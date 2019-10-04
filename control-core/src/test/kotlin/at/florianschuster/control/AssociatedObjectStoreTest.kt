@@ -1,3 +1,3 @@
 package at.florianschuster.control
 
-class AssociatedObjectStoreTest  // todo
+class AssociatedObjectStoreTest // todo

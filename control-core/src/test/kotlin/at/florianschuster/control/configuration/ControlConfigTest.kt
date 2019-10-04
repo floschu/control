@@ -46,5 +46,4 @@ class ControlConfigTest {
         ControlConfig.log { testOperation }
         assert(loggedOperations == listOf(Operation.ControlConfigured.toString(), testOperation.toString()))
     }
-
 }
