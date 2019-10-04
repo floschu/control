@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 
-class GithubController(
+class GithubSearchController(
     private val api: GithubApi = GithubApi.create()
-) : ControllerViewModel<GithubController.Action, GithubController.Mutation, GithubController.State>() {
+) : ControllerViewModel<GithubSearchController.Action, GithubSearchController.Mutation, GithubSearchController.State>() {
 
     sealed class Action {
         data class UpdateQuery(val query: String) : Action()

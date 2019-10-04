@@ -22,7 +22,7 @@ import ru.ldralighieri.corbind.recyclerview.scrollEvents
 import ru.ldralighieri.corbind.widget.textChanges
 
 class GithubSearchActivity : AppCompatActivity(R.layout.activity_github) {
-    private val controller: GithubController by viewModels()
+    private val controller: GithubSearchController by viewModels()
     private val adapter = RepoAdapter()
 
     init {
@@ -35,14 +35,14 @@ class GithubSearchActivity : AppCompatActivity(R.layout.activity_github) {
                 .drop(1)
                 .debounce(300)
                 .map { it.toString() }
-                .map { GithubController.Action.UpdateQuery(it) }
+                .map { GithubSearchController.Action.UpdateQuery(it) }
                 .bind(to = controller.action)
                 .launchIn(lifecycleScope)
 
             repoRecyclerView.scrollEvents()
                 .sample(500)
                 .filter { it.view.shouldLoadMore() }
-                .map { GithubController.Action.LoadNextPage }
+                .map { GithubSearchController.Action.LoadNextPage }
                 .bind(to = controller.action)
                 .launchIn(lifecycleScope)
 
