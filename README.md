@@ -6,4 +6,6 @@
  
 ![CI](https://github.com/floschu/control/workflows/.github/workflows/push.yml/badge.svg)
 
+![logo](.media/control.png)
+
 kotlin flow based unidirectional-data-flow architecture
