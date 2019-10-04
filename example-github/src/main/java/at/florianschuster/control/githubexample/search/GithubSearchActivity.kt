@@ -35,14 +35,14 @@ class GithubSearchActivity : AppCompatActivity(R.layout.activity_github) {
                 .drop(1)
                 .debounce(300)
                 .map { it.toString() }
-                .map { Action.UpdateQuery(it) }
+                .map { GithubController.Action.UpdateQuery(it) }
                 .bind(to = controller.action)
                 .launchIn(lifecycleScope)
 
             repoRecyclerView.scrollEvents()
                 .sample(500)
                 .filter { it.view.shouldLoadMore() }
-                .map { Action.LoadNextPage }
+                .map { GithubController.Action.LoadNextPage }
                 .bind(to = controller.action)
                 .launchIn(lifecycleScope)
 

@@ -9,8 +9,8 @@ internal sealed class Operation(
     class Initialized(tag: String?, initialState: String) :
         Operation(tag, "initialized with $initialState")
 
-    class Mutate(tag: String?, incomingAction: String) :
-        Operation(tag, "mutate with $incomingAction")
+    class Mutate(tag: String?, action: String) :
+        Operation(tag, "mutate with $action")
 
     class Reduce(tag: String?, previousState: String, mutation: String, newState: String) :
         Operation(tag, "reduce $previousState with $mutation to $newState")

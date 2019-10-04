@@ -38,12 +38,6 @@ object Libs {
             Versions.lifecycle_runtime_ktx
 
     /**
-     * http://developer.android.com/tools/extras/support-library.html
-     */
-    const val lifecycle_viewmodel_ktx: String = "androidx.lifecycle:lifecycle-viewmodel-ktx:" +
-            Versions.lifecycle_viewmodel_ktx
-
-    /**
      * https://developer.android.com/studio
      */
     const val aapt2: String = "com.android.tools.build:aapt2:" + Versions.aapt2
@@ -139,6 +133,12 @@ object Libs {
      */
     const val kotlinx_coroutines_core: String = "org.jetbrains.kotlinx:kotlinx-coroutines-core:" +
             Versions.kotlinx_coroutines_core
+
+    /**
+     * https://github.com/Kotlin/kotlinx.coroutines
+     */
+    const val kotlinx_coroutines_test: String = "org.jetbrains.kotlinx:kotlinx-coroutines-test:" +
+            Versions.kotlinx_coroutines_test
 
     /**
      * https://github.com/Kotlin/kotlinx.serialization

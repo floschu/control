@@ -24,4 +24,5 @@ dependencies {
     api Libs.kotlinx_coroutines_core
 
     testImplementation Libs.junit
+    testImplementation Libs.kotlinx_coroutines_test
 }

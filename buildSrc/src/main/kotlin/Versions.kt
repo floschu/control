@@ -22,13 +22,11 @@ object Versions {
 
     const val lifecycle_runtime_ktx: String = "2.2.0-alpha04"
 
-    const val lifecycle_viewmodel_ktx: String = "2.2.0-alpha04"
-
-    const val aapt2: String = "3.5.0-5435860" // available: "3.5.1-5435860"
+    const val aapt2: String = "3.5.1-5435860"
 
     const val com_android_tools_build_gradle: String = "3.5.1"
 
-    const val lint_gradle: String =  "26.5.1"
+    const val lint_gradle: String = "26.5.1"
 
     const val retrofit2_kotlinx_serialization_converter: String = "0.4.0"
 
@@ -43,6 +41,8 @@ object Versions {
     const val org_jetbrains_kotlin: String = "1.3.50"
 
     const val kotlinx_coroutines_core: String = "1.3.2"
+
+    const val kotlinx_coroutines_test: String = "1.3.2"
 
     const val kotlinx_serialization_runtime: String = "0.13.0"
 

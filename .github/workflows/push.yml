@@ -28,7 +28,7 @@ jobs:
       - name: test
         run: ./gradlew test
 
-  build:
+  assemble:
     needs: lint
     runs-on: ubuntu-latest
     steps:
@@ -37,5 +37,5 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: build
-      run: ./gradlew build
+    - name: assemble
+      run: ./gradlew assemble

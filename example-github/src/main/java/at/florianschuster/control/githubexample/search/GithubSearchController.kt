@@ -10,71 +10,60 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 
-sealed class Action {
-    data class UpdateQuery(val query: String) : Action()
-    object LoadNextPage : Action()
-}
-
-sealed class Mutation {
-    data class SetQuery(val query: String) : Mutation()
-    data class SetRepos(val repos: List<Repo>) : Mutation()
-    data class AppendRepos(val repos: List<Repo>) : Mutation()
-    data class SetLoadingNextPage(val loading: Boolean) : Mutation()
-}
-
-data class State(
-    val query: String = "",
-    val repos: List<Repo> = emptyList(),
-    val page: Int = 1,
-    val loadingNextPage: Boolean = false
-)
-
 class GithubController(
-    private val api: GithubApi = GithubApi.create(),
-    override val initialState: State = State()
-) : ControllerViewModel<Action, Mutation, State>() {
+    private val api: GithubApi = GithubApi.create()
+) : ControllerViewModel<GithubController.Action, GithubController.Mutation, GithubController.State>() {
 
-    override fun mutate(incomingAction: Action): Flow<Mutation> = when (incomingAction) {
+    sealed class Action {
+        data class UpdateQuery(val query: String) : Action()
+        object LoadNextPage : Action()
+    }
+
+    sealed class Mutation {
+        data class SetQuery(val query: String) : Mutation()
+        data class SetRepos(val repos: List<Repo>) : Mutation()
+        data class AppendRepos(val repos: List<Repo>) : Mutation()
+        data class SetLoadingNextPage(val loading: Boolean) : Mutation()
+    }
+
+    data class State(
+        val query: String = "",
+        val repos: List<Repo> = emptyList(),
+        val page: Int = 1,
+        val loadingNextPage: Boolean = false
+    )
+
+    override val initialState: State = State()
+
+    override fun mutate(action: Action): Flow<Mutation> = when (action) {
         is Action.UpdateQuery -> flow {
-            emit(Mutation.SetQuery(incomingAction.query))
-            if (incomingAction.query.isEmpty()) return@flow
+            emit(Mutation.SetQuery(action.query))
+            if (action.query.isEmpty()) return@flow
             emit(Mutation.SetLoadingNextPage(true))
-            val repos = search(incomingAction.query, 1)
+            val repos = search(action.query, 1)
             emit(Mutation.SetRepos(repos))
             emit(Mutation.SetLoadingNextPage(false))
         }
         is Action.LoadNextPage -> {
             if (currentState.loadingNextPage) emptyFlow()
             else flow {
-                emit(
-                    Mutation.SetLoadingNextPage(
-                        true
-                    )
-                )
+                emit(Mutation.SetLoadingNextPage(true))
                 val searchResult = search(currentState.query, currentState.page + 1)
-                emit(
-                    Mutation.AppendRepos(
-                        searchResult
-                    )
-                )
-                emit(
-                    Mutation.SetLoadingNextPage(
-                        false
-                    )
-                )
+                emit(Mutation.AppendRepos(searchResult))
+                emit(Mutation.SetLoadingNextPage(false))
             }
         }
     }
 
-    override fun reduce(previousState: State, incomingMutation: Mutation): State =
-        when (incomingMutation) {
-            is Mutation.SetQuery -> previousState.copy(query = incomingMutation.query)
-            is Mutation.SetRepos -> previousState.copy(repos = incomingMutation.repos, page = 1)
+    override fun reduce(previousState: State, mutation: Mutation): State =
+        when (mutation) {
+            is Mutation.SetQuery -> previousState.copy(query = mutation.query)
+            is Mutation.SetRepos -> previousState.copy(repos = mutation.repos, page = 1)
             is Mutation.AppendRepos -> previousState.copy(
-                repos = previousState.repos + incomingMutation.repos,
+                repos = previousState.repos + mutation.repos,
                 page = previousState.page + 1
             )
-            is Mutation.SetLoadingNextPage -> previousState.copy(loadingNextPage = incomingMutation.loading)
+            is Mutation.SetLoadingNextPage -> previousState.copy(loadingNextPage = mutation.loading)
         }
 
     private suspend fun search(query: String, page: Int) = withContext(Dispatchers.IO) {

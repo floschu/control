@@ -64,14 +64,14 @@ interface Controller<Action : Any, Mutation : Any, State : Any> : AssociatedObje
      * Converts an [Action] to a [Mutation]. This is the place to perform side-effects such as
      * async or suspending tasks.
      */
-    fun mutate(incomingAction: Action): Flow<Mutation> = emptyFlow()
+    fun mutate(action: Action): Flow<Mutation> = emptyFlow()
 
     /**
      * Generates a new state with the previous [State] and the incoming [Mutation]. The method
      * should be purely functional, it should not perform any side-effects. This method is called
      * every time a [Mutation] is committed via [mutate].
      */
-    fun reduce(previousState: State, incomingMutation: Mutation): State = previousState
+    fun reduce(previousState: State, mutation: Mutation): State = previousState
 
     /**
      * Transforms the [Action]. Use this function to combine with other [Flow]'s. This method is
@@ -91,6 +91,7 @@ interface Controller<Action : Any, Mutation : Any, State : Any> : AssociatedObje
     fun destroy() {
         associatedObject<ControllerScope>(SCOPE_KEY)?.cancel()
         clearAssociatedObjects()
+        ControlConfig.log { Operation.Destroyed(tag) }
     }
 
     private val privateAction: Channel<Action>
@@ -108,7 +109,10 @@ interface Controller<Action : Any, Mutation : Any, State : Any> : AssociatedObje
         val mutationFlow: Flow<Mutation> = transformAction(privateAction.consumeAsFlow())
             .flatMapMerge {
                 ControlConfig.log { Operation.Mutate(tag, it.toString()) }
-                mutate(it).catch { e: Throwable -> ControlConfig.handleError(e); emitAll(emptyFlow()) }
+                mutate(it).catch { e: Throwable ->
+                    ControlConfig.handleError(e)
+                    emitAll(emptyFlow()) // todo
+                }
             }
 
         val stateFlow: Flow<State> = transformMutation(mutationFlow)
@@ -124,12 +128,14 @@ interface Controller<Action : Any, Mutation : Any, State : Any> : AssociatedObje
                 }
                 reducedState
             }
-            .catch { e: Throwable -> ControlConfig.handleError(e); emitAll(emptyFlow()) }
+            .catch { e: Throwable ->
+                ControlConfig.handleError(e)
+                emitAll(emptyFlow()) // todo
+            }
 
         // todo use future .share() or maybe stateFlow
-        stateFlow.onEach { privateState.offer(it) }
-            .onCompletion { ControlConfig.log { Operation.Destroyed(tag) } }
-            .launchIn(scope)
+        stateFlow.onEach { privateState.offer(it) }.launchIn(scope)
+
         ControlConfig.log { Operation.Initialized(tag, initialState.toString()) }
     }
 

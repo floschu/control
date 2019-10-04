@@ -22,12 +22,12 @@ class CounterActivity : AppCompatActivity(R.layout.activity_counter) {
 
         // action
         btnIncrease.clicks()
-            .map { CounterAction.Increase }
+            .map { CounterController.Action.Increase }
             .bind(to = controller.action)
             .launchIn(scope = lifecycleScope)
 
         btnDecrease.clicks()
-            .map { CounterAction.Decrease }
+            .map { CounterController.Action.Decrease }
             .bind(to = controller.action)
             .launchIn(scope = lifecycleScope)
 
