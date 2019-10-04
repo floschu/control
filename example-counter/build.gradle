@@ -1,0 +1,11 @@
+apply from: rootProject.file("example-module-android.gradle")
+
+android {
+    defaultConfig {
+        applicationId "at.florianschuster.control.counterexample"
+    }
+}
+
+dependencies {
+    implementation project(':control-core')
+}

@@ -1,0 +1,39 @@
+package at.florianschuster.control
+
+interface AssociatedObjectStore {
+
+    private val store: HashMap<String, Any>
+        get() {
+            val currentStore: HashMap<String, Any>? = stores[this]
+            return if (currentStore != null) currentStore
+            else {
+                val store: HashMap<String, Any> = HashMap()
+                stores[this] = store
+                store
+            }
+        }
+
+    fun <T> associatedObject(key: String): T? {
+        @Suppress("UNCHECKED_CAST")
+        return store[key] as? T
+    }
+
+    fun <T> associatedObject(key: String, creator: () -> T): T { // todo
+        val obj: T? = associatedObject<T>(key)
+        return if (obj != null) obj
+        else {
+            val defaultObj: T = creator()
+            store[key] = defaultObj as Any
+            defaultObj
+        }
+    }
+
+    fun clearAssociatedObjects() {
+        stores[this]?.clear()
+        stores.remove(this)
+    }
+
+    companion object {
+        private val stores: HashMap<Any, HashMap<String, Any>> = hashMapOf()
+    }
+}

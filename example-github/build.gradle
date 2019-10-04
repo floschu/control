@@ -1,0 +1,22 @@
+apply from: rootProject.file("example-module-android.gradle")
+
+apply plugin: 'kotlinx-serialization'
+
+android {
+    defaultConfig {
+        applicationId "at.florianschuster.control.githubexample"
+    }
+}
+
+
+dependencies {
+    implementation project(':control-android')
+
+    implementation Libs.activity_ktx
+
+    implementation Libs.kotlinx_serialization_runtime
+    implementation Libs.retrofit
+    implementation Libs.retrofit2_kotlinx_serialization_converter
+
+    implementation Libs.corbind_recyclerview
+}

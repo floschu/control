@@ -1,2 +1,2 @@
-# riffraff
-Kotlin Flow based Unidirectional Data Flow Architecture.
+# control
+kotlin flow based unidirectional-data-flow architecture

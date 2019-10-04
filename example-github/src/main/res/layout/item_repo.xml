@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:padding="4dp"
+    android:background="?selectableItemBackground"
+    android:layout_width="match_parent"
+    android:layout_height="?listPreferredItemHeight">
+
+    <TextView
+        android:id="@+id/repoNameTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:layout_gravity="center"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:textColor="#000"
+        tools:text="Repo/Name"/>
+
+    <View
+        android:layout_marginTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_gravity="bottom"
+        android:layout_height="1dp"
+        android:background="#B8B8B8"/>
+</FrameLayout>
