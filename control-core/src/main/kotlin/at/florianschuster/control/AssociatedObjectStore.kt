@@ -18,11 +18,11 @@ interface AssociatedObjectStore {
         return store[key] as? T
     }
 
-    fun <T> associatedObject(key: String, creator: () -> T): T { // todo
+    fun <T> associatedObject(key: String, default: () -> T): T {
         val obj: T? = associatedObject<T>(key)
         return if (obj != null) obj
         else {
-            val defaultObj: T = creator()
+            val defaultObj: T = default()
             store[key] = defaultObj as Any
             defaultObj
         }
