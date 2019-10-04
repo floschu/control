@@ -1,17 +1,41 @@
-name: Build and Test
+name: lint, test & build
 
 on: push
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: ktlint
+        run: ./gradlew ktlint
+      - name: lint
+        run: ./gradlew lint
+
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: test
+        run: ./gradlew test
+
   build:
+    needs: lint
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: set up JDK 1.8
+    - name: Set up Java
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: ktlint
-      run: ./gradlew ktlint
-    - name: Build
+    - name: build
       run: ./gradlew build
