@@ -66,7 +66,7 @@ class GithubSearchController(
             is Mutation.SetLoadingNextPage -> previousState.copy(loadingNextPage = mutation.loading)
         }
 
-    private suspend fun search(query: String, page: Int) = withContext(Dispatchers.IO) {
+    private suspend fun search(query: String, page: Int): List<Repo> = withContext(Dispatchers.IO) {
         try {
             api.repos(query, page).items
         } catch (e: Exception) {
