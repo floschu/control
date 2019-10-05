@@ -10,7 +10,7 @@ internal object ControlConfig {
         }
     }
 
-    internal fun log(operation: () -> Operation) {
+    internal inline fun log(operation: () -> Operation) {
         if (!configuration.operationLoggerEnabled) return
         configuration.operationLogger?.invoke(operation().toString())
     }
