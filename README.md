@@ -1,6 +1,6 @@
 ![logo](.media/control.png)
 
-![control](https://img.shields.io/github/v/tag/floschu/control?color=blue&label=version) ![issues](https://img.shields.io/github/issues-raw/floschu/control) ![license](https://img.shields.io/badge/license-Apache%202.0-blue.svg)
+[![version](https://img.shields.io/github/v/tag/floschu/control?color=blue&label=version)](https://github.com/floschu/control/releases) [![issues](https://img.shields.io/github/issues-raw/floschu/control)](https://github.com/floschu/control/issues) [![license](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
  
 [![build](https://github.com/floschu/control/workflows/.github/workflows/build.yml/badge.svg)](https://github.com/floschu/control/actions)
 
@@ -40,8 +40,8 @@ TODO
 
 ## examples
 
-* [counter](.example-counter): most basic example. uses `Controller`.
-* [github search](.example-github): github repository search. uses `ControllerViewModel`.
+* [counter](example-counter): most basic example. uses `Controller`.
+* [github search](example-github): github repository search. uses `ControllerViewModel`.
 * [Playables](https://github.com/floschu/Playables): app with a checklist of games you want to play.
 
 
