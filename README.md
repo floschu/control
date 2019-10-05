@@ -2,7 +2,7 @@
 
 ![control](https://img.shields.io/github/v/tag/floschu/control?color=blue&label=version) ![issues](https://img.shields.io/github/issues-raw/floschu/control) ![license](https://img.shields.io/badge/license-Apache%202.0-blue.svg)
  
-[![CI](https://github.com/floschu/control/workflows/.github/workflows/push.yml/badge.svg)]((https://github.com/floschu/control/actions))
+[![build](https://github.com/floschu/control/workflows/.github/workflows/build.yml/badge.svg)](https://github.com/floschu/control/actions)
 
 
 kotlin flow based unidirectional-data-flow architecture
