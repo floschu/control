@@ -1,8 +1,6 @@
 ![logo](.media/control.png)
 
-[![version](https://img.shields.io/github/v/tag/floschu/control?color=blue&label=version)](https://github.com/floschu/control/releases) [![issues](https://img.shields.io/github/issues-raw/floschu/control)](https://github.com/floschu/control/issues) [![license](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
- 
-[![build](https://github.com/floschu/control/workflows/.github/workflows/build.yml/badge.svg)](https://github.com/floschu/control/actions)
+[![version](https://img.shields.io/github/v/tag/floschu/control?color=blue&label=version)](https://github.com/floschu/control/releases) [![build](https://github.com/floschu/control/workflows/build/badge.svg)](https://github.com/floschu/control/actions) [![issues](https://img.shields.io/github/issues-raw/floschu/control)](https://github.com/floschu/control/issues) [![license](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
 
 kotlin flow based unidirectional-data-flow architecture
