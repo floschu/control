@@ -46,18 +46,18 @@ interface Controller<Action : Any, Mutation : Any, State : Any> : AssociatedObje
     val currentState: State get() = privateState.value
 
     /**
-     * The [Action] from the view. Bind user inputs to this [SendChannel].
+     * The [Action] from the view. Bind user inputs to this [ActionProcessor].
      */
-    val action: SendChannel<Action>
+    val action: ActionProcessor<Action>
         get() {
             privateState // init state stream
-            return this.privateAction
+            return privateAction
         }
 
     /**
      * The [State] [Flow]. Use this to observe the state changes.
      */
-    val state: Flow<State> get() = privateState.asFlow() // todo replay(1) !!!
+    val state: Flow<State> get() = privateState.asFlow()
 
     /**
      * Converts an [Action] to a [Mutation]. This is the place to perform side-effects such as
@@ -87,14 +87,16 @@ interface Controller<Action : Any, Mutation : Any, State : Any> : AssociatedObje
     /**
      * Destroys this [Controller].
      */
-    fun destroy() {
+    fun cancel() {
+        associatedObject<Channel<Action>>(ACTION_KEY)?.cancel()
+        associatedObject<ConflatedBroadcastChannel<State>>(STATE_KEY)?.cancel()
         associatedObject<ControllerScope>(SCOPE_KEY)?.cancel()
         clearAssociatedObjects()
         ControlConfig.log { Operation.Destroyed(tag) }
     }
 
-    private val privateAction: Channel<Action>
-        get() = associatedObject(ACTION_KEY) { Channel(capacity = Channel.CONFLATED) }
+    private val privateAction: ActionProcessor<Action>
+        get() = associatedObject(ACTION_KEY) { ActionProcessor() }
 
     private val privateState: ConflatedBroadcastChannel<State>
         get() = associatedObject(STATE_KEY) {
@@ -105,7 +107,7 @@ interface Controller<Action : Any, Mutation : Any, State : Any> : AssociatedObje
     private fun initState() {
         val scope: ControllerScope = associatedObject(SCOPE_KEY) { ControllerScope() }
 
-        val mutationFlow: Flow<Mutation> = transformAction(privateAction.consumeAsFlow())
+        val mutationFlow: Flow<Mutation> = transformAction(privateAction)
             .flatMapMerge {
                 ControlConfig.log { Operation.Mutate(tag, it.toString()) }
                 mutate(it).catch { e: Throwable ->
@@ -133,7 +135,13 @@ interface Controller<Action : Any, Mutation : Any, State : Any> : AssociatedObje
             }
 
         // todo use future .share() or maybe stateFlow
-        stateFlow.onEach { privateState.offer(it) }.launchIn(scope)
+        stateFlow
+            .onEach { privateState.send(it) }
+            .catch { e: Throwable ->
+                ControlConfig.handleError(e)
+                emitAll(emptyFlow()) // todo
+            }
+            .launchIn(scope)
 
         ControlConfig.log { Operation.Initialized(tag, initialState.toString()) }
     }

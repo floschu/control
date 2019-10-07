@@ -6,7 +6,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
 /**
- * A [Controller] that implements AAC [ViewModel] and automatically calls [Controller.destroy]
+ * A [Controller] that implements AAC [ViewModel] and automatically calls [Controller.cancel]
  * when [ViewModel.onCleared] is called.
  */
 @ExperimentalCoroutinesApi
@@ -16,6 +16,6 @@ abstract class ControllerViewModel<Action : Any, Mutation : Any, State : Any> :
 
     override fun onCleared() {
         super.onCleared()
-        destroy()
+        cancel()
     }
 }

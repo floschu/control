@@ -52,7 +52,7 @@ class CounterActivity : AppCompatActivity(R.layout.activity_counter) {
 
     override fun onDestroy() {
         super.onDestroy()
-        controller.destroy()
+        controller.cancel()
     }
 
     companion object {

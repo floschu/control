@@ -1,5 +1,6 @@
 package at.florianschuster.control
 
+import at.florianschuster.control.configuration.configureControl
 import kotlinx.coroutines.channels.ticker
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -9,40 +10,39 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.runBlockingTest
+import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 
 class ControllerTest {
 
-    private val testDispatcher = TestCoroutineDispatcher()
+    @Before
+    fun setup() {
+        configureControl { operationLogger(logger = ::println) }
+    }
 
     @Test
-    fun `initial state only emitted once`() = testDispatcher.runBlockingTest {
+    fun `initial state only emitted once`() = runBlockingTest {
         val controller = TestController()
-        val testStateList = controller.state.toList()
+        val testStateList = controller.state.test(this)
 
-        assertEquals(testStateList.count(), 1)
+        controller.cancel()
+        assertEquals(1, testStateList.count())
     }
 
     @Test
     fun `each method is invoked`() = runBlockingTest {
         val controller = TestController()
-        val testStateList = controller.state.toList()
+        val testStateList = controller.state.test(this)
 
         controller.action.offer(arrayListOf("action"))
 
-        assertEquals(testStateList.count(), 2)
-        assertEquals(testStateList[0], listOf("transformedState"))
+        assertEquals(2, testStateList.count())
+        assertEquals(listOf(), testStateList[0])
         assertEquals(
-            testStateList[1], listOf(
-                "action",
-                "transformedAction",
-                "mutation",
-                "transformedMutation",
-                "transformedState"
-            )
+            listOf("action", "transformedAction", "mutation", "transformedMutation"),
+            testStateList[1]
         )
     }
 
@@ -54,8 +54,8 @@ class ControllerTest {
         controller.action.offer(Unit) // state: 1
         controller.action.offer(Unit) // state: 2
 
-        assertEquals(testStateList.count(), 3)
-        assertEquals(testStateList, listOf(0, 1, 2))
+        assertEquals(3, testStateList.count())
+        assertEquals(listOf(0, 1, 2), testStateList)
     }
 
     @Test
@@ -65,13 +65,8 @@ class ControllerTest {
         controller.action.offer(listOf("action"))
 
         assertEquals(
-            controller.currentState, listOf(
-                "action",
-                "transformedAction",
-                "mutation",
-                "transformedMutation",
-                "transformedState"
-            )
+            listOf("action", "transformedAction", "mutation", "transformedMutation"),
+            controller.currentState
         )
     }
 
@@ -81,13 +76,8 @@ class ControllerTest {
         controller.action.offer(listOf("action"))
 
         assertEquals(
-            controller.currentState, listOf(
-                "action",
-                "transformedAction",
-                "mutation",
-                "transformedMutation",
-                "transformedState"
-            )
+            listOf("action", "transformedAction", "mutation", "transformedMutation"),
+            controller.currentState
         )
     }
 
@@ -103,8 +93,8 @@ class ControllerTest {
         controller.action.offer(Unit)
         controller.action.offer(Unit)
 
-        assertEquals(testStateList.size, 6)
-        assertEquals(testStateList, listOf(0, 1, 2, 3, 4, 5))
+        assertEquals(6, testStateList.size)
+        assertEquals(listOf(0, 1, 2, 3, 4, 5), testStateList)
     }
 
     @Test
@@ -119,7 +109,7 @@ class ControllerTest {
         controller.action.offer(Unit)
         controller.action.offer(Unit)
 
-        assertEquals(testStateList, listOf(0, 1, 2, 3, 4, 5))
+        assertEquals(listOf(0, 1, 2, 3, 4, 5), testStateList)
     }
 
 //    @Test
@@ -178,8 +168,8 @@ private class TestController : Controller<List<String>, List<String>, List<Strin
     }
 
     // 4. [] + ["action", "transformedAction", "mutation", "transformedMutation"]
-    override fun reduce(previousState: List<String>, incomingMutation: List<String>): List<String> {
-        return previousState + incomingMutation
+    override fun reduce(previousState: List<String>, mutation: List<String>): List<String> {
+        return previousState + mutation
     }
 }
 
@@ -201,7 +191,7 @@ private class CounterController : Controller<Unit, Unit, Int> {
         else -> flowOf(action)
     }
 
-    override fun reduce(previousState: Int, incomingMutation: Unit): Int = previousState + 1
+    override fun reduce(previousState: Int, mutation: Unit): Int = previousState + 1
 }
 
 private class StopwatchController : Controller<StopwatchController.Action, Int, Int> {
@@ -222,6 +212,6 @@ private class StopwatchController : Controller<StopwatchController.Action, Int, 
         is Action.Stop -> emptyFlow()
     }
 
-    override fun reduce(previousState: Int, incomingMutation: Int): Int =
-        previousState + incomingMutation
+    override fun reduce(previousState: Int, mutation: Int): Int =
+        previousState + mutation
 }

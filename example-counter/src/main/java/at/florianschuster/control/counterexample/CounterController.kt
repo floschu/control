@@ -21,11 +21,11 @@ class CounterController(
     }
 
     data class State(
-        val value: Int = 0,
-        val loading: Boolean = false
+        val value: Int,
+        val loading: Boolean
     )
 
-    override val initialState: State = State(initialValue)
+    override val initialState: State = State(initialValue, false)
 
     override fun mutate(action: Action): Flow<Mutation> = when (action) {
         is Action.Increase -> flow {

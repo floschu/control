@@ -34,12 +34,12 @@ fun <T> Flow<T>.bind(to: (T) -> Unit): Flow<T> {
 }
 
 /**
- * Binds a [Flow] to the [Controller.action] channel. Also handles errors as defined in
+ * Binds a [Flow] to the [Controller]'s [ActionProcessor]. Also handles errors as defined in
  * [ControlConfig].
  */
 @ExperimentalCoroutinesApi
-fun <T> Flow<T>.bind(to: SendChannel<T>): Flow<T> {
-    return onEach { to.offer(it) }.catch {
+fun <T> Flow<T>.bind(to: ActionProcessor<T>): Flow<T> {
+    return onEach { to.emit(it) }.catch {
         ControlConfig.handleError(it)
         emitAll(emptyFlow()) // todo test
     }
