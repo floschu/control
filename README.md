@@ -30,11 +30,12 @@ dependencies {
 ## what should I know before I try this?
 
 * kotlin
-* Kotlin coroutines & kotlin flow
+* kotlin coroutines 
+* kotlin coroutines flow
 
 ## concept
 
-TODO
+todo
 
 ## examples
 
