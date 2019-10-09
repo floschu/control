@@ -15,14 +15,15 @@ interface GithubApi {
     suspend fun repos(@Query("q") query: String, @Query("page") page: Int): Result
 
     companion object Factory {
-        private const val baseUrl = "https://api.github.com/"
-
-        fun create(): GithubApi {
+        operator fun invoke(
+            baseUrl: String = "https://api.github.com/",
+            mediaType: MediaType = MediaType.get("application/json")
+        ): GithubApi {
+            val converterFactory = Json.nonstrict.asConverterFactory(mediaType)
             val retrofit = Retrofit.Builder().apply {
                 baseUrl(baseUrl)
-                addConverterFactory(Json.nonstrict.asConverterFactory(MediaType.get("application/json")))
+                addConverterFactory(converterFactory)
             }.build()
-
             return retrofit.create(GithubApi::class.java)
         }
     }

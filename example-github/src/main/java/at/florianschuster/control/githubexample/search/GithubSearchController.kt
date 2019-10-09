@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 
 class GithubSearchController(
-    private val api: GithubApi = GithubApi.create()
+    private val api: GithubApi = GithubApi.Factory()
 ) : ControllerViewModel<GithubSearchController.Action, GithubSearchController.Mutation, GithubSearchController.State>() {
 
     sealed class Action {

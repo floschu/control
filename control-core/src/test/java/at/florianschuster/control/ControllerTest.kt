@@ -1,42 +1,46 @@
 package at.florianschuster.control
 
 import at.florianschuster.control.configuration.configureControl
-import kotlinx.coroutines.channels.ticker
+import at.florianschuster.control.util.CoroutineTestRuleScope
+import at.florianschuster.control.util.test
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
 class ControllerTest {
 
+    @get:Rule
+    val testScope = CoroutineTestRuleScope()
+
     @Before
     fun setup() {
-        configureControl { operationLogger(logger = ::println) }
+        configureControl {
+            crashes(true)
+            operationLogger(logger = ::println)
+        }
     }
 
     @Test
-    fun `initial state only emitted once`() = runBlockingTest {
+    fun `initial state only emitted once`() {
         val controller = TestController()
-        val testStateList = controller.state.test(this)
+        val testStateList = controller.state.test(testScope)
 
-        controller.cancel()
         assertEquals(1, testStateList.count())
     }
 
     @Test
-    fun `each method is invoked`() = runBlockingTest {
+    fun `each method is invoked`() {
         val controller = TestController()
-        val testStateList = controller.state.test(this)
 
-        controller.action.offer(arrayListOf("action"))
+        val testStateList = controller.state.test(testScope)
+
+        controller.action(listOf("action"))
 
         assertEquals(2, testStateList.count())
         assertEquals(listOf(), testStateList[0])
@@ -47,22 +51,22 @@ class ControllerTest {
     }
 
     @Test
-    fun `state replay current state`() = runBlockingTest {
+    fun `state replay current state`() {
         val controller = CounterController()
-        val testStateList = controller.state.toList() // state: 0
+        val testStateList = controller.state.test(testScope) // state: 0
 
-        controller.action.offer(Unit) // state: 1
-        controller.action.offer(Unit) // state: 2
+        controller.action(Unit) // state: 1
+        controller.action(Unit) // state: 2
 
         assertEquals(3, testStateList.count())
         assertEquals(listOf(0, 1, 2), testStateList)
     }
 
     @Test
-    fun `current state`() = runBlockingTest {
+    fun `current state`() {
         val controller = TestController()
         controller.state
-        controller.action.offer(listOf("action"))
+        controller.action(listOf("action"))
 
         assertEquals(
             listOf("action", "transformedAction", "mutation", "transformedMutation"),
@@ -71,9 +75,9 @@ class ControllerTest {
     }
 
     @Test
-    fun `state is created when accessing action`() = runBlockingTest {
+    fun `state is created when accessing action`() {
         val controller = TestController()
-        controller.action.offer(listOf("action"))
+        controller.action(listOf("action"))
 
         assertEquals(
             listOf("action", "transformedAction", "mutation", "transformedMutation"),
@@ -82,38 +86,38 @@ class ControllerTest {
     }
 
     @Test
-    fun `stream ignores error from mutate`() = runBlockingTest {
+    fun `stream ignores error from mutate`() {
         val controller = CounterController()
-        val testStateList = controller.state.toList()
+        val testStateList = controller.state.test(testScope)
 
         controller.stateIndexToTriggerError = 2
-        controller.action.offer(Unit)
-        controller.action.offer(Unit)
-        controller.action.offer(Unit)
-        controller.action.offer(Unit)
-        controller.action.offer(Unit)
+        controller.action(Unit)
+        controller.action(Unit)
+        controller.action(Unit)
+        controller.action(Unit)
+        controller.action(Unit)
 
         assertEquals(6, testStateList.size)
         assertEquals(listOf(0, 1, 2, 3, 4, 5), testStateList)
     }
 
     @Test
-    fun `stream ignores completed from mutate`() = runBlockingTest {
+    fun `stream ignores completed from mutate`() {
         val controller = CounterController()
-        val testStateList = controller.state.toList()
+        val testStateList = controller.state.test(testScope)
 
         controller.stateIndexToTriggerCompleted = 2
-        controller.action.offer(Unit)
-        controller.action.offer(Unit)
-        controller.action.offer(Unit)
-        controller.action.offer(Unit)
-        controller.action.offer(Unit)
+        controller.action(Unit)
+        controller.action(Unit)
+        controller.action(Unit)
+        controller.action(Unit)
+        controller.action(Unit)
 
         assertEquals(listOf(0, 1, 2, 3, 4, 5), testStateList)
     }
 
 //    @Test
-//    fun testCancel() = runBlockingTest {
+//    fun testCancel() {
 //        RxJavaPlugins.reset()
 //
 //        val testScheduler = TestScheduler()
@@ -194,24 +198,24 @@ private class CounterController : Controller<Unit, Unit, Int> {
     override fun reduce(previousState: Int, mutation: Unit): Int = previousState + 1
 }
 
-private class StopwatchController : Controller<StopwatchController.Action, Int, Int> {
-
-    sealed class Action {
-        object Start : Action()
-        object Stop : Action()
-    }
-
-    override val initialState: Int = 0
-
-    override fun mutate(action: Action): Flow<Int> = when (action) {
-        is Action.Start -> {
-            ticker(1000).consumeAsFlow()
-                // .takeUntil(this.action.filter { it is Action.Stop }) todo
-                .map { 1 }
-        }
-        is Action.Stop -> emptyFlow()
-    }
-
-    override fun reduce(previousState: Int, mutation: Int): Int =
-        previousState + mutation
-}
+// private class StopwatchController : Controller<StopwatchController.Action, Int, Int> {
+//
+//     sealed class Action {
+//         object Start : Action()
+//         object Stop : Action()
+//     }
+//
+//     override val initialState: Int = 0
+//
+//     override fun mutate(action: Action): Flow<Int> = when (action) {
+//         is Action.Start -> {
+//             ticker(1000).consumeAsFlow()
+//                 .takeUntil(this.action.filter { it is Action.Stop }) todo
+//                 .map { 1 }
+//         }
+//         is Action.Stop -> emptyFlow()
+//     }
+//
+//     override fun reduce(previousState: Int, mutation: Int): Int =
+//         previousState + mutation
+// }

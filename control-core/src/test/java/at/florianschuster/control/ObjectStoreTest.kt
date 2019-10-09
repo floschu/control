@@ -2,7 +2,7 @@ package at.florianschuster.control
 
 import org.junit.Test
 
-class AssociatedObjectStoreTest {
+class ObjectStoreTest {
     private val testObjectKey = "object"
     private val testObject = TestObject()
 
@@ -28,5 +28,5 @@ class AssociatedObjectStoreTest {
     }
 }
 
-private class Store : AssociatedObjectStore
+private class Store : ObjectStore
 private data class TestObject(val element: Int = 123)

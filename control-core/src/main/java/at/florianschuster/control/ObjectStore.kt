@@ -1,6 +1,6 @@
 package at.florianschuster.control
 
-interface AssociatedObjectStore {
+interface ObjectStore {
 
     private val store: HashMap<String, Any>
         get() {

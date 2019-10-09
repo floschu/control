@@ -18,6 +18,6 @@ internal sealed class Operation(
     class Destroyed(tag: String?) : Operation(tag, "destroyed")
 
     override fun toString(): String {
-        return "||||| <control> ||||| ${if (tag != null) "$tag --> " else ""}$message |||||"
+        return "||||| <control> ||||| ${if (tag != null) "$tag -> " else ""}$message |||||"
     }
 }

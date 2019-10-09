@@ -1,23 +1,20 @@
 package at.florianschuster.control
 
 import at.florianschuster.control.configuration.ControlConfig
-import at.florianschuster.control.configuration.ControllerScope
 import at.florianschuster.control.configuration.Operation
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
-import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.scan
 
 /**
@@ -28,7 +25,7 @@ import kotlinx.coroutines.flow.scan
  */
 @FlowPreview
 @ExperimentalCoroutinesApi
-interface Controller<Action : Any, Mutation : Any, State : Any> : AssociatedObjectStore {
+interface Controller<Action : Any, Mutation : Any, State : Any> : ObjectStore {
 
     /**
      * A [String] tag that is used for [Operation] logging.
@@ -88,7 +85,7 @@ interface Controller<Action : Any, Mutation : Any, State : Any> : AssociatedObje
      * Destroys this [Controller].
      */
     fun cancel() {
-        associatedObject<Channel<Action>>(ACTION_KEY)?.cancel()
+        associatedObject<ActionProcessor<Action>>(ACTION_KEY)?.cancel()
         associatedObject<ConflatedBroadcastChannel<State>>(STATE_KEY)?.cancel()
         associatedObject<ControllerScope>(SCOPE_KEY)?.cancel()
         clearAssociatedObjects()
@@ -136,7 +133,7 @@ interface Controller<Action : Any, Mutation : Any, State : Any> : AssociatedObje
 
         // todo use future .share() or maybe stateFlow
         stateFlow
-            .onEach { privateState.send(it) }
+            .onEach { privateState.offer(it) }
             .catch { e: Throwable ->
                 ControlConfig.handleError(e)
                 emitAll(emptyFlow()) // todo
