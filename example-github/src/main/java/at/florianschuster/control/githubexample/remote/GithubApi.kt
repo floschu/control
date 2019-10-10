@@ -1,5 +1,6 @@
 package at.florianschuster.control.githubexample.remote
 
+import android.net.Uri
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -34,5 +35,5 @@ data class Result(val items: List<Repo>)
 
 @Serializable
 data class Repo(val id: Int, @SerialName("full_name") val name: String) {
-    val url: String get() = "https://github.com/$name"
+    val webUri: Uri get() = Uri.parse("https://github.com/$name")
 }

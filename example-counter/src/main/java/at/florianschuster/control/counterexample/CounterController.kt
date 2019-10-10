@@ -5,47 +5,47 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
+sealed class CounterAction {
+    object Increase : CounterAction()
+    object Decrease : CounterAction()
+}
+
+sealed class CounterMutation {
+    object IncreaseValue : CounterMutation()
+    object DecreaseValue : CounterMutation()
+    data class SetLoading(val loading: Boolean) : CounterMutation()
+}
+
+data class CounterState(
+    val value: Int,
+    val loading: Boolean
+)
+
 class CounterController(
     initialValue: Int
-) : Controller<CounterController.Action, CounterController.Mutation, CounterController.State> {
+) : Controller<CounterAction, CounterMutation, CounterState> {
 
-    sealed class Action {
-        object Increase : Action()
-        object Decrease : Action()
-    }
+    override val initialState: CounterState = CounterState(initialValue, false)
 
-    sealed class Mutation {
-        object IncreaseValue : Mutation()
-        object DecreaseValue : Mutation()
-        data class SetLoading(val loading: Boolean) : Mutation()
-    }
-
-    data class State(
-        val value: Int,
-        val loading: Boolean
-    )
-
-    override val initialState: State = State(initialValue, false)
-
-    override fun mutate(action: Action): Flow<Mutation> = when (action) {
-        is Action.Increase -> flow {
-            emit(Mutation.SetLoading(true))
-            emit(Mutation.IncreaseValue)
+    override fun mutate(action: CounterAction): Flow<CounterMutation> = when (action) {
+        is CounterAction.Increase -> flow {
+            emit(CounterMutation.SetLoading(true))
+            emit(CounterMutation.IncreaseValue)
             delay(1000)
-            emit(Mutation.SetLoading(false))
+            emit(CounterMutation.SetLoading(false))
         }
-        is Action.Decrease -> flow {
-            emit(Mutation.SetLoading(true))
-            emit(Mutation.DecreaseValue)
+        is CounterAction.Decrease -> flow {
+            emit(CounterMutation.SetLoading(true))
+            emit(CounterMutation.DecreaseValue)
             delay(1000)
-            emit(Mutation.SetLoading(false))
+            emit(CounterMutation.SetLoading(false))
         }
     }
 
-    override fun reduce(previousState: State, mutation: Mutation): State =
+    override fun reduce(previousState: CounterState, mutation: CounterMutation): CounterState =
         when (mutation) {
-            is Mutation.IncreaseValue -> previousState.copy(value = previousState.value + 1)
-            is Mutation.DecreaseValue -> previousState.copy(value = previousState.value - 1)
-            is Mutation.SetLoading -> previousState.copy(loading = mutation.loading)
+            is CounterMutation.IncreaseValue -> previousState.copy(value = previousState.value + 1)
+            is CounterMutation.DecreaseValue -> previousState.copy(value = previousState.value - 1)
+            is CounterMutation.SetLoading -> previousState.copy(loading = mutation.loading)
         }
 }

@@ -119,6 +119,12 @@ object Libs {
     /**
      * https://kotlinlang.org/
      */
+    const val kotlin_serialization_unshaded: String =
+            "org.jetbrains.kotlin:kotlin-serialization-unshaded:" + Versions.org_jetbrains_kotlin
+
+    /**
+     * https://kotlinlang.org/
+     */
     const val kotlin_stdlib: String = "org.jetbrains.kotlin:kotlin-stdlib:" +
             Versions.org_jetbrains_kotlin
 

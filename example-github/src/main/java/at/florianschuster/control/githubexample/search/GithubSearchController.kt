@@ -1,14 +1,15 @@
 package at.florianschuster.control.githubexample.search
 
+import androidx.lifecycle.viewModelScope
 import at.florianschuster.control.android.ControllerViewModel
 import at.florianschuster.control.githubexample.remote.GithubApi
 import at.florianschuster.control.githubexample.remote.Repo
-import java.lang.Exception
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.map
 
 class GithubSearchController(
     private val api: GithubApi = GithubApi.Factory()
@@ -40,16 +41,15 @@ class GithubSearchController(
             emit(Mutation.SetQuery(action.query))
             if (action.query.isEmpty()) return@flow
             emit(Mutation.SetLoadingNextPage(true))
-            val repos = search(action.query, 1)
-            emit(Mutation.SetRepos(repos))
+            emitAll(flowSearch(action.query, 1).map { Mutation.SetRepos(it) })
             emit(Mutation.SetLoadingNextPage(false))
         }
         is Action.LoadNextPage -> {
             if (currentState.loadingNextPage) emptyFlow()
             else flow {
                 emit(Mutation.SetLoadingNextPage(true))
-                val searchResult = search(currentState.query, currentState.page + 1)
-                emit(Mutation.AppendRepos(searchResult))
+                val repos = coroutineSearch(currentState.query, currentState.page + 1)
+                emit(Mutation.AppendRepos(repos))
                 emit(Mutation.SetLoadingNextPage(false))
             }
         }
@@ -66,12 +66,25 @@ class GithubSearchController(
             is Mutation.SetLoadingNextPage -> previousState.copy(loadingNextPage = mutation.loading)
         }
 
-    private suspend fun search(query: String, page: Int): List<Repo> = withContext(Dispatchers.IO) {
+    /**
+     * Search with [Flow]
+     */
+    private fun flowSearch(query: String, page: Int): Flow<List<Repo>> =
+        flow { emit(api.repos(query, page)) }
+            .map { it.items }
+            .catch { e ->
+                println("Search Error: $e")
+                emit(emptyList())
+            }
+
+    /**
+     * Search with [suspend] function.
+     */
+    private suspend fun coroutineSearch(query: String, page: Int): List<Repo> =
         try {
             api.repos(query, page).items
         } catch (e: Exception) {
             println("Search Error: $e")
-            emptyList<Repo>()
+            emptyList()
         }
-    }
 }

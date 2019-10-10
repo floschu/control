@@ -9,6 +9,7 @@ import kotlinx.android.synthetic.main.activity_counter.*
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import ru.ldralighieri.corbind.view.clicks
 
 class CounterActivity : AppCompatActivity(R.layout.activity_counter) {
@@ -22,12 +23,12 @@ class CounterActivity : AppCompatActivity(R.layout.activity_counter) {
 
         // action
         btnIncrease.clicks()
-            .map { CounterController.Action.Increase }
+            .map { CounterAction.Increase }
             .bind(to = controller.action)
             .launchIn(scope = lifecycleScope)
 
         btnDecrease.clicks()
-            .map { CounterController.Action.Decrease }
+            .map { CounterAction.Decrease }
             .bind(to = controller.action)
             .launchIn(scope = lifecycleScope)
 

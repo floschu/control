@@ -1,6 +1,6 @@
 package at.florianschuster.control
 
-import at.florianschuster.control.configuration.ControlConfig
+import at.florianschuster.control.configuration.Control
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.BroadcastChannel
@@ -27,7 +27,7 @@ class ActionProcessor<T> : AbstractFlow<T>(), (T) -> Unit {
         try {
             channel.offer(value)
         } catch (e: ClosedSendChannelException) {
-            ControlConfig.handleError(e)
+            Control.log(e)
         }
     }
 

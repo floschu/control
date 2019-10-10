@@ -26,7 +26,7 @@ class ObjectStoreTest {
         val retrievedTestObject = store.associatedObject<TestObject>(testObjectKey)
         assert(retrievedTestObject == null)
     }
-}
 
-private class Store : ObjectStore
-private data class TestObject(val element: Int = 123)
+    private class Store : ObjectStore
+    private data class TestObject(val element: Int = 123)
+}

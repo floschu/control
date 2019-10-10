@@ -1,7 +1,6 @@
 package at.florianschuster.control.githubexample.search
 
 import android.content.Intent
-import android.net.Uri
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -28,12 +27,14 @@ class GithubSearchActivity : AppCompatActivity(R.layout.activity_github) {
     init {
         lifecycleScope.launchWhenCreated {
             repoRecyclerView.adapter = adapter
-            adapter.onClick = { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it.url))) }
+            repoRecyclerView.itemAnimator = null
+
+            adapter.onClick = { startActivity(Intent(Intent.ACTION_VIEW, it.webUri)) }
 
             // action
             searchEditText.textChanges()
                 .drop(1)
-                .debounce(300)
+                .debounce(500)
                 .map { it.toString() }
                 .map { GithubSearchController.Action.UpdateQuery(it) }
                 .bind(to = controller.action)
