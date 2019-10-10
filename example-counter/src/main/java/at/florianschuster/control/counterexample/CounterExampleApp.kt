@@ -8,7 +8,7 @@ class CounterExampleApp : Application() {
         super.onCreate()
 
         configureControl {
-            errors(escalateErrors = BuildConfig.DEBUG, logger = { println("Control Error: $it") })
+            errors { println("Control Error: $it") }
             operations(loggingEnabled = true, logger = ::println)
         }
     }

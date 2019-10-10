@@ -3,10 +3,10 @@ package at.florianschuster.control
 import at.florianschuster.control.configuration.configureControl
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.ticker
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -117,54 +117,35 @@ class ControllerTest {
         testCollector.assertValues(listOf(0, 1, 2, 3, 4, 5))
     }
 
-    @Test
-    fun `stream ignores cancel from mutate`() {
-        val controller = CounterController(mutateCancelIndex = 2)
-        val testCollector = controller.state.test(testScope)
-
-        controller.action(Unit)
-        controller.action(Unit)
-        controller.action(Unit)
-        controller.action(Unit)
-        controller.action(Unit)
-
-        testCollector.assertValues(listOf(0, 1, 2, 3, 4, 5))
-    }
-
-//    @Test
-//    fun testCancel() {
-//        RxJavaPlugins.reset()
-//
-//        val testScheduler = TestScheduler()
-//        RxJavaPlugins.setComputationSchedulerHandler { testScheduler }
-//
-//        val controller = StopwatchController()
-//
-//        controller.action.accept(StopwatchController.Action.Start)
-//        testScheduler.advanceTimeBy(2, TimeUnit.SECONDS)
-//        controller.action.accept(StopwatchController.Action.Stop)
-//
-//        controller.action.accept(StopwatchController.Action.Start)
-//        testScheduler.advanceTimeBy(3, TimeUnit.SECONDS)
-//        controller.action.accept(StopwatchController.Action.Stop)
-//
-//        controller.action.accept(StopwatchController.Action.Start)
-//        testScheduler.advanceTimeBy(4, TimeUnit.SECONDS)
-//        controller.action.accept(StopwatchController.Action.Stop)
-//
-//        // this should be ignored
-//        controller.action.accept(StopwatchController.Action.Start)
-//        testScheduler.advanceTimeBy(500, TimeUnit.MILLISECONDS)
-//        controller.action.accept(StopwatchController.Action.Stop)
-//
-//        controller.action.accept(StopwatchController.Action.Start)
-//        testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
-//        controller.action.accept(StopwatchController.Action.Stop)
-//
-//        assertEquals(controller.currentState ,10) // 2+3+4+1
-//
-//        RxJavaPlugins.reset()
-//    }
+    // @Test
+    // fun `cancel hot flow in mutate`() { todo
+    //     val controller = StopwatchController()
+    //     val testCollector = controller.state.test(testScope)
+    //
+    //     controller.action(StopwatchController.Action.Start)
+    //     testScope.advanceTimeBy(2000)
+    //     controller.action(StopwatchController.Action.Stop)
+    //
+    //     controller.action(StopwatchController.Action.Start)
+    //     testScope.advanceTimeBy(3000)
+    //     controller.action(StopwatchController.Action.Stop)
+    //
+    //     controller.action(StopwatchController.Action.Start)
+    //     testScope.advanceTimeBy(4000)
+    //     controller.action(StopwatchController.Action.Stop)
+    //
+    //     // this should be ignored
+    //     controller.action(StopwatchController.Action.Start)
+    //     testScope.advanceTimeBy(500)
+    //     controller.action(StopwatchController.Action.Stop)
+    //
+    //     controller.action(StopwatchController.Action.Start)
+    //     testScope.advanceTimeBy(1000)
+    //     controller.action(StopwatchController.Action.Stop)
+    //
+    //     assertEquals(10, controller.currentState) // 2+3+4+1
+    //     testCollector.assertNoErrors()
+    // }
 
     private class OperationController : Controller<List<String>, List<String>, List<String>> {
 
@@ -199,8 +180,7 @@ class ControllerTest {
     }
 
     private class CounterController(
-        val mutateErrorIndex: Int? = null,
-        val mutateCancelIndex: Int? = null
+        val mutateErrorIndex: Int? = null
     ) : Controller<Unit, Unit, Int> {
 
         override val scope: CoroutineScope = TestCoroutineScope()
@@ -211,36 +191,31 @@ class ControllerTest {
                 emit(action)
                 throw CancellationException()
             }
-            mutateCancelIndex -> callbackFlow { // todo
-                send(action)
-                cancel()
-            }
             else -> flowOf(action)
         }
 
         override fun reduce(previousState: Int, mutation: Unit): Int = previousState + 1
     }
 
-// private class StopwatchController : Controller<StopwatchController.Action, Int, Int> {
-//
-//     sealed class Action {
-//         object Start : Action()
-//         object Stop : Action()
-//     }
-//
-//     override val initialState: Int = 0
-//
-//     override fun mutate(action: Action): Flow<Int> = when (action) {
-//         is Action.Start -> {
-//             ticker(1000)
-//                 .consumeAsFlow()
-//                 .takeWhile { this@StopwatchController.action.first() !is Action.Stop }
-//                 .map { 1 }
-//         }
-//         is Action.Stop -> emptyFlow()
-//     }
-//
-//     override fun reduce(previousState: Int, mutation: Int): Int =
-//         previousState + mutation
-// }
+    private class StopwatchController : Controller<StopwatchController.Action, Int, Int> {
+
+        sealed class Action {
+            object Start : Action()
+            object Stop : Action()
+        }
+
+        override val initialState: Int = 0
+
+        override fun mutate(action: Action): Flow<Int> = when (action) {
+            is Action.Start -> {
+                ticker(1000).consumeAsFlow()
+                    // .takeWhile { this@StopwatchController.action.first() !is Action.Stop }
+                    .map { 1 }
+            }
+            is Action.Stop -> emptyFlow()
+        }
+
+        override fun reduce(previousState: Int, mutation: Int): Int =
+            previousState + mutation
+    }
 }

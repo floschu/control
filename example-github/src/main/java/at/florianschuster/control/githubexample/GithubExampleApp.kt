@@ -8,7 +8,7 @@ class GithubExampleApp : Application() {
         super.onCreate()
 
         configureControl {
-            errors(escalateErrors = BuildConfig.DEBUG, logger = { print("Control Error: $it") })
+            errors { println("Control Error: $it") }
             operations(loggingEnabled = true, logger = ::println)
         }
     }
