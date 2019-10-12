@@ -21,14 +21,15 @@ class CounterControllerTest {
     }
 
     @Test
-    fun `action triggers correct flow`() = testScopeRule.runBlockingTest {
+    fun `action increment triggers correct flow`() = testScopeRule.runBlockingTest {
         val controllerStates = mutableListOf<CounterState>()
         testScopeRule.launch { controller.state.toList(controllerStates) }
 
+        // when
         controller.action(CounterAction.Increment)
-
         advanceTimeBy(1000)
 
+        // then
         assertEquals(4, controllerStates.count())
         assertEquals(
             listOf(
@@ -42,7 +43,8 @@ class CounterControllerTest {
     }
 
     @Test
-    fun `multiple actions trigger correct current state`() = testScopeRule.runBlockingTest {
+    fun `actions trigger correct current state`() = testScopeRule.runBlockingTest {
+        // when
         controller.action(CounterAction.Increment)
         controller.action(CounterAction.Increment)
         controller.action(CounterAction.Decrement)
@@ -51,6 +53,7 @@ class CounterControllerTest {
 
         advanceTimeBy(5000)
 
+        // then
         assertEquals(CounterState(-1, false), controller.currentState)
     }
 }

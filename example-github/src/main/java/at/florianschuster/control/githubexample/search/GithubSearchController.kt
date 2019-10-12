@@ -15,7 +15,7 @@ class GithubSearchController(
 ) : ControllerViewModel<GithubSearchController.Action, GithubSearchController.Mutation, GithubSearchController.State>() {
 
     sealed class Action {
-        data class UpdateQuery(val query: String) : Action()
+        data class UpdateQuery(val text: String) : Action()
         object LoadNextPage : Action()
     }
 
@@ -37,10 +37,10 @@ class GithubSearchController(
 
     override fun mutate(action: Action): Flow<Mutation> = when (action) {
         is Action.UpdateQuery -> flow {
-            emit(Mutation.SetQuery(action.query))
-            if (action.query.isEmpty()) return@flow
+            emit(Mutation.SetQuery(action.text))
+            if (action.text.isEmpty()) return@flow
             emit(Mutation.SetLoadingNextPage(true))
-            emitAll(flowSearch(action.query, 1).map { Mutation.SetRepos(it) })
+            emitAll(flowSearch(action.text, 1).map { Mutation.SetRepos(it) })
             emit(Mutation.SetLoadingNextPage(false))
         }
         is Action.LoadNextPage -> {
