@@ -19,4 +19,5 @@ dependencies {
     api(Libs.kotlinx_coroutines_core)
 
     testImplementation(project(":test-util"))
+    testImplementation(Libs.kotlin_flow_extensions)
 }

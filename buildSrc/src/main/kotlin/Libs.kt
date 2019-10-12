@@ -52,11 +52,6 @@ object Libs {
             Versions.kotlinx_coroutines_test
 
     /**
-     * http://mockk.io
-     */
-    const val mockk: String = "io.mockk:mockk:" + Versions.mockk
-
-    /**
      * https://github.com/LDRAlighieri/Corbind/
      */
     const val corbind: String = "ru.ldralighieri.corbind:corbind:" +
@@ -73,6 +68,12 @@ object Libs {
      */
     const val corbind_recyclerview: String = "ru.ldralighieri.corbind:corbind-recyclerview:" +
             Versions.ru_ldralighieri_corbind
+
+    /**
+     * https://github.com/akarnokd/kotlin-flow-extensions/
+     */
+    const val kotlin_flow_extensions: String = "com.github.akarnokd:kotlin-flow-extensions:" +
+            Versions.kotlin_flow_extensions
 
     const val lifecycle_runtime_ktx: String = "androidx.lifecycle:lifecycle-runtime-ktx:" +
             Versions.lifecycle_runtime_ktx
@@ -173,4 +174,9 @@ object Libs {
      * http://junit.org
      */
     const val junit: String = "junit:junit:" + Versions.junit
+
+    /**
+     * http://mockk.io
+     */
+    const val mockk: String = "io.mockk:mockk:" + Versions.mockk
 }

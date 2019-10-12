@@ -39,3 +39,7 @@ todo
 ## author
 
 visit my [website](https://florianschuster.at/).
+
+## reaktor
+
+control is the kotlin coroutines flow alternative of [Reaktor](https://github.com/floschu/Reaktor/) which uses [RxJava2](https://github.com/ReactiveX/RxJava) to create its unidirectional-data-flow architecture.

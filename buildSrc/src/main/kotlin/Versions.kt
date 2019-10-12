@@ -28,9 +28,9 @@ object Versions {
 
     const val kotlinx_coroutines_test: String = "1.3.2"
 
-    const val mockk: String = "1.9.3"
-
     const val ru_ldralighieri_corbind: String = "1.2.0-RC"
+
+    const val kotlin_flow_extensions: String = "0.0.2"
 
     const val lifecycle_runtime_ktx: String = "2.2.0-alpha04"
 
@@ -53,6 +53,8 @@ object Versions {
     const val aapt2: String = "3.5.1-5435860"
 
     const val junit: String = "4.12"
+
+    const val mockk: String = "1.9.3"
 
     /**
      * Current version: "5.6.2"

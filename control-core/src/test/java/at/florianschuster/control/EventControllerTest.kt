@@ -6,7 +6,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Rule
 import org.junit.Test
 
@@ -17,7 +16,11 @@ class EventControllerTest : FlowTest {
 
     @Test
     fun `events are triggered correctly`() {
-        val controller = TestEventController(mutateEventIndex = 2, reduceEventIndex = 4)
+        val controller = TestEventController(
+            testScopeRule,
+            mutateEventIndex = 2,
+            reduceEventIndex = 4
+        )
         val eventsCollector = controller.events.test()
 
         controller.action(Unit)
@@ -40,11 +43,11 @@ class EventControllerTest : FlowTest {
     }
 
     private class TestEventController(
+        override var scope: CoroutineScope,
         private val mutateEventIndex: Int? = null,
         private val reduceEventIndex: Int? = null
     ) : EventController<Unit, Unit, Int, String> {
 
-        override var scope: CoroutineScope = TestCoroutineScope()
         override val initialState: Int = 0
 
         override fun mutate(action: Unit): Flow<Unit> = when (currentState) {
