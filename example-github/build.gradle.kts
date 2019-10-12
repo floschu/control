@@ -25,7 +25,6 @@ dependencies {
 
     implementation(Libs.appcompat)
     implementation(Libs.constraintlayout)
-    implementation(Libs.core_ktx)
     implementation(Libs.lifecycle_runtime_ktx)
     implementation(Libs.corbind)
     implementation(Libs.corbind_core)

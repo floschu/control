@@ -44,8 +44,6 @@ object Versions {
 
     const val appcompat: String = "1.1.0"
 
-    const val core_ktx: String = "1.1.0"
-
     const val retrofit: String = "2.6.2"
 
     const val ktlint: String = "0.34.2"
@@ -68,4 +66,4 @@ object Versions {
  */
 val PluginDependenciesSpec.buildSrcVersions: PluginDependencySpec
     inline get() =
-        id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
+            id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)

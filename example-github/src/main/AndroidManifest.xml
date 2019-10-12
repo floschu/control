@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="at.florianschuster.test.githubexample">
+    package="at.florianschuster.control.githubexample">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name="at.florianschuster.test.githubexample.GithubExampleApp"
+        android:name="at.florianschuster.control.githubexample.GithubExampleApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
 
-        <activity android:name="at.florianschuster.test.githubexample.search.GithubSearchActivity">
+        <activity android:name="at.florianschuster.control.githubexample.search.GithubSearchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

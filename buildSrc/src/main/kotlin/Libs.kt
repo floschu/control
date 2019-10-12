@@ -150,11 +150,6 @@ object Libs {
     const val appcompat: String = "androidx.appcompat:appcompat:" + Versions.appcompat
 
     /**
-     * http://developer.android.com/tools/extras/support-library.html
-     */
-    const val core_ktx: String = "androidx.core:core-ktx:" + Versions.core_ktx
-
-    /**
      * https://github.com/square/retrofit/
      */
     const val retrofit: String = "com.squareup.retrofit2:retrofit:" + Versions.retrofit
