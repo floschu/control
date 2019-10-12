@@ -28,7 +28,6 @@ dependencies {
     implementation(Libs.lifecycle_runtime_ktx)
     implementation(Libs.corbind)
     implementation(Libs.corbind_core)
-    implementation(Libs.corbind_appcompat)
 
     testImplementation(Libs.junit)
     testImplementation(Libs.kotlin_test)

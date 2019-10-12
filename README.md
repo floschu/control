@@ -7,7 +7,7 @@ kotlin flow based unidirectional-data-flow architecture
 
 ## installation
 
-```groovy
+``` groovy
 allprojects {
     repositories {
         jcenter()
@@ -15,23 +15,16 @@ allprojects {
 }
 
 dependencies {
-    /**
-    * core: kotlin only dependency
-    */
+    // kotlin module
     implementation "at.florianschuster.control:control-core:$version"
     
-    /**
-     * android: AAC viewmodel controller
-     */
+    // android module > also provides control-core
     implementation "at.florianschuster.control:control-android:$version"
+    
+    // kotlin module
+    implementation "at.florianschuster.control:control-data:$version"
 }
 ```
-
-## what should I know before I try this?
-
-* kotlin
-* kotlin coroutines 
-* kotlin coroutines flow
 
 ## concept
 
@@ -42,7 +35,6 @@ todo
 * [counter](example-counter): most basic example. uses `Controller`.
 * [github search](example-github): github repository search. uses `ControllerViewModel`.
 * [Playables](https://github.com/floschu/Playables): app with a checklist of games you want to play.
-
 
 ## author
 

@@ -1,4 +1,8 @@
-include ":control-core",
-        ":control-android",
-        ":example-counter",
-        ":example-github"
+include(":control-core")
+include(":control-android")
+include(':control-data')
+
+include(":example-counter")
+include(":example-github")
+
+include(':test-util')

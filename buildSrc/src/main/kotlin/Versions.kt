@@ -14,11 +14,11 @@ import org.gradle.plugin.use.PluginDependencySpec
 object Versions {
     const val org_jlleitschuh_gradle_ktlint_gradle_plugin: String = "9.0.0"
 
-    const val io_gitlab_arturbosch_detekt_gradle_plugin: String = "1.1.0"
+    const val io_gitlab_arturbosch_detekt_gradle_plugin: String = "1.1.1"
 
     const val retrofit2_kotlinx_serialization_converter: String = "0.4.0"
 
-    const val de_fayard_buildsrcversions_gradle_plugin: String = "0.6.4"
+    const val de_fayard_buildsrcversions_gradle_plugin: String = "0.6.5"
 
     const val com_android_tools_build_gradle: String = "3.5.1"
 
@@ -68,4 +68,4 @@ object Versions {
  */
 val PluginDependenciesSpec.buildSrcVersions: PluginDependencySpec
     inline get() =
-            id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
+        id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)

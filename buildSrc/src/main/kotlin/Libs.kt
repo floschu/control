@@ -60,12 +60,6 @@ object Libs {
     /**
      * https://github.com/LDRAlighieri/Corbind/
      */
-    const val corbind_appcompat: String = "ru.ldralighieri.corbind:corbind-appcompat:" +
-            Versions.ru_ldralighieri_corbind
-
-    /**
-     * https://github.com/LDRAlighieri/Corbind/
-     */
     const val corbind_core: String = "ru.ldralighieri.corbind:corbind-core:" +
             Versions.ru_ldralighieri_corbind
 

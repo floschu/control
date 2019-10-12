@@ -29,7 +29,6 @@ dependencies {
     implementation(Libs.lifecycle_runtime_ktx)
     implementation(Libs.corbind)
     implementation(Libs.corbind_core)
-    implementation(Libs.corbind_appcompat)
     implementation(Libs.corbind_recyclerview)
     implementation(Libs.activity_ktx)
     implementation(Libs.kotlinx_serialization_runtime)

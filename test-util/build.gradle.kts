@@ -17,6 +17,7 @@ compileTestKotlin.kotlinOptions {
 dependencies {
     api(Libs.kotlin_stdlib)
     api(Libs.kotlinx_coroutines_core)
-
-    testImplementation(project(":test-util"))
+    api(Libs.junit)
+    api(Libs.kotlin_test)
+    api(Libs.kotlinx_coroutines_test)
 }

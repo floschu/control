@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="define_control" />
+    <string name="library_control_author">Florian Schuster</string>
+    <string name="library_control_authorWebsite">https://florianschuster.at</string>
+    <string name="library_control_libraryName">control</string>
+    <string name="library_control_libraryDescription">control is a framework for kotlin flow based unidirectional-data-flow architecture.</string>
+    <string name="library_control_libraryWebsite">https://github.com/floschu/control</string>
+    <string name="library_control_isOpenSource">true</string>
+    <string name="library_control_repositoryLink">https://github.com/floschu/control.git</string>
+    <string name="library_control_classPath">at.florianschuster.control</string>
+    <string name="library_control_licenseId">apache_2_0</string>
+</resources>
