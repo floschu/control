@@ -1,4 +1,4 @@
-package at.florianschuster.control.util
+package at.florianschuster.test.util
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineScope

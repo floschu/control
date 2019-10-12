@@ -1,7 +1,7 @@
 package at.florianschuster.control
 
-import at.florianschuster.control.util.CoroutineScopeRule
-import at.florianschuster.control.util.FlowTest
+import at.florianschuster.test.util.CoroutineScopeRule
+import at.florianschuster.test.util.FlowTest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

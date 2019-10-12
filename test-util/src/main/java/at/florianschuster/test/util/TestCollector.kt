@@ -1,4 +1,4 @@
-package at.florianschuster.control.util
+package at.florianschuster.test.util
 
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference

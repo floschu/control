@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class GithubSearchController(
+    override val initialState: State = State(),
     private val api: GithubApi = GithubApi.Factory()
 ) : ControllerViewModel<GithubSearchController.Action, GithubSearchController.Mutation, GithubSearchController.State>() {
 
@@ -33,8 +34,6 @@ class GithubSearchController(
         val loadingNextPage: Boolean = false
     )
 
-    override val initialState: State = State()
-
     override fun mutate(action: Action): Flow<Mutation> = when (action) {
         is Action.UpdateQuery -> flow {
             emit(Mutation.SetQuery(action.text))
@@ -47,8 +46,8 @@ class GithubSearchController(
             if (currentState.loadingNextPage) emptyFlow()
             else flow {
                 emit(Mutation.SetLoadingNextPage(true))
-                val repos = coroutineSearch(currentState.query, currentState.page + 1)
-                emit(Mutation.AppendRepos(repos))
+                val repos = suspendedSearch(currentState.query, currentState.page + 1)
+                if (repos != null) emit(Mutation.AppendRepos(repos))
                 emit(Mutation.SetLoadingNextPage(false))
             }
         }
@@ -71,19 +70,16 @@ class GithubSearchController(
     private fun flowSearch(query: String, page: Int): Flow<List<Repo>> =
         flow { emit(api.repos(query, page)) }
             .map { it.items }
-            .catch { e ->
-                println("Search Error: $e")
-                emit(emptyList())
-            }
+            .catch { e -> println("Search Error: $e") }
 
     /**
      * Search with [suspend] function.
      */
-    private suspend fun coroutineSearch(query: String, page: Int): List<Repo> =
+    private suspend fun suspendedSearch(query: String, page: Int): List<Repo>? =
         try {
             api.repos(query, page).items
         } catch (e: Exception) {
             println("Search Error: $e")
-            emptyList()
+            null
         }
 }

@@ -1,7 +1,7 @@
 package at.florianschuster.control
 
-import at.florianschuster.control.util.CoroutineScopeRule
-import at.florianschuster.control.util.FlowTest
+import at.florianschuster.test.util.CoroutineScopeRule
+import at.florianschuster.test.util.FlowTest
 import org.junit.Rule
 import org.junit.Test
 
