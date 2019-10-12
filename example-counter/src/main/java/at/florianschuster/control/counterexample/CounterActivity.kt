@@ -12,13 +12,10 @@ import kotlinx.coroutines.flow.map
 import ru.ldralighieri.corbind.view.clicks
 
 class CounterActivity : AppCompatActivity(R.layout.activity_counter) {
-    private var savedCounterValue: Int = 0
-    private val controller: CounterController by lazy { CounterController(savedCounterValue) }
+    private val controller: CounterController by lazy { CounterController() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        savedCounterValue = savedInstanceState?.getInt(counterValueKey) ?: 0
 
         // action
         btnIncrease.clicks()
@@ -45,17 +42,8 @@ class CounterActivity : AppCompatActivity(R.layout.activity_counter) {
             .launchIn(scope = lifecycleScope)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putInt(counterValueKey, controller.currentState.value)
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         controller.cancel()
-    }
-
-    companion object {
-        private const val counterValueKey: String = "CounterActivity.counter"
     }
 }

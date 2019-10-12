@@ -14,16 +14,19 @@ class CounterControllerTest {
     val testScopeRule = CoroutineScopeRule()
 
     private lateinit var controller: CounterController
+    private lateinit var controllerStates: List<CounterState>
 
-    @Before
-    fun setup() {
-        controller = CounterController(0).apply { scope = testScopeRule }
+    private fun `given counter controller`() {
+        controller = CounterController().apply { scope = testScopeRule }
+        controllerStates = mutableListOf<CounterState>().also { states ->
+            testScopeRule.launch { controller.state.toList(states) }
+        }
     }
 
     @Test
     fun `action increment triggers correct flow`() = testScopeRule.runBlockingTest {
-        val controllerStates = mutableListOf<CounterState>()
-        testScopeRule.launch { controller.state.toList(controllerStates) }
+        // given
+        `given counter controller`()
 
         // when
         controller.action(CounterAction.Increment)
@@ -44,6 +47,9 @@ class CounterControllerTest {
 
     @Test
     fun `actions trigger correct current state`() = testScopeRule.runBlockingTest {
+        // given
+        `given counter controller`()
+
         // when
         controller.action(CounterAction.Increment)
         controller.action(CounterAction.Increment)

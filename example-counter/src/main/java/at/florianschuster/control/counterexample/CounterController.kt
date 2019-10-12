@@ -21,11 +21,9 @@ data class CounterState(
     val loading: Boolean
 )
 
-class CounterController(
-    initialValue: Int
-) : Controller<CounterAction, CounterMutation, CounterState> {
+class CounterController : Controller<CounterAction, CounterMutation, CounterState> {
 
-    override val initialState: CounterState = CounterState(initialValue, false)
+    override val initialState: CounterState = CounterState(0, false)
 
     override fun mutate(action: CounterAction): Flow<CounterMutation> = when (action) {
         is CounterAction.Increment -> flow {

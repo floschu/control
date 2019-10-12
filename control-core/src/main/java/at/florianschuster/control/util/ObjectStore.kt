@@ -1,4 +1,4 @@
-package at.florianschuster.control
+package at.florianschuster.control.util
 
 interface ObjectStore {
 

@@ -32,7 +32,7 @@ class GithubSearchControllerTest {
         coEvery { githubApi.repos(any(), 2) } returns mockResultPage2
     }
 
-    private fun `given controller`(
+    private fun `given github search controller`(
         initialState: GithubSearchController.State = GithubSearchController.State()
     ) {
         controller = GithubSearchController(initialState, githubApi).apply { scope = testScopeRule }
@@ -45,7 +45,7 @@ class GithubSearchControllerTest {
     fun `update query with non-empty text`() = testScopeRule.runBlockingTest {
         // given
         val query = "control"
-        `given controller`()
+        `given github search controller`()
 
         // when
         controller.action(GithubSearchController.Action.UpdateQuery(query))
@@ -68,7 +68,7 @@ class GithubSearchControllerTest {
     fun `update query with empty text`() = testScopeRule.runBlockingTest {
         // given
         val query = ""
-        `given controller`()
+        `given github search controller`()
 
         // when
         controller.action(GithubSearchController.Action.UpdateQuery(query))
@@ -85,7 +85,7 @@ class GithubSearchControllerTest {
     fun `load next page loads correct next page`() = testScopeRule.runBlockingTest {
         // given
         val query = "control"
-        `given controller`(GithubSearchController.State(query = query, repos = mockReposPage1))
+        `given github search controller`(GithubSearchController.State(query = query, repos = mockReposPage1))
 
         // when
         controller.action(GithubSearchController.Action.LoadNextPage)
@@ -107,7 +107,7 @@ class GithubSearchControllerTest {
     fun `load next page only when currently not loading`() = testScopeRule.runBlockingTest {
         // given
         val initialState = GithubSearchController.State(loadingNextPage = true)
-        `given controller`(initialState)
+        `given github search controller`(initialState)
 
         // when
         controller.action(GithubSearchController.Action.LoadNextPage)
@@ -122,7 +122,7 @@ class GithubSearchControllerTest {
         // given
         val query = "control"
         coEvery { githubApi.repos(any(), any()) } throws Error()
-        `given controller`()
+        `given github search controller`()
 
         // when
         controller.action(GithubSearchController.Action.UpdateQuery(query))

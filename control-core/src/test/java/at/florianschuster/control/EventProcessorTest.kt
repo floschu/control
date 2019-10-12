@@ -1,5 +1,6 @@
 package at.florianschuster.control
 
+import at.florianschuster.control.processor.EventProcessor
 import at.florianschuster.test.util.CoroutineScopeRule
 import at.florianschuster.test.util.FlowTest
 import org.junit.Rule
