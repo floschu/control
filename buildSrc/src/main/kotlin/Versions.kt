@@ -28,6 +28,8 @@ object Versions {
 
     const val kotlinx_coroutines_test: String = "1.3.2"
 
+    const val mockk: String = "1.9.3"
+
     const val ru_ldralighieri_corbind: String = "1.2.0-RC"
 
     const val lifecycle_runtime_ktx: String = "2.2.0-alpha04"

@@ -52,6 +52,11 @@ object Libs {
             Versions.kotlinx_coroutines_test
 
     /**
+     * http://mockk.io
+     */
+    const val mockk: String = "io.mockk:mockk:" + Versions.mockk
+
+    /**
      * https://github.com/LDRAlighieri/Corbind/
      */
     const val corbind: String = "ru.ldralighieri.corbind:corbind:" +

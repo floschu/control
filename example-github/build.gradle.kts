@@ -37,4 +37,5 @@ dependencies {
     testImplementation(Libs.junit)
     testImplementation(Libs.kotlin_test)
     testImplementation(Libs.kotlinx_coroutines_test)
+    testImplementation( Libs.mockk)
 }
