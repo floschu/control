@@ -121,7 +121,7 @@ class GithubSearchControllerTest {
     fun `error from api is correctly handled`() = testScopeRule.runBlockingTest {
         // given
         val query = "control"
-        coEvery { githubApi.repos(any(), any()) } throws Error()
+        coEvery { githubApi.repos(any(), any()) } throws Exception()
         `given github search controller`()
 
         // when

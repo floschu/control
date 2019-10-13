@@ -28,7 +28,7 @@ class DataTest {
     fun `invoke only contains element at success`() {
         assertNull(Data.Uninitialized.invoke())
         assertNull(Data.Loading.invoke())
-        assertNull(Data.Failure(Error()).invoke())
+        assertNull(Data.Failure(Exception()).invoke())
         assertNotNull(Data.Success(1).invoke())
     }
 }

@@ -12,7 +12,7 @@ class DataExtTest {
 
     @Test
     fun `data flow extension converts correctly`() = runBlockingTest {
-        val error = Error()
+        val error = Exception()
         val dataList = (1 until 10).asFlow()
             .map {
                 if (it == 5) throw error
@@ -39,7 +39,7 @@ class DataExtTest {
             emit(Data.Success(Unit))
             emit(Data.Success(Unit))
             emit(Data.Success(Unit))
-            emit(Data.Failure(Error()))
+            emit(Data.Failure(Exception()))
             emit(Data.Success(Unit))
         }.filterSuccessData().toList()
 
@@ -48,7 +48,7 @@ class DataExtTest {
 
     @Test
     fun `filterFailureData only filters failure`() = runBlockingTest {
-        val error = Error()
+        val error = Exception()
         val dataList = flow {
             emit(Data.Success(Unit))
             emit(Data.Success(Unit))

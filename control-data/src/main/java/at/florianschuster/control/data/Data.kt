@@ -1,16 +1,33 @@
 package at.florianschuster.control.data
 
+import java.lang.Exception
+
 /**
  * Sealed class that represents an asynchronous load of a data resource.
  */
 sealed class Data<out T> {
     open operator fun invoke(): T? = null
 
+    /**
+     * Represents the initial state of the data.
+     */
     object Uninitialized : Data<Nothing>()
+
+    /**
+     * Represents the loading state of the data.
+     */
     object Loading : Data<Nothing>()
-    data class Failure(val error: Throwable) : Data<Nothing>()
-    data class Success<out T>(val element: T) : Data<T>() {
-        override operator fun invoke(): T = element
+
+    /**
+     * Represents the failed state of the data containing the [error] cause.
+     */
+    data class Failure(val error: Exception) : Data<Nothing>()
+
+    /**
+     * Represents the successful state of the data containing the [value].
+     */
+    data class Success<out T>(val value: T) : Data<T>() {
+        override operator fun invoke(): T = value
     }
 
     val uninitialized: Boolean get() = this is Uninitialized
@@ -19,10 +36,14 @@ sealed class Data<out T> {
     val successful: Boolean get() = this is Success
     val complete: Boolean get() = this is Error || this is Success
 
-    companion object Factory {
-        operator fun <T> invoke(dataFunction: () -> T): Data<T> =
+    companion object {
+
+        /**
+         * Invoke this to create either a [Data.Success] or [Data.Failure] from the [captor].
+         */
+        operator fun <T> invoke(captor: () -> T): Data<T> =
             try {
-                Success(dataFunction())
+                Success(captor())
             } catch (e: Exception) {
                 Failure(e)
             }

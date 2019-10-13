@@ -1,7 +1,10 @@
 package at.florianschuster.control.util
 
+import at.florianschuster.control.Controller
+
 /**
  * Used to store objects of [Controller].
+ * Do not use this outside of the library unless you know what you are doing.
  */
 interface ObjectStore {
 
@@ -16,21 +19,31 @@ interface ObjectStore {
             }
         }
 
+    /**
+     * Retrieves the value from the [store] corresponding to the [key] if it exists.
+     */
     fun <T> associatedObject(key: String): T? {
         @Suppress("UNCHECKED_CAST")
         return store[key] as? T
     }
 
-    fun <T> associatedObject(key: String, default: () -> T): T {
+    /**
+     * Retrieves the value from the [store] corresponding to the [key] if it exists.
+     * If it does not exist, the value is created with the [creator] and stored in the [store].
+     */
+    fun <T> associatedObject(key: String, creator: () -> T): T {
         val obj: T? = associatedObject<T>(key)
         return if (obj != null) obj
         else {
-            val defaultObj: T = default()
+            val defaultObj: T = creator()
             store[key] = defaultObj as Any
             defaultObj
         }
     }
 
+    /**
+     * Clears the [store].
+     */
     fun clearAssociatedObjects() {
         stores[this]?.clear()
         stores.remove(this)

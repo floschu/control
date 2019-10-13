@@ -1,13 +1,16 @@
 package at.florianschuster.control.configuration
 
 /**
- * Configures control. See [ControlConfiguration] for further details.
+ * Configures control. See [ControlConfiguration].
  */
 fun configureControl(configuration: ControlConfiguration.() -> Unit) {
     Control.configuration.apply(configuration)
     Control.log { Operation.ControlConfigured }
 }
 
+/**
+ * Configuration proxy class.
+ */
 class ControlConfiguration {
     internal var errorLogger: ((Throwable) -> Unit)? = null
     internal var operationLoggerEnabled = false
@@ -21,7 +24,7 @@ class ControlConfiguration {
     }
 
     /**
-     * Logs certain control [Operation]'s with [logger] if [loggingEnabled] is true].
+     * Logs certain control [Operation]'s with [logger] if [loggingEnabled] is true.
      */
     fun operations(loggingEnabled: Boolean = true, logger: (String) -> Unit) {
         this.operationLoggerEnabled = loggingEnabled
@@ -29,14 +32,23 @@ class ControlConfiguration {
     }
 }
 
+/**
+ * Internal configuration holder.
+ */
 internal object Control {
     val configuration = ControlConfiguration()
 
-    fun log(throwable: Throwable) {
+    /**
+     * Logs [Throwable]'s internally.
+     */
+    internal fun log(throwable: Throwable) {
         configuration.errorLogger?.invoke(throwable)
     }
 
-    inline fun log(operation: () -> Operation) {
+    /**
+     * Logs [Operation]'s internally.
+     */
+    internal inline fun log(operation: () -> Operation) {
         if (!configuration.operationLoggerEnabled) return
         configuration.operationLogger?.invoke(operation().toString())
     }

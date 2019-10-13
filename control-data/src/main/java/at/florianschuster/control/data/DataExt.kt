@@ -16,10 +16,10 @@ fun <T> Flow<T>.asDataFlow(): Flow<Data<T>> =
 
 /**
  * Filters [Flow] of [Data] to only emit [Data.Success] type and maps to
- * [Data.Success.element].
+ * [Data.Success.value].
  */
 fun <T> Flow<Data<T>>.filterSuccessData(): Flow<T> =
-    filterIsInstance<Data.Success<T>>().map { it.element }
+    filterIsInstance<Data.Success<T>>().map { it.value }
 
 /**
  * Filters [Flow] of [Data] to only emit [Data.Failure] type and maps to
