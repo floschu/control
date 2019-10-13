@@ -7,45 +7,30 @@ import kotlin.String
  *   `$ ./gradlew buildSrcVersions`
  */
 object Libs {
-    const val org_jlleitschuh_gradle_ktlint_gradle_plugin: String =
-            "org.jlleitschuh.gradle.ktlint:org.jlleitschuh.gradle.ktlint.gradle.plugin:" +
-            Versions.org_jlleitschuh_gradle_ktlint_gradle_plugin
-
-    /**
-     * https://github.com/JakeWharton/retrofit2-kotlinx-serialization-converter/
-     */
-    const val retrofit2_kotlinx_serialization_converter: String =
-            "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:" +
-            Versions.retrofit2_kotlinx_serialization_converter
-
-    const val de_fayard_buildsrcversions_gradle_plugin: String =
-            "de.fayard.buildSrcVersions:de.fayard.buildSrcVersions.gradle.plugin:" +
-            Versions.de_fayard_buildsrcversions_gradle_plugin
-
-    /**
-     * https://developer.android.com/studio
-     */
-    const val com_android_tools_build_gradle: String = "com.android.tools.build:gradle:" +
-            Versions.com_android_tools_build_gradle
-
     /**
      * https://github.com/Kotlin/kotlinx.serialization
      */
     const val kotlinx_serialization_runtime: String =
             "org.jetbrains.kotlinx:kotlinx-serialization-runtime:" +
-            Versions.kotlinx_serialization_runtime
+            Versions.org_jetbrains_kotlinx_kotlinx_serialization
 
     /**
      * https://github.com/Kotlin/kotlinx.coroutines
      */
     const val kotlinx_coroutines_core: String = "org.jetbrains.kotlinx:kotlinx-coroutines-core:" +
-            Versions.kotlinx_coroutines_core
+            Versions.org_jetbrains_kotlinx_kotlinx_coroutines
 
     /**
      * https://github.com/Kotlin/kotlinx.coroutines
      */
     const val kotlinx_coroutines_test: String = "org.jetbrains.kotlinx:kotlinx-coroutines-test:" +
-            Versions.kotlinx_coroutines_test
+            Versions.org_jetbrains_kotlinx_kotlinx_coroutines
+
+    /**
+     * https://github.com/LDRAlighieri/Corbind/
+     */
+    const val corbind_recyclerview: String = "ru.ldralighieri.corbind:corbind-recyclerview:" +
+            Versions.ru_ldralighieri_corbind
 
     /**
      * https://github.com/LDRAlighieri/Corbind/
@@ -58,27 +43,6 @@ object Libs {
      */
     const val corbind_core: String = "ru.ldralighieri.corbind:corbind-core:" +
             Versions.ru_ldralighieri_corbind
-
-    /**
-     * https://github.com/LDRAlighieri/Corbind/
-     */
-    const val corbind_recyclerview: String = "ru.ldralighieri.corbind:corbind-recyclerview:" +
-            Versions.ru_ldralighieri_corbind
-
-    /**
-     * https://github.com/akarnokd/kotlin-flow-extensions/
-     */
-    const val kotlin_flow_extensions: String = "com.github.akarnokd:kotlin-flow-extensions:" +
-            Versions.kotlin_flow_extensions
-
-    const val lifecycle_runtime_ktx: String = "androidx.lifecycle:lifecycle-runtime-ktx:" +
-            Versions.lifecycle_runtime_ktx
-
-    /**
-     * https://developer.android.com/topic/libraries/architecture/index.html
-     */
-    const val lifecycle_extensions: String = "androidx.lifecycle:lifecycle-extensions:" +
-            Versions.lifecycle_extensions
 
     /**
      * https://kotlinlang.org/
@@ -129,6 +93,50 @@ object Libs {
      */
     const val kotlin_test: String = "org.jetbrains.kotlin:kotlin-test:" +
             Versions.org_jetbrains_kotlin
+
+    /**
+     * https://developer.android.com/studio
+     */
+    const val com_android_tools_build_gradle: String = "com.android.tools.build:gradle:" +
+            Versions.com_android_tools_build_gradle
+
+    const val org_jlleitschuh_gradle_ktlint_gradle_plugin: String =
+            "org.jlleitschuh.gradle.ktlint:org.jlleitschuh.gradle.ktlint.gradle.plugin:" +
+            Versions.org_jlleitschuh_gradle_ktlint_gradle_plugin
+
+    /**
+     * https://github.com/JakeWharton/retrofit2-kotlinx-serialization-converter/
+     */
+    const val retrofit2_kotlinx_serialization_converter: String =
+            "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:" +
+            Versions.retrofit2_kotlinx_serialization_converter
+
+    const val de_fayard_buildsrcversions_gradle_plugin: String =
+            "de.fayard.buildSrcVersions:de.fayard.buildSrcVersions.gradle.plugin:" +
+            Versions.de_fayard_buildsrcversions_gradle_plugin
+
+    const val org_jetbrains_dokka_gradle_plugin: String =
+            "org.jetbrains.dokka:org.jetbrains.dokka.gradle.plugin:" +
+            Versions.org_jetbrains_dokka_gradle_plugin
+
+    const val com_jfrog_bintray_gradle_plugin: String =
+            "com.jfrog.bintray:com.jfrog.bintray.gradle.plugin:" +
+            Versions.com_jfrog_bintray_gradle_plugin
+
+    /**
+     * https://github.com/akarnokd/kotlin-flow-extensions/
+     */
+    const val kotlin_flow_extensions: String = "com.github.akarnokd:kotlin-flow-extensions:" +
+            Versions.kotlin_flow_extensions
+
+    const val lifecycle_runtime_ktx: String = "androidx.lifecycle:lifecycle-runtime-ktx:" +
+            Versions.lifecycle_runtime_ktx
+
+    /**
+     * https://developer.android.com/topic/libraries/architecture/index.html
+     */
+    const val lifecycle_extensions: String = "androidx.lifecycle:lifecycle-extensions:" +
+            Versions.lifecycle_extensions
 
     /**
      * http://tools.android.com

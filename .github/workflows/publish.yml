@@ -6,9 +6,30 @@ on:
       - '*'
 
 jobs:
-  publish:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: "Publish"
-        run: |
-          echo This still has to be implemented.
+      - name: "Checkout"
+        uses: actions/checkout@v1
+      - name: "Set up Java"
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: "Build"
+        run: ./gradlew build
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v1
+      - name: "Set up Java"
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: "Build and upload to Bintray"
+        env:
+          bintrayUser: ${{ secrets.BINTRAY_USER }}
+          bintrayApiKey: ${{ secrets.BINTRAY_TOKEN }}
+        run: ./gradlew install bintrayUpload

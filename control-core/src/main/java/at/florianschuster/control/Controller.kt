@@ -25,6 +25,27 @@ import kotlinx.coroutines.flow.scan
  * of a [Controller] is to separate control flow from a view. Every view should have its own
  * [Controller] and delegates all logic to it. A [Controller] has no dependency to a view, so it
  * can be easily tested.
+ *
+ * Unidirectional-data-flow:
+ * View sends [Action] via [action] to [Controller].
+ * [Controller] publishes new [State] via [state] to View.
+ *
+ * <pre>
+ *                  [Action] via [action]
+ *          +-----------------------------------+
+ *          |                                   |
+ *     +----+-----+                    +--------v-------+
+ *     |          |                    |                |
+ *     |   View   |                    |  [Controller]  |
+ *     |          |                    |                |
+ *     +----^-----+                    +--------+-------+
+ *          |                                  |
+ *          +----------------------------------+
+ *                  [State] via [state]
+ * </pre>
+ *
+ * Internally the [Controller] processes the new action in [mutation] where a [Mutation] is
+ * created which is used to reduce the previous [State] to a new [State].
  */
 @FlowPreview
 @ExperimentalCoroutinesApi

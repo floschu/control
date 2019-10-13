@@ -1,7 +1,5 @@
 package at.florianschuster.control.data
 
-import java.lang.Exception
-
 /**
  * Sealed class that represents an asynchronous load of a data [value].
  */
@@ -24,7 +22,7 @@ sealed class Data<out T> {
     /**
      * Represents the failed state of the data containing the [error] cause.
      */
-    data class Failure(val error: Exception) : Data<Nothing>()
+    data class Failure(val error: Throwable) : Data<Nothing>()
 
     /**
      * Represents the successful state of the data containing the [value].
@@ -47,7 +45,7 @@ sealed class Data<out T> {
         operator fun <T> invoke(captor: () -> T): Data<T> =
             try {
                 Success(captor())
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 Failure(e)
             }
     }

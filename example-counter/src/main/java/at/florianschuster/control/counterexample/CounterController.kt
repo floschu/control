@@ -5,17 +5,20 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
+// action triggered by view
 sealed class CounterAction {
     object Increment : CounterAction()
     object Decrement : CounterAction()
 }
 
+// mutation that is used to alter the state
 sealed class CounterMutation {
     object IncreaseValue : CounterMutation()
     object DecreaseValue : CounterMutation()
     data class SetLoading(val loading: Boolean) : CounterMutation()
 }
 
+// immutable state
 data class CounterState(
     val value: Int,
     val loading: Boolean
@@ -23,8 +26,10 @@ data class CounterState(
 
 class CounterController : Controller<CounterAction, CounterMutation, CounterState> {
 
+    // we start with the initial state
     override val initialState: CounterState = CounterState(0, false)
 
+    // every action is transformed into [0..n] mutations
     override fun mutate(action: CounterAction): Flow<CounterMutation> = when (action) {
         is CounterAction.Increment -> flow {
             emit(CounterMutation.SetLoading(true))
@@ -40,6 +45,8 @@ class CounterController : Controller<CounterAction, CounterMutation, CounterStat
         }
     }
 
+    // every mutation is used to reduce the previous state to a new state
+    // that is then published to the view
     override fun reduce(previousState: CounterState, mutation: CounterMutation): CounterState =
         when (mutation) {
             is CounterMutation.IncreaseValue -> previousState.copy(value = previousState.value + 1)
