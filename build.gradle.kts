@@ -14,8 +14,7 @@ buildscript {
 
 plugins {
     buildSrcVersions
-    id("io.gitlab.arturbosch.detekt") version Versions.io_gitlab_arturbosch_detekt_gradle_plugin
-    id("org.jlleitschuh.gradle.ktlint") version Versions.org_jlleitschuh_gradle_ktlint_gradle_plugin
+    id("org.jlleitschuh.gradle.ktlint").version(Versions.org_jlleitschuh_gradle_ktlint_gradle_plugin)
 }
 
 allprojects {
@@ -31,8 +30,4 @@ task<Delete>("clean") {
 
 buildSrcVersions {
     indent = "    "
-}
-
-detekt {
-    input = files("src/main/java", "src/main/kotlin")
 }

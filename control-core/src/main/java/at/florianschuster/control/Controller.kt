@@ -9,6 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
@@ -18,7 +19,6 @@ import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
-import java.lang.Exception
 
 /**
  * A [Controller] is an UI-independent layer which manages the state of a view. The foremost role
@@ -140,7 +140,7 @@ interface Controller<Action, Mutation, State> : ObjectStore {
         stateFlow.onEach {
             try {
                 stateChannel.offer(it)
-            } catch (e: Exception) {
+            } catch (e: ClosedSendChannelException) {
                 Control.log(e)
             }
         }.launchIn(scope)

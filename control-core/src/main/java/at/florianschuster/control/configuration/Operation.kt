@@ -1,5 +1,8 @@
 package at.florianschuster.control.configuration
 
+/**
+ * Used to log certain operations in the library.
+ */
 internal sealed class Operation(
     private val tag: String,
     private val message: String
@@ -17,7 +20,5 @@ internal sealed class Operation(
 
     class Destroyed(tag: String) : Operation(tag, "destroyed")
 
-    override fun toString(): String {
-        return "||||| <control> ||||| $tag -> $message |||||"
-    }
+    override fun toString(): String = "||||| <control> ||||| $tag -> $message |||||"
 }

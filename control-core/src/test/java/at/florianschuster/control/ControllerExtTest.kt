@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
+import java.io.IOException
 import kotlin.test.assertEquals
 
 class ControllerExtTest {
@@ -38,14 +39,14 @@ class ControllerExtTest {
 
     @Test
     fun `bind catches errors correctly and logs it`() = runBlockingTest {
-        val errors= mutableListOf<Throwable>()
+        val errors = mutableListOf<Throwable>()
         configureControl { errors { errors.add(it) } }
 
         val testValues = mutableListOf<Int>()
         flow {
             emit(1)
             emit(2)
-            throw Error()
+            throw IOException()
         }.bind { testValues.add(it) }.launchIn(this)
 
         assertEquals(errors.count(), 1)

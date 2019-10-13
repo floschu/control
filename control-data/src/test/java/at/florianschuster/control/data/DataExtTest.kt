@@ -14,8 +14,12 @@ class DataExtTest {
     fun `data flow extension converts correctly`() = runBlockingTest {
         val error = Error()
         val dataList = (1 until 10).asFlow()
-            .map { if (it == 5) throw error; it }
-            .asDataFlow().toList()
+            .map {
+                if (it == 5) throw error
+                it
+            }
+            .asDataFlow()
+            .toList()
 
         assertEquals(
             listOf(

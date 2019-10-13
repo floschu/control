@@ -37,10 +37,11 @@ class GithubSearchController(
     override fun mutate(action: Action): Flow<Mutation> = when (action) {
         is Action.UpdateQuery -> flow {
             emit(Mutation.SetQuery(action.text))
-            if (action.text.isEmpty()) return@flow
-            emit(Mutation.SetLoadingNextPage(true))
-            emitAll(flowSearch(action.text, 1).map { Mutation.SetRepos(it) })
-            emit(Mutation.SetLoadingNextPage(false))
+            if (action.text.isNotEmpty()) {
+                emit(Mutation.SetLoadingNextPage(true))
+                emitAll(flowSearch(action.text, 1).map { Mutation.SetRepos(it) })
+                emit(Mutation.SetLoadingNextPage(false))
+            }
         }
         is Action.LoadNextPage -> {
             if (currentState.loadingNextPage) emptyFlow()

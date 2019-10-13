@@ -1,5 +1,8 @@
 package at.florianschuster.control.util
 
+/**
+ * Used to store objects of [Controller].
+ */
 interface ObjectStore {
 
     private val store: HashMap<String, Any>

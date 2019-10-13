@@ -11,10 +11,6 @@ object Libs {
             "org.jlleitschuh.gradle.ktlint:org.jlleitschuh.gradle.ktlint.gradle.plugin:" +
             Versions.org_jlleitschuh_gradle_ktlint_gradle_plugin
 
-    const val io_gitlab_arturbosch_detekt_gradle_plugin: String =
-            "io.gitlab.arturbosch.detekt:io.gitlab.arturbosch.detekt.gradle.plugin:" +
-            Versions.io_gitlab_arturbosch_detekt_gradle_plugin
-
     /**
      * https://github.com/JakeWharton/retrofit2-kotlinx-serialization-converter/
      */

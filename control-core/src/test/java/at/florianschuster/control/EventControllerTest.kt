@@ -38,10 +38,6 @@ class EventControllerTest : FlowTest {
         }
     }
 
-    @Test
-    fun `events can only be triggered from inside of the controller`() {
-    }
-
     private class TestEventController(
         override var scope: CoroutineScope,
         private val mutateEventIndex: Int? = null,
