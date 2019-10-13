@@ -3,9 +3,12 @@ package at.florianschuster.control.data
 import java.lang.Exception
 
 /**
- * Sealed class that represents an asynchronous load of a data resource.
+ * Sealed class that represents an asynchronous load of a data [value].
  */
 sealed class Data<out T> {
+    /**
+     * Returns the value [value] if it is available, otherwise null.
+     */
     open operator fun invoke(): T? = null
 
     /**
