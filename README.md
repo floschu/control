@@ -1,6 +1,6 @@
 ![logo](.media/control.png)
 
-[![version](https://img.shields.io/github/v/tag/floschu/control?color=blue&label=version)](https://bintray.com/flosch/control) [![build](https://github.com/floschu/control/workflows/build/badge.svg)](https://github.com/floschu/control/actions) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/39072347acb94bf79651d7f16bfa63ca)](https://www.codacy.com/manual/floschu/control?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=floschu/control&amp;utm_campaign=Badge_Grade) [![issues](https://img.shields.io/github/issues-raw/floschu/control)](https://github.com/floschu/control/issues) [![license](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![version](https://img.shields.io/github/v/tag/floschu/control?color=blue&label=version)](https://bintray.com/flosch/control) [![build](https://github.com/floschu/control/workflows/build/badge.svg)](https://github.com/floschu/control/actions) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/39072347acb94bf79651d7f16bfa63ca)](https://www.codacy.com/manual/floschu/control?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=floschu/control&amp;utm_campaign=Badge_Grade) [![license](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
 kotlin flow based unidirectional-data-flow architecture
 
