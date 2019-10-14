@@ -28,8 +28,6 @@ object Versions {
 
     const val de_fayard_buildsrcversions_gradle_plugin: String = "0.7.0"
 
-    const val org_jetbrains_dokka_gradle_plugin: String = "0.10.0"
-
     const val com_jfrog_bintray_gradle_plugin: String = "1.8.4"
 
     const val kotlin_flow_extensions: String = "0.0.2"
@@ -48,7 +46,7 @@ object Versions {
 
     const val retrofit: String = "2.6.2"
 
-    const val ktlint: String = "0.35.0"
+    const val ktlint: String = "0.34.2" // available: "0.35.0"
 
     const val aapt2: String = "3.5.1-5435860"
 
@@ -70,4 +68,4 @@ object Versions {
  */
 val PluginDependenciesSpec.buildSrcVersions: PluginDependencySpec
     inline get() =
-        id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
+            id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)

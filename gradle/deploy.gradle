@@ -1,92 +1,37 @@
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.jfrog.bintray'
+apply plugin: "com.jfrog.bintray"
 
-def artifact = new Properties()
-artifact.load(new FileInputStream("$project.name/gradle.properties"))
+group = "at.florianschuster.control"
+version = Config.libVersion
 
-group = Config.group
+def settings = new Properties()
+file("deploy.properties").withInputStream { settings.load(it) }
 
-install {
-    repositories.mavenInstaller {
-        pom.project {
-            packaging 'aar'
-            groupId Config.group
-            artifactId artifact.id
-
-            name Config.name
-            description Config.description
-            url Config.webUrl
-
-            licenses {
-                license {
-                    name 'The Apache Software License, Version 2.0'
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                }
-            }
-            developers {
-                developer {
-                    id "flosch"
-                    name "Florian Schuster"
-                    email "mail@florianschuster.at"
-                }
-            }
-            scm {
-                connection Config.gitUrl
-                developerConnection Config.gitUrl
-                url Config.webUrl
-            }
-        }
-        pom.withXml {
-            def dependenciesNode = asNode().appendNode('dependencies')
-            configurations.api.allDependencies.withType(ModuleDependency) { ModuleDependency dp ->
-                def dependencyNode = dependenciesNode.appendNode('dependency')
-                dependencyNode.appendNode('groupId', dp.group)
-                dependencyNode.appendNode('artifactId', dp.name)
-                dependencyNode.appendNode('version', dp.version)
-            }
-        }
-    }
-}
-
-version = Config.version
-
-if (project.hasProperty("kotlin")) {
-    task sourcesJar(type: Jar) {
-        archiveClassifier.set("sources")
-        from android.sourceSets.main.java.srcDirs
-    }
-
-    task javadoc(type: Javadoc, dependsOn: dokka) {
-    }
-} else if (project.hasProperty("android")) {
-    task sourcesJar(type: Jar) {
-        archiveClassifier.set("sources")
-        from android.sourceSets.main.java.srcDirs
-    }
-
-    task javadoc(type: Javadoc) {
-        source = android.sourceSets.main.java.srcDirs
-        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    }
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    archiveClassifier.set("javadoc")
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives javadocJar
-    archives sourcesJar
+project.ext {
+    mavProjectName = settings.name
+    mavLibraryDescription = settings.description
+    mavPublishToMavenLocal = true
+    mavSiteUrl = "https://github.com/floschu/control"
+    mavGitUrl = mavSiteUrl + ".git"
+    mavLibraryLicenses = ["Apache-2.0": 'http://www.apache.org/licenses/LICENSE-2.0.txt']
 }
 
 bintray {
     user = System.getenv("BINTRAY_USER")
     key = System.getenv("BINTRAY_KEY")
-    configurations = ["archives"]
+    // todo remove
+    publications = ['mavenPublish']
+    configurations = ['archives']
+    publish = true
     pkg {
-        repo = Config.name
-        name = artifact.id
-        publish = true
+        repo = settings.repo
+        name = settings.name
+        version {
+            name = "${settings.name}:${Config.libVersion}"
+            desc = "Version ${Config.libVersion}"
+            released = new Date()
+            vcsTag = Config.libVersion
+        }
     }
 }
+
+apply from: 'https://raw.githubusercontent.com/sky-uk/gradle-maven-plugin/master/gradle-mavenizer.gradle'

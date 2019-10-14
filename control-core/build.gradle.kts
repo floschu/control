@@ -21,3 +21,5 @@ dependencies {
     testImplementation(project(":test-util"))
     testImplementation(Libs.kotlin_flow_extensions)
 }
+
+apply(from = "$rootDir/gradle/deploy.gradle")

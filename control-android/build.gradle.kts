@@ -23,3 +23,5 @@ dependencies {
     api(project(":control-core"))
     api(Libs.lifecycle_extensions)
 }
+
+apply(from = "$rootDir/gradle/deploy.gradle")

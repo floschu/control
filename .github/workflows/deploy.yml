@@ -1,4 +1,4 @@
-name: publish
+name: deploy
 
 on:
   push:
@@ -32,4 +32,4 @@ jobs:
         env:
           bintrayUser: ${{ secrets.BINTRAY_USER }}
           bintrayApiKey: ${{ secrets.BINTRAY_TOKEN }}
-        run: ./gradlew install bintrayUpload
+        run: ./gradlew build publish bintrayUpload
