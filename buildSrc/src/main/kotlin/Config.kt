@@ -3,7 +3,7 @@ import kotlin.String
 import kotlin.Int
 
 object Config {
-    const val libVersion: String = "0.0.2"
+    const val libVersion: String = "0.0.3"
 
     const val targetSdkVersion: Int = 29
     const val minSdkVersion: Int = 16
