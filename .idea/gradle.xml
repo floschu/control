@@ -9,9 +9,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/buildSrc" />
-            <option value="$PROJECT_DIR$/control-android" />
             <option value="$PROJECT_DIR$/control-core" />
-            <option value="$PROJECT_DIR$/control-data" />
             <option value="$PROJECT_DIR$/example-counter" />
             <option value="$PROJECT_DIR$/example-github" />
             <option value="$PROJECT_DIR$/test-util" />

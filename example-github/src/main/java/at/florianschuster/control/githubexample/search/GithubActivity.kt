@@ -20,8 +20,8 @@ import kotlinx.coroutines.flow.sample
 import ru.ldralighieri.corbind.recyclerview.scrollEvents
 import ru.ldralighieri.corbind.widget.textChanges
 
-class GithubSearchActivity : AppCompatActivity(R.layout.activity_github) {
-    private val controller: GithubSearchController by viewModels()
+class GithubActivity : AppCompatActivity(R.layout.activity_github) {
+    private val controller: GithubController by viewModels()
     private val adapter = RepoAdapter()
 
     init {
@@ -36,14 +36,14 @@ class GithubSearchActivity : AppCompatActivity(R.layout.activity_github) {
                 .drop(1)
                 .debounce(500)
                 .map { it.toString() }
-                .map { GithubSearchController.Action.UpdateQuery(it) }
+                .map { GithubController.Action.UpdateQuery(it) }
                 .bind(to = controller.action)
                 .launchIn(lifecycleScope)
 
             repoRecyclerView.scrollEvents()
                 .sample(500)
                 .filter { it.view.shouldLoadMore() }
-                .map { GithubSearchController.Action.LoadNextPage }
+                .map { GithubController.Action.LoadNextPage }
                 .bind(to = controller.action)
                 .launchIn(lifecycleScope)
 

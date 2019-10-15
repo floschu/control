@@ -18,7 +18,7 @@ fun <State : Any, SubState : Any> Flow<State>.changesFrom(
 ): Flow<SubState> = map { mapper(it) }.distinctUntilChanged()
 
 /**
- * Binds a [Flow] to an UI target.
+ * Binds a [Flow] to an UI target or a [PublishProcessor].
  * Also handles errors as defined in [Control].
  */
 @ExperimentalCoroutinesApi

@@ -7,21 +7,8 @@ kotlin flow based unidirectional-data-flow architecture
 ## installation
 
 ``` groovy
-allprojects {
-    repositories {
-        jcenter()
-    }
-}
-
 dependencies {
-    // kotlin module
-    implementation("at.florianschuster.control:control-core:$version")
-    
-    // android module > also provides control-core
-    implementation("at.florianschuster.control:control-android:$version")
-    
-    // kotlin module
-    implementation("at.florianschuster.control:control-data:$version")
+    implementation("at.florianschuster.control:control-core:$version") // kotlin only module
 }
 ```
 

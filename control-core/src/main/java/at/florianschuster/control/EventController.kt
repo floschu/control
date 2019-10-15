@@ -1,6 +1,6 @@
 package at.florianschuster.control
 
-import at.florianschuster.control.processor.EventProcessor
+import at.florianschuster.control.processor.PublishProcessor
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 
@@ -13,8 +13,8 @@ import kotlinx.coroutines.FlowPreview
 @ExperimentalCoroutinesApi
 interface EventController<Action, Mutation, State, Event> : Controller<Action, Mutation, State> {
 
-     val events: EventProcessor<Event>
-        get() = associatedObject(EVENT_KEY) { EventProcessor() }
+    val events: PublishProcessor<Event>
+        get() = associatedObject(EVENT_KEY) { PublishProcessor(singleCollector = true) }
 
     companion object {
         private const val EVENT_KEY = "event_controller_events"

@@ -2,7 +2,7 @@ package at.florianschuster.control
 
 import at.florianschuster.control.configuration.Control
 import at.florianschuster.control.configuration.Operation
-import at.florianschuster.control.processor.ActionProcessor
+import at.florianschuster.control.processor.PublishProcessor
 import at.florianschuster.control.util.ControllerScope
 import at.florianschuster.control.util.ObjectStore
 import kotlinx.coroutines.CoroutineScope
@@ -21,10 +21,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 
 /**
- * A [Controller] is an UI-independent layer which manages the state of a view. The foremost role
- * of a [Controller] is to separate control flow from a view. Every view should have its own
- * [Controller] and delegates all logic to it. A [Controller] has no dependency to a view, so it
- * can be easily tested.
+ * A [Controller] is an UI-independent layer which controls the state of a view. The role
+ * of a [Controller] is to separate business logic and control flow from a view. Every view
+ * should have its own [Controller] and delegates all logic to it. A [Controller] has no
+ * dependency to a view, so it can be easily tested.
  *
  * Unidirectional-data-flow:
  * View sends [Action] via [action] to [Controller].
@@ -49,7 +49,7 @@ import kotlinx.coroutines.flow.scan
  */
 @FlowPreview
 @ExperimentalCoroutinesApi
-interface Controller<Action, Mutation, State> : ObjectStore {
+interface Controller<Action, Mutation, State> : ObjectStore { // todo reactor
 
     /**
      * A [String] tag that is used for [Operation] logging.
@@ -80,9 +80,9 @@ interface Controller<Action, Mutation, State> : ObjectStore {
     val currentState: State get() = privateState.value
 
     /**
-     * The [Action] from the view. Bind user inputs to this [ActionProcessor].
+     * The [Action] from the view. Bind user inputs to this [PublishProcessor].
      */
-    val action: ActionProcessor<Action>
+    val action: PublishProcessor<Action>
         get() {
             privateState // init state stream
             return privateAction
@@ -127,8 +127,8 @@ interface Controller<Action, Mutation, State> : ObjectStore {
         Control.log { Operation.Destroyed(tag) }
     }
 
-    private val privateAction: ActionProcessor<Action>
-        get() = associatedObject(ACTION_KEY) { ActionProcessor() }
+    private val privateAction: PublishProcessor<Action>
+        get() = associatedObject(ACTION_KEY) { PublishProcessor() }
 
     private val privateState: ConflatedBroadcastChannel<State>
         get() = associatedObject(STATE_KEY) { initState() }

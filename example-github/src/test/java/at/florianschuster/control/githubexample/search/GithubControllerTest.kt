@@ -16,14 +16,14 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
-class GithubSearchControllerTest {
+class GithubControllerTest {
 
     @get:Rule
     val testScopeRule = CoroutineScopeRule()
 
     private val githubApi: GithubApi = mockk()
-    private lateinit var controller: GithubSearchController
-    private lateinit var controllerStates: List<GithubSearchController.State>
+    private lateinit var controller: GithubController
+    private lateinit var controllerStates: List<GithubController.State>
 
     @Before
     fun setup() {
@@ -33,10 +33,10 @@ class GithubSearchControllerTest {
     }
 
     private fun `given github search controller`(
-        initialState: GithubSearchController.State = GithubSearchController.State()
+        initialState: GithubController.State = GithubController.State()
     ) {
-        controller = GithubSearchController(initialState, githubApi).apply { scope = testScopeRule }
-        controllerStates = mutableListOf<GithubSearchController.State>().also { states ->
+        controller = GithubController(initialState, githubApi).apply { scope = testScopeRule }
+        controllerStates = mutableListOf<GithubController.State>().also { states ->
             testScopeRule.launch { controller.state.toList(states) }
         }
     }
@@ -48,17 +48,17 @@ class GithubSearchControllerTest {
         `given github search controller`()
 
         // when
-        controller.action(GithubSearchController.Action.UpdateQuery(query))
+        controller.action(GithubController.Action.UpdateQuery(query))
 
         // then
         coVerify(exactly = 1) { githubApi.repos(query, 1) }
         assertEquals(
             listOf(
-                GithubSearchController.State(),
-                GithubSearchController.State(query = query),
-                GithubSearchController.State(query = query, loadingNextPage = true),
-                GithubSearchController.State(query, mockReposPage1, 1, true),
-                GithubSearchController.State(query, mockReposPage1, 1, false)
+                GithubController.State(),
+                GithubController.State(query = query),
+                GithubController.State(query = query, loadingNextPage = true),
+                GithubController.State(query, mockReposPage1, 1, true),
+                GithubController.State(query, mockReposPage1, 1, false)
             ),
             controllerStates
         )
@@ -71,12 +71,12 @@ class GithubSearchControllerTest {
         `given github search controller`()
 
         // when
-        controller.action(GithubSearchController.Action.UpdateQuery(query))
+        controller.action(GithubController.Action.UpdateQuery(query))
 
         // then
         coVerify { githubApi.repos(any(), any()) wasNot Called }
         assertEquals(
-            listOf(GithubSearchController.State(), GithubSearchController.State(query = query)),
+            listOf(GithubController.State(), GithubController.State(query = query)),
             controllerStates
         )
     }
@@ -85,19 +85,19 @@ class GithubSearchControllerTest {
     fun `load next page loads correct next page`() = testScopeRule.runBlockingTest {
         // given
         val query = "control"
-        `given github search controller`(GithubSearchController.State(query = query, repos = mockReposPage1))
+        `given github search controller`(GithubController.State(query = query, repos = mockReposPage1))
 
         // when
-        controller.action(GithubSearchController.Action.LoadNextPage)
+        controller.action(GithubController.Action.LoadNextPage)
 
         // then
         coVerify(exactly = 1) { githubApi.repos(any(), 2) }
         assertEquals(
             listOf(
-                GithubSearchController.State(query = query, repos = mockReposPage1),
-                GithubSearchController.State(query, mockReposPage1, 1, true),
-                GithubSearchController.State(query, mockReposPage1 + mockReposPage2, 2, true),
-                GithubSearchController.State(query, mockReposPage1 + mockReposPage2, 2, false)
+                GithubController.State(query = query, repos = mockReposPage1),
+                GithubController.State(query, mockReposPage1, 1, true),
+                GithubController.State(query, mockReposPage1 + mockReposPage2, 2, true),
+                GithubController.State(query, mockReposPage1 + mockReposPage2, 2, false)
             ),
             controllerStates
         )
@@ -106,11 +106,11 @@ class GithubSearchControllerTest {
     @Test
     fun `load next page only when currently not loading`() = testScopeRule.runBlockingTest {
         // given
-        val initialState = GithubSearchController.State(loadingNextPage = true)
+        val initialState = GithubController.State(loadingNextPage = true)
         `given github search controller`(initialState)
 
         // when
-        controller.action(GithubSearchController.Action.LoadNextPage)
+        controller.action(GithubController.Action.LoadNextPage)
 
         // then
         coVerify { githubApi.repos(any(), any()) wasNot Called }
@@ -125,16 +125,16 @@ class GithubSearchControllerTest {
         `given github search controller`()
 
         // when
-        controller.action(GithubSearchController.Action.UpdateQuery(query))
+        controller.action(GithubController.Action.UpdateQuery(query))
 
         // then
         coVerify(exactly = 1) { githubApi.repos(query, 1) }
         assertEquals(
             listOf(
-                GithubSearchController.State(),
-                GithubSearchController.State(query = query),
-                GithubSearchController.State(query = query, loadingNextPage = true),
-                GithubSearchController.State(query = query, loadingNextPage = false)
+                GithubController.State(),
+                GithubController.State(query = query),
+                GithubController.State(query = query, loadingNextPage = true),
+                GithubController.State(query = query, loadingNextPage = false)
             ),
             controllerStates
         )

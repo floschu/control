@@ -13,17 +13,24 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * This processor acts as a [Flow] through [AbstractFlow] and accepts values via [invoke].
- * Supports only one collector.
+ *
+ * Supports only one collector if [singleCollector] is true.
+ * If [singleCollector] is false [PublishProcessor] will throw an [IllegalStateException] if more
+ * than one collectors try to collect the output flow.
  */
 @ExperimentalCoroutinesApi
 @FlowPreview
-class EventProcessor<T> : AbstractFlow<T>(), (T) -> Unit {
+class PublishProcessor<T>(
+    private val singleCollector: Boolean = false
+) : AbstractFlow<T>(), (T) -> Unit {
     private val channel: BroadcastChannel<T> = BroadcastChannel(1)
     private val collected = AtomicBoolean(false)
 
     override suspend fun collectSafely(collector: FlowCollector<T>) {
-        check(!collected.get()) { "Only one collector allowed." }
-        collected.set(true)
+        if (singleCollector) {
+            check(!collected.get()) { "Only one collector allowed." }
+            collected.set(true)
+        }
         collector.emitAll(channel.openSubscription())
     }
 

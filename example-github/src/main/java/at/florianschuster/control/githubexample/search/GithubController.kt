@@ -1,6 +1,6 @@
 package at.florianschuster.control.githubexample.search
 
-import at.florianschuster.control.android.ControllerViewModel
+import at.florianschuster.control.githubexample.ControllerViewModel
 import at.florianschuster.control.githubexample.remote.GithubApi
 import at.florianschuster.control.githubexample.remote.Repo
 import kotlinx.coroutines.flow.Flow
@@ -10,10 +10,10 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
-class GithubSearchController(
+class GithubController(
     override val initialState: State = State(),
     private val api: GithubApi = GithubApi.Factory()
-) : ControllerViewModel<GithubSearchController.Action, GithubSearchController.Mutation, GithubSearchController.State>() {
+) : ControllerViewModel<GithubController.Action, GithubController.Mutation, GithubController.State>() {
 
     sealed class Action {
         data class UpdateQuery(val text: String) : Action()

@@ -129,12 +129,6 @@ object Libs {
             Versions.lifecycle_runtime_ktx
 
     /**
-     * https://developer.android.com/topic/libraries/architecture/index.html
-     */
-    const val lifecycle_extensions: String = "androidx.lifecycle:lifecycle-extensions:" +
-            Versions.lifecycle_extensions
-
-    /**
      * http://tools.android.com
      */
     const val constraintlayout: String = "androidx.constraintlayout:constraintlayout:" +

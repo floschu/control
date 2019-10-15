@@ -1,6 +1,5 @@
-package at.florianschuster.control
+package at.florianschuster.control.util
 
-import at.florianschuster.control.util.ObjectStore
 import org.junit.Test
 
 class ObjectStoreTest {

@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion(Config.targetSdkVersion)
+    compileSdkVersion(29)
     defaultConfig {
         applicationId = "at.florianschuster.control.counterexample"
-        minSdkVersion(Config.minSdkVersion)
-        targetSdkVersion(Config.targetSdkVersion)
+        minSdkVersion(21)
+        targetSdkVersion(29)
         versionCode = 1
         versionName = "1.0.0"
     }

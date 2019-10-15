@@ -1,19 +1,19 @@
-package at.florianschuster.control
+package at.florianschuster.control.processor
 
-import at.florianschuster.control.processor.EventProcessor
+import at.florianschuster.control.processor.PublishProcessor
 import at.florianschuster.test.util.CoroutineScopeRule
 import at.florianschuster.test.util.FlowTest
 import org.junit.Rule
 import org.junit.Test
 
-class EventProcessorTest : FlowTest {
+class PublishProcessorTest : FlowTest {
 
     @get:Rule
     override val testScopeRule = CoroutineScopeRule()
 
     @Test
     fun `emit and collect work correctly`() {
-        val processor = EventProcessor<Int>()
+        val processor = PublishProcessor<Int>()
 
         val testCollector = processor.test()
 
@@ -30,7 +30,7 @@ class EventProcessorTest : FlowTest {
 
     @Test
     fun `only last value is received after collect`() {
-        val processor = EventProcessor<Int>()
+        val processor = PublishProcessor<Int>()
 
         processor(0)
         val testCollector = processor.test()
@@ -43,8 +43,8 @@ class EventProcessorTest : FlowTest {
     }
 
     @Test
-    fun `only one subscriber can collect`() {
-        val processor = EventProcessor<Int>()
+    fun `only one subscriber can collect if singleCollector true`() {
+        val processor = PublishProcessor<Int>(singleCollector = true)
 
         val testCollector0 = processor.test()
         val testCollector1 = processor.test()
@@ -61,5 +61,22 @@ class EventProcessorTest : FlowTest {
             assertErrorsCount(1)
             assertValuesCount(0)
         }
+    }
+
+    @Test
+    fun `all subscribers collect if singleCollector false`() {
+        val processor = PublishProcessor<Int>()
+
+        val testCollector0 = processor.test()
+        val testCollector1 = processor.test()
+        val testCollector2 = processor.test()
+
+        processor(0)
+        processor(1)
+        processor(2)
+
+        testCollector0.assertValues(listOf(0, 1, 2))
+        testCollector1.assertValues(listOf(0, 1, 2))
+        testCollector2.assertValues(listOf(0, 1, 2))
     }
 }
