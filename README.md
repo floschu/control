@@ -7,6 +7,10 @@ kotlin flow based unidirectional-data-flow architecture
 ## installation
 
 ``` groovy
+repositories {
+    jcenter()
+}
+
 dependencies {
     implementation("at.florianschuster.control:control-core:$version") // kotlin only module
 }
@@ -14,12 +18,62 @@ dependencies {
 
 ## concept
 
-todo
+### controller
+
+``` kotlin
+class ValueController : Controller<ValueController.Action, ValueController.Mutation, ValueController.State> {
+    sealed class Action {
+        data class SetValue(val value: Int) : Action()
+    }
+ 
+    sealed class Mutation {
+        data class SetMutatedValue(val value: Int) : Mutation()
+    }
+ 
+    data class State(
+        val value: Int
+    )
+ 
+    override val initialState = State(value = 0)
+}
+```
+
+### view
+
+``` kotlin
+class View {
+    private val controller = ValueController()
+    
+    init {
+        // action
+        buttonSetValue.clicks()
+            .map { ValueController.Action.SetValue(2) }
+            .bind(to = controller.action)
+            .launchIn(scope = /*some scope*/)
+            
+        // state
+        controller.state.map { it.value }
+            .map { "$it" }
+            .bind(to = valueTextView::setText)
+            .launchIn(scope = /*some scope*/)
+    }
+    
+    fun onDestroy() {
+        controller.cancel()
+    }
+}
+```
+
+### test
+
+``` kotlin
+// todo
+```
 
 ## examples
 
 *   [counter](example-counter): most basic example. uses `Controller`.
-*   [github search](example-github): github repository search. uses `ControllerViewModel`.
+*   [github search](example-github): github repository search. uses `Controller` combined with android jetpack AAC `ViewModel`.
 *   [Playables](https://github.com/floschu/Playables): app with a checklist of games you want to play.
 
 ## author

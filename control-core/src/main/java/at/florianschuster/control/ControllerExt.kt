@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.onEach
  * from their immediate predecessors.
  */
 @ExperimentalCoroutinesApi
-fun <State : Any, SubState : Any> Flow<State>.changesFrom(
+fun <State, SubState> Flow<State>.changesFrom(
     mapper: (State) -> SubState
 ): Flow<SubState> = map { mapper(it) }.distinctUntilChanged()
 

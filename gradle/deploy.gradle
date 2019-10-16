@@ -18,7 +18,6 @@ project.ext {
 bintray {
     user = System.getenv("bintrayUser")
     key = System.getenv("bintrayApiKey")
-    // todo remove
     publications = ['mavenPublish']
     configurations = ['archives']
     publish = true

@@ -21,14 +21,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 
 /**
- * A [Controller] is an UI-independent layer which controls the state of a view. The role
+ * A [Controller] is an UI-independent class that controls the state of a view. The role
  * of a [Controller] is to separate business logic and control flow from a view. Every view
  * should have its own [Controller] and delegates all logic to it. A [Controller] has no
  * dependency to a view, so it can be easily tested.
- *
- * Unidirectional-data-flow:
- * View sends [Action] via [action] to [Controller].
- * [Controller] publishes new [State] via [state] to View.
  *
  * <pre>
  *                  [Action] via [action]
@@ -44,8 +40,18 @@ import kotlinx.coroutines.flow.scan
  *                  [State] via [state]
  * </pre>
  *
- * Internally the [Controller] processes the new action in [mutation] where a [Mutation] is
- * created which is used to reduce the previous [State] to a new [State].
+ * Internally the [Controller]...
+ * 1. ... receives an [Action] via [action] and handles it inside [Controller.mutate]. Here all
+ * asynchronous side effects happen such as e.g. API calls. The function then returns a
+ * [Flow] of [Mutation].
+ * 2. ... receives a [Mutation] in [Controller.reduce]. Here the previous [State] and the incoming
+ * [Mutation] are reduced into a new [State] which is then published via [state].
+ *
+ * To support global states (such as e.g. a user session) there is a [Controller.transformMutation]
+ * that takes global states and maps them to a [Controller] specific [Mutation]. When the global
+ * state changes, a new [Mutation] is triggered and the current [State] is reduced.
+ *
+ * After you are done, call [Controller.cancel] to clear up resources.
  */
 @FlowPreview
 @ExperimentalCoroutinesApi
