@@ -12,8 +12,9 @@ repositories {
 }
 
 dependencies {
-    implementation("at.florianschuster.control:control-core:$version") // kotlin only module
-    testImplementation("at.florianschuster.control:control-test:$version") // kotlin only module
+    // kotlin only module
+    implementation("at.florianschuster.control:control-core:$version")
+    testImplementation("at.florianschuster.control:control-test:$version")
 }
 ```
 
@@ -45,8 +46,8 @@ class ValueController : Controller<ValueController.Action, ValueController.Mutat
     }
 
     override fun reduce(previousState: State, mutation: Mutation): State = when (mutation) {
-            is Mutation.SetMutatedValue -> previousState.copy(value = mutation.mutatedValue)
-        }
+        is Mutation.SetMutatedValue -> previousState.copy(value = mutation.mutatedValue)
+    }
 }
 ```
 
@@ -70,15 +71,15 @@ class View {
             .launchIn(scope = /*some scope*/)
     }
     
-    fun onDestroy() {
-        controller.cancel()
-    }
+    // later at some point
+    controller.cancel()
 }
 ```
 
 ### test
 
 either use currentState
+
 ``` koltlin
 @Test
 fun testController() {
@@ -87,7 +88,7 @@ fun testController() {
     
     // when
     controller.action(ValueController.Action.SetValue(2))
-    advanceTypeBy(5000)
+    advanceTimeBy(5000)
     
     // then
     assertEquals(3, controller.currentState.value)
@@ -105,11 +106,12 @@ fun testController() {
     
     // when
     controller.action(ValueController.Action.SetValue(2))
-    advanceTypeBy(5000)
+    advanceTimeBy(5000)
     
     // then
     with(testCollector) {
         assertNoErrors()
+        assertValue(index = 0, expectedValue = ValueController.State(0))
         assertValue(index = 1, expectedValue = ValueController.State(3))
     }
 }
