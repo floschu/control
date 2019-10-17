@@ -1,7 +1,7 @@
 package at.florianschuster.control
 
-import at.florianschuster.test.util.CoroutineScopeRule
-import at.florianschuster.test.util.FlowTest
+import at.florianschuster.control.test.TestCoroutineScopeRule
+import at.florianschuster.control.test.test
 import hu.akarnokd.kotlin.flow.takeUntil
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -17,15 +17,15 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
-class ControllerTest : FlowTest {
+class ControllerTest {
 
     @get:Rule
-    override val testScopeRule = CoroutineScopeRule()
+    val testScopeRule = TestCoroutineScopeRule()
 
     @Test
     fun `initial state only emitted once`() {
         val controller = OperationController(testScopeRule)
-        val testCollector = controller.state.test()
+        val testCollector = controller.state.test(testScopeRule)
 
         with(testCollector) {
             assertValuesCount(1)
@@ -36,7 +36,7 @@ class ControllerTest : FlowTest {
     @Test
     fun `each method is invoked`() {
         val controller = OperationController(testScopeRule)
-        val testCollector = controller.state.test()
+        val testCollector = controller.state.test(testScopeRule)
 
         controller.action(OperationController.Action)
 
@@ -100,7 +100,7 @@ class ControllerTest : FlowTest {
         controller.action(Unit) // 2
         controller.action(Unit) // 3
         controller.action(Unit) // 4
-        val testCollector = controller.state.test()
+        val testCollector = controller.state.test(testScopeRule)
         controller.action(Unit) // 5
 
         testCollector.assertValues(listOf(4, 5))
@@ -109,7 +109,7 @@ class ControllerTest : FlowTest {
     @Test
     fun `stream ignores error from mutate`() {
         val controller = CounterController(testScopeRule, mutateErrorIndex = 2)
-        val testCollector = controller.state.test()
+        val testCollector = controller.state.test(testScopeRule)
 
         controller.action(Unit)
         controller.action(Unit)
@@ -130,7 +130,7 @@ class ControllerTest : FlowTest {
             override fun mutate(action: Unit): Flow<Unit> = flowOf(action)
             override fun reduce(previousState: Int, mutation: Unit): Int = previousState + 1
         }
-        val testCollector = controller.state.test()
+        val testCollector = controller.state.test(testScopeRule)
 
         controller.action(Unit)
         controller.action(Unit)

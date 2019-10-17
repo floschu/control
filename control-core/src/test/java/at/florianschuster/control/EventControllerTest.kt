@@ -1,7 +1,7 @@
 package at.florianschuster.control
 
-import at.florianschuster.test.util.CoroutineScopeRule
-import at.florianschuster.test.util.FlowTest
+import at.florianschuster.control.test.TestCoroutineScopeRule
+import at.florianschuster.control.test.test
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -9,10 +9,10 @@ import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
 import org.junit.Test
 
-class EventControllerTest : FlowTest {
+class EventControllerTest  {
 
     @get:Rule
-    override val testScopeRule = CoroutineScopeRule()
+     val testScopeRule = TestCoroutineScopeRule()
 
     @Test
     fun `events are triggered correctly`() {
@@ -21,7 +21,7 @@ class EventControllerTest : FlowTest {
             mutateEventIndex = 2,
             reduceEventIndex = 4
         )
-        val eventsCollector = controller.events.test()
+        val eventsCollector = controller.events.test(testScopeRule)
 
         controller.action(Unit)
         controller.action(Unit)

@@ -13,6 +13,7 @@ repositories {
 
 dependencies {
     implementation("at.florianschuster.control:control-core:$version") // kotlin only module
+    testImplementation("at.florianschuster.control:control-test:$version") // kotlin only module
 }
 ```
 
@@ -27,7 +28,7 @@ class ValueController : Controller<ValueController.Action, ValueController.Mutat
     }
  
     sealed class Mutation {
-        data class SetMutatedValue(val value: Int) : Mutation()
+        data class SetMutatedValue(val mutatedValue: Int) : Mutation()
     }
  
     data class State(
@@ -35,6 +36,17 @@ class ValueController : Controller<ValueController.Action, ValueController.Mutat
     )
  
     override val initialState = State(value = 0)
+    
+    override fun mutate(action: Action): Flow<Mutation> = when (action) {
+        is Action.SetValue -> flow {
+            delay(5000) // some asynchronous action
+            emit(Mutation.SetMutatedValue(3))
+        }
+    }
+
+    override fun reduce(previousState: State, mutation: Mutation): State = when (mutation) {
+            is Mutation.SetMutatedValue -> previousState.copy(value = mutation.mutatedValue)
+        }
 }
 ```
 
@@ -66,8 +78,41 @@ class View {
 
 ### test
 
-``` kotlin
-// todo
+either use currentState
+``` koltlin
+@Test
+fun testController() {
+    // given
+    val controller = ValueController().apply { scope = testScope }
+    
+    // when
+    controller.action(ValueController.Action.SetValue(2))
+    advanceTypeBy(5000)
+    
+    // then
+    assertEquals(3, controller.currentState.value)
+}
+```
+
+or with the `control-test` package
+
+``` koltlin
+@Test
+fun testController() {
+    // given
+    val controller = ValueController().apply { scope = testScope }
+    val testCollector = controller.test(testScope)
+    
+    // when
+    controller.action(ValueController.Action.SetValue(2))
+    advanceTypeBy(5000)
+    
+    // then
+    with(testCollector) {
+        assertNoErrors()
+        assertValue(index = 1, expectedValue = ValueController.State(3))
+    }
+}
 ```
 
 ## examples

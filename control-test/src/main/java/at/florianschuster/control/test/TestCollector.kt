@@ -1,9 +1,15 @@
-package at.florianschuster.test.util
+package at.florianschuster.control.test
 
+import kotlinx.coroutines.flow.Flow
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.test.assertEquals
 
+/**
+ * A class that contains all value emissions, all error emissions and all completions when
+ * a [Flow] is tested with [Flow.test].
+ * Similar to RxJava TestObserver.
+ */
 class TestCollector<T> {
     var tag: String = this::class.java.simpleName
 
@@ -14,10 +20,6 @@ class TestCollector<T> {
     val errors: List<Throwable> get() = atomicErrors.get()
     fun add(throwable: Throwable): Boolean = atomicErrors.get().add(throwable)
     private val atomicErrors = AtomicReference<MutableList<Throwable>>(mutableListOf())
-
-    val completed: Boolean get() = atomicCompleted.get()
-    fun complete() = atomicCompleted.set(true)
-    private val atomicCompleted = AtomicBoolean(false)
 
     fun assertNoErrors() {
         assertEquals(0, atomicErrors.get().count(), "$tag no errors")
@@ -51,17 +53,8 @@ class TestCollector<T> {
         assertEquals(expectedValue, atomicValues.get()[index], "$tag value at $index")
     }
 
-    fun assertCompleted() {
-        assertEquals(true, atomicCompleted.get(), "$tag completed")
-    }
-
-    fun assertNotCompleted() {
-        assertEquals(false, atomicCompleted.get(), "$tag not completed")
-    }
-
     fun reset() {
         atomicValues.set(mutableListOf())
         atomicErrors.set(mutableListOf())
-        atomicCompleted.set(false)
     }
 }
