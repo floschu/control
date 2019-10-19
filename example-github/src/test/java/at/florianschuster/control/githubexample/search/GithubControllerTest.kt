@@ -3,18 +3,19 @@ package at.florianschuster.control.githubexample.search
 import at.florianschuster.control.githubexample.remote.GithubApi
 import at.florianschuster.control.githubexample.remote.Repo
 import at.florianschuster.control.githubexample.remote.Result
+import at.florianschuster.control.test.TestCollector
+import at.florianschuster.control.test.hasEmissionCount
+import at.florianschuster.control.test.hasEmissions
+import at.florianschuster.control.test.test
 import io.mockk.Called
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import kotlin.test.assertEquals
 
 class GithubControllerTest {
 
@@ -23,7 +24,7 @@ class GithubControllerTest {
 
     private val githubApi: GithubApi = mockk()
     private lateinit var controller: GithubController
-    private lateinit var controllerStates: List<GithubController.State>
+    private lateinit var stateCollector: TestCollector<GithubController.State>
 
     @Before
     fun setup() {
@@ -36,9 +37,7 @@ class GithubControllerTest {
         initialState: GithubController.State = GithubController.State()
     ) {
         controller = GithubController(initialState, githubApi).apply { scope = testScopeRule }
-        controllerStates = mutableListOf<GithubController.State>().also { states ->
-            testScopeRule.launch { controller.state.toList(states) }
-        }
+        stateCollector = controller.state.test(testScopeRule)
     }
 
     @Test
@@ -52,15 +51,12 @@ class GithubControllerTest {
 
         // then
         coVerify(exactly = 1) { githubApi.repos(query, 1) }
-        assertEquals(
-            listOf(
-                GithubController.State(),
-                GithubController.State(query = query),
-                GithubController.State(query = query, loadingNextPage = true),
-                GithubController.State(query, mockReposPage1, 1, true),
-                GithubController.State(query, mockReposPage1, 1, false)
-            ),
-            controllerStates
+        stateCollector hasEmissions listOf(
+            GithubController.State(),
+            GithubController.State(query = query),
+            GithubController.State(query = query, loadingNextPage = true),
+            GithubController.State(query, mockReposPage1, 1, true),
+            GithubController.State(query, mockReposPage1, 1, false)
         )
     }
 
@@ -75,9 +71,9 @@ class GithubControllerTest {
 
         // then
         coVerify { githubApi.repos(any(), any()) wasNot Called }
-        assertEquals(
-            listOf(GithubController.State(), GithubController.State(query = query)),
-            controllerStates
+        stateCollector hasEmissions listOf(
+            GithubController.State(),
+            GithubController.State(query = query)
         )
     }
 
@@ -85,21 +81,23 @@ class GithubControllerTest {
     fun `load next page loads correct next page`() = testScopeRule.runBlockingTest {
         // given
         val query = "control"
-        `given github search controller`(GithubController.State(query = query, repos = mockReposPage1))
+        `given github search controller`(
+            GithubController.State(
+                query = query,
+                repos = mockReposPage1
+            )
+        )
 
         // when
         controller.action(GithubController.Action.LoadNextPage)
 
         // then
         coVerify(exactly = 1) { githubApi.repos(any(), 2) }
-        assertEquals(
-            listOf(
-                GithubController.State(query = query, repos = mockReposPage1),
-                GithubController.State(query, mockReposPage1, 1, true),
-                GithubController.State(query, mockReposPage1 + mockReposPage2, 2, true),
-                GithubController.State(query, mockReposPage1 + mockReposPage2, 2, false)
-            ),
-            controllerStates
+        stateCollector hasEmissions listOf(
+            GithubController.State(query = query, repos = mockReposPage1),
+            GithubController.State(query, mockReposPage1, 1, true),
+            GithubController.State(query, mockReposPage1 + mockReposPage2, 2, true),
+            GithubController.State(query, mockReposPage1 + mockReposPage2, 2, false)
         )
     }
 
@@ -114,7 +112,8 @@ class GithubControllerTest {
 
         // then
         coVerify { githubApi.repos(any(), any()) wasNot Called }
-        assertEquals(listOf(initialState), controllerStates)
+        stateCollector hasEmissionCount 1
+        stateCollector hasEmissions listOf(initialState)
     }
 
     @Test
@@ -129,14 +128,11 @@ class GithubControllerTest {
 
         // then
         coVerify(exactly = 1) { githubApi.repos(query, 1) }
-        assertEquals(
-            listOf(
-                GithubController.State(),
-                GithubController.State(query = query),
-                GithubController.State(query = query, loadingNextPage = true),
-                GithubController.State(query = query, loadingNextPage = false)
-            ),
-            controllerStates
+        stateCollector hasEmissions listOf(
+            GithubController.State(),
+            GithubController.State(query = query),
+            GithubController.State(query = query, loadingNextPage = true),
+            GithubController.State(query = query, loadingNextPage = false)
         )
     }
 

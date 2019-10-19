@@ -1,6 +1,9 @@
 package at.florianschuster.control
 
 import at.florianschuster.control.test.TestCoroutineScopeRule
+import at.florianschuster.control.test.hasEmission
+import at.florianschuster.control.test.hasEmissionCount
+import at.florianschuster.control.test.hasEmissions
 import at.florianschuster.control.test.test
 import hu.akarnokd.kotlin.flow.takeUntil
 import kotlinx.coroutines.CancellationException
@@ -28,8 +31,8 @@ class ControllerTest {
         val testCollector = controller.state.test(testScopeRule)
 
         with(testCollector) {
-            assertValuesCount(1)
-            assertValue(0, listOf("initialState"))
+            hasEmissionCount(1)
+            hasEmission(0, listOf("initialState"))
         }
     }
 
@@ -41,9 +44,9 @@ class ControllerTest {
         controller.action(OperationController.Action)
 
         with(testCollector) {
-            assertValuesCount(2)
-            assertValue(0, listOf("initialState"))
-            assertValue(
+            hasEmissionCount(2)
+            hasEmission(0, listOf("initialState"))
+            hasEmission(
                 1,
                 listOf(
                     "initialState",
@@ -103,7 +106,7 @@ class ControllerTest {
         val testCollector = controller.state.test(testScopeRule)
         controller.action(Unit) // 5
 
-        testCollector.assertValues(listOf(4, 5))
+        testCollector.hasEmissions(listOf(4, 5))
     }
 
     @Test
@@ -117,7 +120,7 @@ class ControllerTest {
         controller.action(Unit)
         controller.action(Unit)
 
-        testCollector.assertValues(listOf(0, 1, 2, 3, 4, 5))
+        testCollector.hasEmissions(listOf(0, 1, 2, 3, 4, 5))
     }
 
     @Test
@@ -135,7 +138,7 @@ class ControllerTest {
         controller.action(Unit)
         controller.action(Unit)
 
-        testCollector.assertValues(listOf(0, 1, 2))
+        testCollector.hasEmissions(listOf(0, 1, 2))
     }
 
     @Test

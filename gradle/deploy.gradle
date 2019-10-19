@@ -1,7 +1,7 @@
 apply plugin: "com.jfrog.bintray"
 
+version = "0.0.5"
 group = "at.florianschuster.control"
-version = Config.libVersion
 
 def settings = new Properties()
 file("deploy.properties").withInputStream { settings.load(it) }
@@ -25,10 +25,10 @@ bintray {
         repo = settings.repo
         name = settings.name
         version {
-            name = "${settings.name}:${Config.libVersion}"
-            desc = "Version ${Config.libVersion}"
+            name = "${settings.name}:${version}"
+            desc = "Version ${version}"
             released = new Date()
-            vcsTag = Config.libVersion
+            vcsTag = version
         }
     }
 }

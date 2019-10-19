@@ -2,7 +2,7 @@
 
 [![version](https://img.shields.io/github/v/tag/floschu/control?color=blue&label=version)](https://bintray.com/flosch/control) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/39072347acb94bf79651d7f16bfa63ca)](https://www.codacy.com/manual/floschu/control?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=floschu/control&amp;utm_campaign=Badge_Grade) [![build](https://github.com/floschu/control/workflows/build/badge.svg)](https://github.com/floschu/control/actions) [![license](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
-kotlin flow based unidirectional-data-flow architecture
+coroutines flow based unidirectional-data-flow architecture
 
 ## installation
 
@@ -66,19 +66,20 @@ class View {
             
         // state
         controller.state.map { it.value }
+            .distinctUntilChanged()
             .map { "$it" }
             .bind(to = valueTextView::setText)
             .launchIn(scope = /*some scope*/)
-    }
     
-    // later at some point
-    controller.cancel()
+        // later at some point
+        controller.cancel()
+    }
 }
 ```
 
 ### test
 
-either use currentState
+either use `Controller.currentState`
 
 ``` koltlin
 @Test
@@ -95,14 +96,14 @@ fun testController() {
 }
 ```
 
-or with the `control-test` package
+or test with the `control-test` package
 
 ``` koltlin
 @Test
 fun testController() {
     // given
     val controller = ValueController().apply { scope = testScope }
-    val testCollector = controller.test(testScope)
+    val testCollector = controller.state.test(testScope)
     
     // when
     controller.action(ValueController.Action.SetValue(2))
@@ -110,9 +111,12 @@ fun testController() {
     
     // then
     with(testCollector) {
-        assertNoErrors()
-        assertValue(index = 0, expectedValue = ValueController.State(0))
-        assertValue(index = 1, expectedValue = ValueController.State(3))
+        hasNoErrors()
+        hasEmissionCount(2)
+        hasEmission(
+            ValueController.State(0),
+            ValueController.State(3)
+        )
     }
 }
 ```

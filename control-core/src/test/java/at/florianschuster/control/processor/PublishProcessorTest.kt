@@ -1,6 +1,11 @@
 package at.florianschuster.control.processor
 
 import at.florianschuster.control.test.TestCoroutineScopeRule
+import at.florianschuster.control.test.hasEmission
+import at.florianschuster.control.test.hasEmissionCount
+import at.florianschuster.control.test.hasEmissions
+import at.florianschuster.control.test.hasErrorCount
+import at.florianschuster.control.test.hasNoErrors
 import at.florianschuster.control.test.test
 import org.junit.Rule
 import org.junit.Test
@@ -21,9 +26,9 @@ class PublishProcessorTest {
         processor(2)
 
         with(testCollector) {
-            assertNoErrors()
-            assertValuesCount(3)
-            assertValues(listOf(0, 1, 2))
+            hasNoErrors()
+            hasEmissionCount(3)
+            hasEmissions(listOf(0, 1, 2))
         }
     }
 
@@ -36,8 +41,8 @@ class PublishProcessorTest {
         processor(1)
 
         with(testCollector) {
-            assertValuesCount(1)
-            assertValue(0, 1)
+            hasEmissionCount(1)
+            hasEmission(0, 1)
         }
     }
 
@@ -53,12 +58,14 @@ class PublishProcessorTest {
         processor(2)
 
         with(testCollector0) {
-            assertNoErrors()
-            assertValues(listOf(0, 1, 2))
+            hasNoErrors()
+            hasEmissions(listOf(0, 1, 2))
         }
+
         with(testCollector1) {
-            assertErrorsCount(1)
-            assertValuesCount(0)
+            hasErrorCount(1)
+            hasErrorCount(1)
+            hasEmissionCount(0)
         }
     }
 
@@ -74,8 +81,8 @@ class PublishProcessorTest {
         processor(1)
         processor(2)
 
-        testCollector0.assertValues(listOf(0, 1, 2))
-        testCollector1.assertValues(listOf(0, 1, 2))
-        testCollector2.assertValues(listOf(0, 1, 2))
+        testCollector0 hasEmissions listOf(0, 1, 2)
+        testCollector1 hasEmissions listOf(0, 1, 2)
+        testCollector2 hasEmissions listOf(0, 1, 2)
     }
 }

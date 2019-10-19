@@ -7,11 +7,11 @@ plugins {
 
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.kotlinOptions {
-    jvmTarget = Config.jvmTarget.toString()
+    jvmTarget = JavaVersion.VERSION_1_8.toString()
 }
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
-    jvmTarget = Config.jvmTarget.toString()
+    jvmTarget = JavaVersion.VERSION_1_8.toString()
 }
 
 dependencies {

@@ -14,8 +14,8 @@ android {
         versionName = "1.0.0"
     }
     compileOptions {
-        sourceCompatibility = Config.jvmTarget
-        targetCompatibility = Config.jvmTarget
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 }
 
@@ -28,7 +28,5 @@ dependencies {
     implementation(Libs.corbind)
     implementation(Libs.corbind_core)
 
-    testImplementation(Libs.junit)
-    testImplementation(Libs.kotlin_test)
-    testImplementation(Libs.kotlinx_coroutines_test)
+    testImplementation(project(":control-test"))
 }

@@ -55,7 +55,7 @@ import kotlinx.coroutines.flow.scan
  */
 @FlowPreview
 @ExperimentalCoroutinesApi
-interface Controller<Action, Mutation, State> : ObjectStore { // todo reactor
+interface Controller<Action, Mutation, State> : ObjectStore {
 
     /**
      * A [String] tag that is used for [Operation] logging.

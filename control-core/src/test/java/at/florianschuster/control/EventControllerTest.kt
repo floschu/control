@@ -1,6 +1,9 @@
 package at.florianschuster.control
 
 import at.florianschuster.control.test.TestCoroutineScopeRule
+import at.florianschuster.control.test.hasEmission
+import at.florianschuster.control.test.hasEmissionCount
+import at.florianschuster.control.test.hasNoErrors
 import at.florianschuster.control.test.test
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -25,16 +28,16 @@ class EventControllerTest  {
 
         controller.action(Unit)
         controller.action(Unit)
-        eventsCollector.assertValuesCount(0)
+        eventsCollector.hasEmissionCount(0)
         controller.action(Unit)
-        eventsCollector.assertValuesCount(1)
+        eventsCollector.hasEmissionCount(1)
         controller.action(Unit)
-        eventsCollector.assertValuesCount(2)
+        eventsCollector.hasEmissionCount(2)
 
         with(eventsCollector) {
-            assertNoErrors()
-            assertValue(0, TestEventController.EVENT_MUTATE)
-            assertValue(1, TestEventController.EVENT_REDUCE)
+            hasNoErrors()
+            hasEmission(0, TestEventController.EVENT_MUTATE)
+            hasEmission(1, TestEventController.EVENT_REDUCE)
         }
     }
 

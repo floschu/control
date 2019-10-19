@@ -3,6 +3,7 @@ package at.florianschuster.control.counterexample
 import at.florianschuster.control.Controller
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 
 // action triggered by view

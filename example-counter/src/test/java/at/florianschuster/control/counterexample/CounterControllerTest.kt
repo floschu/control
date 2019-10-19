@@ -1,9 +1,10 @@
 package at.florianschuster.control.counterexample
 
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
+import at.florianschuster.control.test.TestCollector
+import at.florianschuster.control.test.hasEmissionCount
+import at.florianschuster.control.test.hasEmissions
+import at.florianschuster.control.test.test
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -14,13 +15,11 @@ class CounterControllerTest {
     val testScopeRule = CoroutineScopeRule()
 
     private lateinit var controller: CounterController
-    private lateinit var controllerStates: List<CounterState>
+    private lateinit var stateCollector: TestCollector<CounterState>
 
     private fun `given counter controller`() {
         controller = CounterController().apply { scope = testScopeRule }
-        controllerStates = mutableListOf<CounterState>().also { states ->
-            testScopeRule.launch { controller.state.toList(states) }
-        }
+        stateCollector = controller.state.test(testScopeRule)
     }
 
     @Test
@@ -33,16 +32,15 @@ class CounterControllerTest {
         advanceTimeBy(1000)
 
         // then
-        assertEquals(4, controllerStates.count())
-        assertEquals(
-            listOf(
+        with(stateCollector) {
+            hasEmissionCount(4)
+            hasEmissions(
                 CounterState(0, false),
                 CounterState(0, true),
                 CounterState(1, true),
                 CounterState(1, false)
-            ),
-            controllerStates
-        )
+            )
+        }
     }
 
     @Test
