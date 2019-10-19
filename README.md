@@ -1,6 +1,6 @@
 ![logo](.media/control.png)
 
-[![version](https://img.shields.io/github/v/tag/floschu/control?color=blue&label=version)](https://bintray.com/flosch/control) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/39072347acb94bf79651d7f16bfa63ca)](https://www.codacy.com/manual/floschu/control?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=floschu/control&amp;utm_campaign=Badge_Grade) [![build](https://github.com/floschu/control/workflows/build/badge.svg)](https://github.com/floschu/control/actions) [![license](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![version](https://img.shields.io/github/v/tag/floschu/control?color=f88909&label=version)](https://bintray.com/flosch/control) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/39072347acb94bf79651d7f16bfa63ca)](https://www.codacy.com/manual/floschu/control?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=floschu/control&amp;utm_campaign=Badge_Grade) [![build](https://github.com/floschu/control/workflows/build/badge.svg)](https://github.com/floschu/control/actions) [![license](https://img.shields.io/badge/license-Apache%202.0-blue.svg?color=7b6fe2)](LICENSE)
 
 ## installation
 
@@ -80,40 +80,44 @@ class View {
 either use `Controller.currentState`
 
 ``` koltlin
-@Test
-fun testController() {
-    // given
-    val controller = ValueController().apply { scope = testScope }
-    
-    // when
-    controller.action(ValueController.Action.SetValue(2))
-    advanceTimeBy(5000)
-    
-    // then
-    assertEquals(3, controller.currentState.value)
+class Test {
+    @Test
+    fun testController() {
+        // given
+        val controller = ValueController().apply { scope = testScope }
+
+        // when
+        controller.action(ValueController.Action.SetValue(2))
+        advanceTimeBy(5000)
+
+        // then
+        assertEquals(3, controller.currentState.value)
+    }
 }
 ```
 
 or test with the `control-test` package
 
 ``` koltlin
-@Test
-fun testController() {
-    // given
-    val controller = ValueController().apply { scope = testScope }
-    val testCollector = controller.state.test(testScope)
-    
-    // when
-    controller.action(ValueController.Action.SetValue(2))
-    advanceTimeBy(5000)
-    
-    // then
-    testCollector expect noErrors()
-    testCollector expect emissionCount(2)
-    testCollector expect emissions(
-        ValueController.State(0), // initial state
-        ValueController.State(3) // after action
-    )
+class Test {
+    @Test
+    fun testController() {
+        // given
+        val controller = ValueController().apply { scope = testScope }
+        val testCollector = controller.state.test(testScope)
+
+        // when
+        controller.action(ValueController.Action.SetValue(2))
+        advanceTimeBy(5000)
+
+        // then
+        testCollector expect noErrors()
+        testCollector expect emissionCount(2)
+        testCollector expect emissions(
+            ValueController.State(0), // initial state
+            ValueController.State(3) // after action
+        )
+    }
 }
 ```
 
