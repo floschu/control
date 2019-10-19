@@ -21,3 +21,5 @@ dependencies {
     api(Libs.kotlin_test)
     api(Libs.kotlinx_coroutines_test)
 }
+
+apply(from = "$rootDir/gradle/deploy.gradle")
