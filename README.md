@@ -22,22 +22,30 @@ dependencies {
 
 ### controller
 
+A [Controller](control-core/src/main/java/at/florianschuster/control/Controller.kt) is an UI-independent class that controls the state of a view. The role of a Controller is to separate business logic and control flow from a view. A Controller has no dependency to a view, so it can be easily tested.
+
 ``` kotlin
 class ValueController : Controller<ValueController.Action, ValueController.Mutation, ValueController.State> {
+    // action triggered by view
     sealed class Action {
         data class SetValue(val value: Int) : Action()
     }
  
+    // mutation that is used to alter the state
     sealed class Mutation {
         data class SetMutatedValue(val mutatedValue: Int) : Mutation()
     }
  
+    // immutable state
     data class State(
         val value: Int
     )
  
+    // we start with the initial state
+    // could also be set from the constructor to enable injection of initial state
     override val initialState = State(value = 0)
     
+    // every action is transformed into [0..n] mutations
     override fun mutate(action: Action): Flow<Mutation> = when (action) {
         is Action.SetValue -> flow {
             delay(5000) // some asynchronous action
@@ -45,6 +53,7 @@ class ValueController : Controller<ValueController.Action, ValueController.Mutat
         }
     }
 
+    // every mutation is used to reduce the previous state to a new state that is then published to the view
     override fun reduce(previousState: State, mutation: Mutation): State = when (mutation) {
         is Mutation.SetMutatedValue -> previousState.copy(value = mutation.mutatedValue)
     }
@@ -58,13 +67,13 @@ class View {
     private val controller = ValueController()
     
     init {
-        // action
+        // bind view actions to Controller.action
         buttonSetValue.clicks()
             .map { ValueController.Action.SetValue(2) }
             .bind(to = controller.action)
             .launchIn(scope = viewScope)
             
-        // state
+        // bind Controller.state to view
         controller.state.map { it.value }
             .distinctUntilChanged()
             .map { "$it" }
