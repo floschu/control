@@ -22,9 +22,9 @@ import kotlinx.coroutines.flow.scan
 
 /**
  * A [Controller] is an UI-independent class that controls the state of a view. The role
- * of a [Controller] is to separate business logic and control flow from a view. Every view
- * should have its own [Controller] and delegates all logic to it. A [Controller] has no
- * dependency to a view, so it can be easily tested.
+ * of a [Controller] is to separate business logic and control flow away from a view. Every
+ * view should have its own [Controller] and delegates all logic to it. A [Controller] has no
+ * dependency to a view, so it can easily be unit tested.
  *
  * <pre>
  *                  [Action] via [action]

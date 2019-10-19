@@ -22,10 +22,11 @@ dependencies {
 
 ### controller
 
-A [Controller](control-core/src/main/java/at/florianschuster/control/Controller.kt) is an UI-independent class that controls the state of a view. The role of a Controller is to separate business logic and control flow from a view. A Controller has no dependency to a view, so it can be easily tested.
+a [Controller](control-core/src/main/java/at/florianschuster/control/Controller.kt) is an ui-independent class that controls the state of a view. The role of a `Controller` is to separate business logic and control flow away from the view. a `Controller` has no dependency to a view, so it can easily be unit tested.
 
 ``` kotlin
-class ValueController : Controller<ValueController.Action, ValueController.Mutation, ValueController.State> {
+class ValueController : Controller<Action, Mutation, State> {
+
     // action triggered by view
     sealed class Action {
         data class SetValue(val value: Int) : Action()
@@ -88,7 +89,7 @@ class View {
 
 ### test
 
-either use `Controller.currentState`
+To test a `Controller` either use `Controller.currentState`:
 
 ``` kotlin
 @Test
@@ -105,7 +106,7 @@ fun testController() {
 }
 ```
 
-or test with the `control-test` package
+or test with the `control-test` package:
 
 ``` kotlin
 @Test
@@ -127,6 +128,11 @@ fun testController() {
     )
 }
 ```
+
+when using delay controls on a `Controller`, set the `Controller.scope` to a `TestCoroutineScope`.
+examples:
+ *  [CounterControllerTest](example-counter/src/test/java/at/florianschuster/control/counterexample/CounterControllerTest.kt)
+ *  [GithubControllerTest](example-github/src/test/java/at/florianschuster/control/githubexample/search/GithubControllerTest.kt)
 
 ## examples
 
