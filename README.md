@@ -62,14 +62,14 @@ class View {
         buttonSetValue.clicks()
             .map { ValueController.Action.SetValue(2) }
             .bind(to = controller.action)
-            .launchIn(scope = /*some scope*/)
+            .launchIn(scope = viewScope)
             
         // state
         controller.state.map { it.value }
             .distinctUntilChanged()
             .map { "$it" }
             .bind(to = valueTextView::setText)
-            .launchIn(scope = /*some scope*/)
+            .launchIn(scope = viewScope)
     
         // later at some point
         controller.cancel()
