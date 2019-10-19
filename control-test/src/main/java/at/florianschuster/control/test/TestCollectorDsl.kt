@@ -1,3 +1,5 @@
+@file:Suppress("TooManyFunctions")
+
 package at.florianschuster.control.test
 
 import kotlinx.coroutines.flow.Flow
