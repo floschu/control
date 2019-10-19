@@ -1,9 +1,10 @@
 package at.florianschuster.control
 
 import at.florianschuster.control.test.TestCoroutineScopeRule
-import at.florianschuster.control.test.hasEmission
-import at.florianschuster.control.test.hasEmissionCount
-import at.florianschuster.control.test.hasEmissions
+import at.florianschuster.control.test.emission
+import at.florianschuster.control.test.emissions
+import at.florianschuster.control.test.emissionCount
+import at.florianschuster.control.test.expect
 import at.florianschuster.control.test.test
 import hu.akarnokd.kotlin.flow.takeUntil
 import kotlinx.coroutines.CancellationException
@@ -30,10 +31,8 @@ class ControllerTest {
         val controller = OperationController(testScopeRule)
         val testCollector = controller.state.test(testScopeRule)
 
-        with(testCollector) {
-            hasEmissionCount(1)
-            hasEmission(0, listOf("initialState"))
-        }
+        testCollector expect emissionCount(1)
+        testCollector expect emission(0, listOf("initialState"))
     }
 
     @Test
@@ -43,20 +42,17 @@ class ControllerTest {
 
         controller.action(OperationController.Action)
 
-        with(testCollector) {
-            hasEmissionCount(2)
-            hasEmission(0, listOf("initialState"))
-            hasEmission(
-                1,
-                listOf(
-                    "initialState",
-                    "action",
-                    "transformedAction",
-                    "mutation",
-                    "transformedMutation"
-                )
+        testCollector expect emissionCount(2)
+        testCollector expect emission(0, listOf("initialState"))
+        testCollector expect emission(
+            1, listOf(
+                "initialState",
+                "action",
+                "transformedAction",
+                "mutation",
+                "transformedMutation"
             )
-        }
+        )
     }
 
     @Test
@@ -106,7 +102,7 @@ class ControllerTest {
         val testCollector = controller.state.test(testScopeRule)
         controller.action(Unit) // 5
 
-        testCollector.hasEmissions(listOf(4, 5))
+        testCollector expect emissions(4, 5)
     }
 
     @Test
@@ -120,7 +116,7 @@ class ControllerTest {
         controller.action(Unit)
         controller.action(Unit)
 
-        testCollector.hasEmissions(listOf(0, 1, 2, 3, 4, 5))
+        testCollector expect emissions(0, 1, 2, 3, 4, 5)
     }
 
     @Test
@@ -138,7 +134,7 @@ class ControllerTest {
         controller.action(Unit)
         controller.action(Unit)
 
-        testCollector.hasEmissions(listOf(0, 1, 2))
+        testCollector expect emissions(0, 1, 2)
     }
 
     @Test

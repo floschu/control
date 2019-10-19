@@ -1,8 +1,9 @@
 package at.florianschuster.control.counterexample
 
 import at.florianschuster.control.test.TestCollector
-import at.florianschuster.control.test.hasEmissionCount
-import at.florianschuster.control.test.hasEmissions
+import at.florianschuster.control.test.emissions
+import at.florianschuster.control.test.emissionCount
+import at.florianschuster.control.test.expect
 import at.florianschuster.control.test.test
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
@@ -32,15 +33,13 @@ class CounterControllerTest {
         advanceTimeBy(1000)
 
         // then
-        with(stateCollector) {
-            hasEmissionCount(4)
-            hasEmissions(
-                CounterState(0, false),
-                CounterState(0, true),
-                CounterState(1, true),
-                CounterState(1, false)
-            )
-        }
+        stateCollector expect emissionCount(4)
+        stateCollector expect emissions(
+            CounterState(0, false),
+            CounterState(0, true),
+            CounterState(1, true),
+            CounterState(1, false)
+        )
     }
 
     @Test

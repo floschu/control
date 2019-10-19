@@ -1,11 +1,12 @@
 package at.florianschuster.control.processor
 
 import at.florianschuster.control.test.TestCoroutineScopeRule
-import at.florianschuster.control.test.hasEmission
-import at.florianschuster.control.test.hasEmissionCount
-import at.florianschuster.control.test.hasEmissions
-import at.florianschuster.control.test.hasErrorCount
-import at.florianschuster.control.test.hasNoErrors
+import at.florianschuster.control.test.emission
+import at.florianschuster.control.test.emissions
+import at.florianschuster.control.test.emissionCount
+import at.florianschuster.control.test.errorCount
+import at.florianschuster.control.test.expect
+import at.florianschuster.control.test.noErrors
 import at.florianschuster.control.test.test
 import org.junit.Rule
 import org.junit.Test
@@ -25,11 +26,9 @@ class PublishProcessorTest {
         processor(1)
         processor(2)
 
-        with(testCollector) {
-            hasNoErrors()
-            hasEmissionCount(3)
-            hasEmissions(listOf(0, 1, 2))
-        }
+        testCollector expect noErrors()
+        testCollector expect emissionCount(3)
+        testCollector expect emissions(0, 1, 2)
     }
 
     @Test
@@ -40,10 +39,8 @@ class PublishProcessorTest {
         val testCollector = processor.test(testScopeRule)
         processor(1)
 
-        with(testCollector) {
-            hasEmissionCount(1)
-            hasEmission(0, 1)
-        }
+        testCollector expect emissionCount(1)
+        testCollector expect emission(0, 1)
     }
 
     @Test
@@ -57,16 +54,11 @@ class PublishProcessorTest {
         processor(1)
         processor(2)
 
-        with(testCollector0) {
-            hasNoErrors()
-            hasEmissions(listOf(0, 1, 2))
-        }
+        testCollector0 expect noErrors()
+        testCollector0 expect emissions(0, 1, 2)
 
-        with(testCollector1) {
-            hasErrorCount(1)
-            hasErrorCount(1)
-            hasEmissionCount(0)
-        }
+        testCollector1 expect errorCount(1)
+        testCollector1 expect emissionCount(0)
     }
 
     @Test
@@ -81,8 +73,8 @@ class PublishProcessorTest {
         processor(1)
         processor(2)
 
-        testCollector0 hasEmissions listOf(0, 1, 2)
-        testCollector1 hasEmissions listOf(0, 1, 2)
-        testCollector2 hasEmissions listOf(0, 1, 2)
+        testCollector0 expect emissions(0, 1, 2)
+        testCollector1 expect emissions(0, 1, 2)
+        testCollector2 expect emissions(0, 1, 2)
     }
 }

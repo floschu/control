@@ -18,17 +18,15 @@ class TestCollectorTest {
     fun `flow without errors produces correct TestCollector`() {
         val testCollector = (0 until 3).asFlow().test(testScopeRule)
 
-        with(testCollector) {
-            hasNoErrors()
-            assertEquals(emptyList(), errors)
+        testCollector expect noErrors()
+        assertEquals(emptyList(), testCollector.errors)
 
-            hasEmissionCount(3)
-            hasEmissions(listOf(0, 1, 2))
-            hasEmission(index = 0, expected = 0)
-            hasEmission(1, 1)
-            hasEmission(2, 2)
-            assertEquals(listOf(0, 1, 2), emissions)
-        }
+        testCollector expect emissionCount(3)
+        testCollector expect emissions(listOf(0, 1, 2))
+        testCollector expect emission(index = 0, expected = 0)
+        testCollector expect emission(1, 1)
+        testCollector expect emission(2, 2)
+        assertEquals(listOf(0, 1, 2), testCollector.emissions)
     }
 
     @Test
@@ -42,23 +40,20 @@ class TestCollectorTest {
             emit(3)
         }.test(testScopeRule)
 
-        with(testCollector) {
-            hasErrorCount(1)
-            hasErrors(listOf(exception))
+        testCollector expect errorCount(1)
+        testCollector expect errors(exception)
+        testCollector expect errors(listOf(exception))
 
-            hasEmissionCount(3)
-            hasEmissions(listOf(0, 1, 2))
-        }
+        testCollector expect emissionCount(3)
+        testCollector expect emissions(listOf(0, 1, 2))
     }
 
     @Test
     fun `flow has no emissions`() {
         val testCollector = flow<Int> { throw IOException() }.test(testScopeRule)
 
-        with(testCollector) {
-            hasErrorCount(1)
-            hasNoEmissions()
-        }
+        testCollector expect errorCount(1)
+        testCollector expect noEmissions()
     }
 
     @Test
@@ -70,13 +65,11 @@ class TestCollectorTest {
             }
             .test(testScopeRule)
 
-        with(testCollector) {
-            hasErrorCount(1)
-            hasError<IOException>(0)
+        testCollector expect errorCount(1)
+        testCollector expect error(0, IOException::class)
 
-            hasEmissionCount(8)
-            hasEmissions(listOf(0, 2, 4, 6, 8, 10, 12, 14))
-        }
+        testCollector expect emissionCount(8)
+        testCollector expect emissions(listOf(0, 2, 4, 6, 8, 10, 12, 14))
     }
 
     @Test
@@ -85,12 +78,12 @@ class TestCollectorTest {
         val testCollector = channel.asFlow().test(testScopeRule)
 
         channel.offer(1)
-        testCollector hasEmissionCount 1
+        testCollector expect emissionCount(1)
 
         testCollector.reset()
-        testCollector.hasNoEmissions()
+        testCollector expect noEmissions()
 
         channel.offer(1)
-        testCollector hasEmissionCount 1
+        testCollector expect emissionCount(1)
     }
 }

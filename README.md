@@ -110,14 +110,12 @@ fun testController() {
     advanceTimeBy(5000)
     
     // then
-    with(testCollector) {
-        hasNoErrors()
-        hasEmissionCount(2)
-        hasEmission(
-            ValueController.State(0),
-            ValueController.State(3)
-        )
-    }
+    testCollector expect noErrors()
+    testCollector expect emissionCount(2)
+    testCollector expect emissions(
+        ValueController.State(0),
+        ValueController.State(3)
+    )
 }
 ```
 
