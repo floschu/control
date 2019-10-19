@@ -10,7 +10,6 @@ repositories {
 }
 
 dependencies {
-    // kotlin only modules
     implementation("at.florianschuster.control:control-core:$version")
     testImplementation("at.florianschuster.control:control-test:$version")
 }
