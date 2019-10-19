@@ -79,45 +79,41 @@ class View {
 
 either use `Controller.currentState`
 
-``` koltlin
-class Test {
-    @Test
-    fun testController() {
-        // given
-        val controller = ValueController().apply { scope = testScope }
+``` kotlin
+@Test
+fun testController() {
+    // given
+    val controller = ValueController().apply { scope = testScope }
 
-        // when
-        controller.action(ValueController.Action.SetValue(2))
-        advanceTimeBy(5000)
+    // when
+    controller.action(ValueController.Action.SetValue(2))
+    advanceTimeBy(5000)
 
-        // then
-        assertEquals(3, controller.currentState.value)
-    }
+    // then
+    assertEquals(3, controller.currentState.value)
 }
 ```
 
 or test with the `control-test` package
 
-``` koltlin
-class Test {
-    @Test
-    fun testController() {
-        // given
-        val controller = ValueController().apply { scope = testScope }
-        val testCollector = controller.state.test(testScope)
+``` kotlin
+@Test
+fun testController() {
+    // given
+    val controller = ValueController().apply { scope = testScope }
+    val testCollector = controller.state.test(testScope)
 
-        // when
-        controller.action(ValueController.Action.SetValue(2))
-        advanceTimeBy(5000)
+    // when
+    controller.action(ValueController.Action.SetValue(2))
+    advanceTimeBy(5000)
 
-        // then
-        testCollector expect noErrors()
-        testCollector expect emissionCount(2)
-        testCollector expect emissions(
-            ValueController.State(0), // initial state
-            ValueController.State(3) // after action
-        )
-    }
+    // then
+    testCollector expect noErrors()
+    testCollector expect emissionCount(2)
+    testCollector expect emissions(
+        ValueController.State(0), // initial state
+        ValueController.State(3) // after action
+    )
 }
 ```
 
