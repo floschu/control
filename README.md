@@ -113,8 +113,8 @@ fun testController() {
     testCollector expect noErrors()
     testCollector expect emissionCount(2)
     testCollector expect emissions(
-        ValueController.State(0),
-        ValueController.State(3)
+        ValueController.State(0), // initial state
+        ValueController.State(3) // after action
     )
 }
 ```
