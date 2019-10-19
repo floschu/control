@@ -6,7 +6,6 @@ import at.florianschuster.control.test.emissions
 import at.florianschuster.control.test.emissionCount
 import at.florianschuster.control.test.expect
 import at.florianschuster.control.test.test
-import hu.akarnokd.kotlin.flow.takeUntil
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -137,33 +136,34 @@ class ControllerTest {
         testCollector expect emissions(0, 1, 2)
     }
 
-    @Test
-    fun `cancel producing flow in mutate`() = testScopeRule.runBlockingTest {
-        val controller = StopwatchController(testScopeRule)
-
-        controller.action(StopwatchController.Action.Start)
-        testScopeRule.advanceTimeBy(2000)
-        controller.action(StopwatchController.Action.Stop)
-
-        controller.action(StopwatchController.Action.Start)
-        testScopeRule.advanceTimeBy(3000)
-        controller.action(StopwatchController.Action.Stop)
-
-        controller.action(StopwatchController.Action.Start)
-        testScopeRule.advanceTimeBy(4000)
-        controller.action(StopwatchController.Action.Stop)
-
-        // this should be ignored
-        controller.action(StopwatchController.Action.Start)
-        testScopeRule.advanceTimeBy(500)
-        controller.action(StopwatchController.Action.Stop)
-
-        controller.action(StopwatchController.Action.Start)
-        testScopeRule.advanceTimeBy(1000)
-        controller.action(StopwatchController.Action.Stop)
-
-        assertEquals(10, controller.currentState) // 2+3+4+1
-    }
+    // todo wait until official Flow.takeUntil
+    // @Test
+    // fun `cancel producing flow in mutate`() = testScopeRule.runBlockingTest {
+    //     val controller = StopwatchController(testScopeRule)
+    //
+    //     controller.action(StopwatchController.Action.Start)
+    //     testScopeRule.advanceTimeBy(2000)
+    //     controller.action(StopwatchController.Action.Stop)
+    //
+    //     controller.action(StopwatchController.Action.Start)
+    //     testScopeRule.advanceTimeBy(3000)
+    //     controller.action(StopwatchController.Action.Stop)
+    //
+    //     controller.action(StopwatchController.Action.Start)
+    //     testScopeRule.advanceTimeBy(4000)
+    //     controller.action(StopwatchController.Action.Stop)
+    //
+    //     // this should be ignored
+    //     controller.action(StopwatchController.Action.Start)
+    //     testScopeRule.advanceTimeBy(500)
+    //     controller.action(StopwatchController.Action.Stop)
+    //
+    //     controller.action(StopwatchController.Action.Start)
+    //     testScopeRule.advanceTimeBy(1000)
+    //     controller.action(StopwatchController.Action.Stop)
+    //
+    //     assertEquals(10, controller.currentState) // 2+3+4+1
+    // }
 
     private class OperationController(
         override var scope: CoroutineScope
@@ -215,26 +215,27 @@ class ControllerTest {
         override fun reduce(previousState: Int, mutation: Unit): Int = previousState + 1
     }
 
-    private class StopwatchController(
-        override var scope: CoroutineScope
-    ) : Controller<StopwatchController.Action, Int, Int> {
-
-        enum class Action { Start, Stop }
-
-        override val initialState: Int = 0
-
-        override fun mutate(action: Action): Flow<Int> = when (action) {
-            Action.Start -> {
-                flow {
-                    while (true) {
-                        delay(1000)
-                        emit(1)
-                    }
-                }.takeUntil(this@StopwatchController.action.filter { it == Action.Stop })
-            }
-            Action.Stop -> emptyFlow()
-        }
-
-        override fun reduce(previousState: Int, mutation: Int): Int = previousState + mutation
-    }
+    // todo wait until official Flow.takeUntil
+    // private class StopwatchController(
+    //     override var scope: CoroutineScope
+    // ) : Controller<StopwatchController.Action, Int, Int> {
+    //
+    //     enum class Action { Start, Stop }
+    //
+    //     override val initialState: Int = 0
+    //
+    //     override fun mutate(action: Action): Flow<Int> = when (action) {
+    //         Action.Start -> {
+    //             flow {
+    //                 while (true) {
+    //                     delay(1000)
+    //                     emit(1)
+    //                 }
+    //             }.takeUntil(this@StopwatchController.action.filter { it == Action.Stop })
+    //         }
+    //         Action.Stop -> emptyFlow()
+    //     }
+    //
+    //     override fun reduce(previousState: Int, mutation: Int): Int = previousState + mutation
+    // }
 }

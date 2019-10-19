@@ -29,12 +29,6 @@ object Libs {
     /**
      * https://github.com/LDRAlighieri/Corbind/
      */
-    const val corbind_recyclerview: String = "ru.ldralighieri.corbind:corbind-recyclerview:" +
-            Versions.ru_ldralighieri_corbind
-
-    /**
-     * https://github.com/LDRAlighieri/Corbind/
-     */
     const val corbind: String = "ru.ldralighieri.corbind:corbind:" +
             Versions.ru_ldralighieri_corbind
 
@@ -42,6 +36,12 @@ object Libs {
      * https://github.com/LDRAlighieri/Corbind/
      */
     const val corbind_core: String = "ru.ldralighieri.corbind:corbind-core:" +
+            Versions.ru_ldralighieri_corbind
+
+    /**
+     * https://github.com/LDRAlighieri/Corbind/
+     */
+    const val corbind_recyclerview: String = "ru.ldralighieri.corbind:corbind-recyclerview:" +
             Versions.ru_ldralighieri_corbind
 
     /**
@@ -118,12 +118,6 @@ object Libs {
     const val com_jfrog_bintray_gradle_plugin: String =
             "com.jfrog.bintray:com.jfrog.bintray.gradle.plugin:" +
             Versions.com_jfrog_bintray_gradle_plugin
-
-    /**
-     * https://github.com/akarnokd/kotlin-flow-extensions/
-     */
-    const val kotlin_flow_extensions: String = "com.github.akarnokd:kotlin-flow-extensions:" +
-            Versions.kotlin_flow_extensions
 
     const val lifecycle_runtime_ktx: String = "androidx.lifecycle:lifecycle-runtime-ktx:" +
             Versions.lifecycle_runtime_ktx

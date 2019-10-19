@@ -19,7 +19,6 @@ dependencies {
     api(Libs.kotlinx_coroutines_core)
 
     testImplementation(project(":control-test"))
-    testImplementation(Libs.kotlin_flow_extensions)
 }
 
 apply(from = "$rootDir/gradle/deploy.gradle")
