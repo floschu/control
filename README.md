@@ -50,7 +50,7 @@ class ValueController : Controller<Action, Mutation, State> {
     override fun mutate(action: Action): Flow<Mutation> = when (action) {
         is Action.SetValue -> flow {
             delay(5000) // some asynchronous action
-            emit(Mutation.SetMutatedValue(3))
+            emit(Mutation.SetMutatedValue(action.value))
         }
     }
 
@@ -70,7 +70,7 @@ class View {
     init {
         // bind view actions to Controller.action
         buttonSetValue.clicks()
-            .map { ValueController.Action.SetValue(2) }
+            .map { ValueController.Action.SetValue(3) }
             .bind(to = controller.action)
             .launchIn(scope = viewScope)
             
@@ -98,7 +98,7 @@ fun testController() {
     val controller = ValueController().apply { scope = testScope }
 
     // when
-    controller.action(ValueController.Action.SetValue(2))
+    controller.action(ValueController.Action.SetValue(3))
     advanceTimeBy(5000)
 
     // then
@@ -116,7 +116,7 @@ fun testController() {
     val testCollector = controller.state.test(testScope)
 
     // when
-    controller.action(ValueController.Action.SetValue(2))
+    controller.action(ValueController.Action.SetValue(3))
     advanceTimeBy(5000)
 
     // then
