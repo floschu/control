@@ -1,6 +1,7 @@
 package at.florianschuster.control.counterexample
 
 import at.florianschuster.control.test.TestCollector
+import at.florianschuster.control.test.TestCoroutineScopeRule
 import at.florianschuster.control.test.emissions
 import at.florianschuster.control.test.emissionCount
 import at.florianschuster.control.test.expect
@@ -13,7 +14,7 @@ import kotlin.test.assertEquals
 class CounterControllerTest {
 
     @get:Rule
-    val testScopeRule = CoroutineScopeRule()
+    val testScopeRule = TestCoroutineScopeRule()
 
     private lateinit var controller: CounterController
     private lateinit var stateCollector: TestCollector<CounterState>

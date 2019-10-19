@@ -4,6 +4,7 @@ import at.florianschuster.control.githubexample.remote.GithubApi
 import at.florianschuster.control.githubexample.remote.Repo
 import at.florianschuster.control.githubexample.remote.Result
 import at.florianschuster.control.test.TestCollector
+import at.florianschuster.control.test.TestCoroutineScopeRule
 import at.florianschuster.control.test.emissions
 import at.florianschuster.control.test.emissionCount
 import at.florianschuster.control.test.expect
@@ -21,7 +22,7 @@ import org.junit.Test
 class GithubControllerTest {
 
     @get:Rule
-    val testScopeRule = CoroutineScopeRule()
+    val testScopeRule = TestCoroutineScopeRule()
 
     private val githubApi: GithubApi = mockk {
         coEvery { repos(any(), 1) } returns mockResultPage1
@@ -41,7 +42,7 @@ class GithubControllerTest {
     }
 
     @Test
-    fun `update query with non-empty text`() = testScopeRule.runBlockingTest {
+    fun `update query with non-empty text`() {
         // given
         val query = "control"
         `given github search controller`()
@@ -61,7 +62,7 @@ class GithubControllerTest {
     }
 
     @Test
-    fun `update query with empty text`() = testScopeRule.runBlockingTest {
+    fun `update query with empty text`() {
         // given
         val query = ""
         `given github search controller`()
@@ -78,7 +79,7 @@ class GithubControllerTest {
     }
 
     @Test
-    fun `load next page loads correct next page`() = testScopeRule.runBlockingTest {
+    fun `load next page loads correct next page`() {
         // given
         val query = "control"
         `given github search controller`(
@@ -99,7 +100,7 @@ class GithubControllerTest {
     }
 
     @Test
-    fun `load next page only when currently not loading`() = testScopeRule.runBlockingTest {
+    fun `load next page only when currently not loading`() {
         // given
         val initialState = GithubController.State(loadingNextPage = true)
         `given github search controller`(initialState)
@@ -114,7 +115,7 @@ class GithubControllerTest {
     }
 
     @Test
-    fun `error from api is correctly handled`() = testScopeRule.runBlockingTest {
+    fun `error from api is correctly handled`() {
         // given
         val query = "control"
         coEvery { githubApi.repos(any(), any()) } throws Exception()

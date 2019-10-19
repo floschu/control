@@ -3,7 +3,6 @@
 package at.florianschuster.control.test
 
 import kotlinx.coroutines.flow.Flow
-import kotlin.reflect.KClass
 import kotlin.test.assertEquals
 
 /**
@@ -45,14 +44,36 @@ fun <T> errors(expected: List<Throwable>): (TestCollector<T>) -> Unit = { collec
 /**
  * Asserts that an [errorClass] error occurred at [index] of the [errors] collection.
  */
-fun <T, E : Throwable> error(index: Int, errorClass: KClass<E>): (TestCollector<T>) -> Unit =
+inline fun <reified T : Throwable> error(index: Int): (TestCollector<*>) -> Unit =
     { collector ->
         assertEquals(
-            errorClass,
+            T::class,
             collector.errors[index]::class,
             "${collector.tag} error at $index"
         )
     }
+
+/**
+ * Asserts that an error with Type [T] occurred first in the [errors] collection.
+ */
+inline fun <reified T : Throwable> firstError(): (TestCollector<*>) -> Unit = { collector ->
+    assertEquals(
+        T::class,
+        collector.errors.first()::class,
+        "${collector.tag} first error"
+    )
+}
+
+/**
+ * Asserts that an error with Type [T] occurred last in the [errors] collection.
+ */
+inline fun <reified T : Throwable> lastError(): (TestCollector<*>) -> Unit = { collector ->
+    assertEquals(
+        T::class,
+        collector.errors.last()::class,
+        "${collector.tag} last error"
+    )
+}
 
 /**
  * Asserts that no emissions occurred during collection the the [Flow].
@@ -91,4 +112,18 @@ fun <T> emissions(expected: List<T>): (TestCollector<T>) -> Unit = { collector -
  */
 fun <T> emission(index: Int, expected: T): (TestCollector<T>) -> Unit = { collector ->
     assertEquals(expected, collector.emissions[index], "${collector.tag} emission at $index")
+}
+
+/**
+ * Asserts that [expected] emission occurred first in the [emissions] collection.
+ */
+fun <T> firstEmission(expected: T): (TestCollector<T>) -> Unit = { collector ->
+    assertEquals(expected, collector.emissions.first(), "${collector.tag} first emission")
+}
+
+/**
+ * Asserts that [expected] emission occurred last in the [emissions] collection.
+ */
+fun <T> lastEmission(expected: T): (TestCollector<T>) -> Unit = { collector ->
+    assertEquals(expected, collector.emissions.last(), "${collector.tag} last emission")
 }

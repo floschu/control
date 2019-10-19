@@ -22,6 +22,8 @@ class TestCollectorTest {
         assertEquals(emptyList(), testCollector.errors)
 
         testCollector expect emissionCount(3)
+        testCollector expect firstEmission(0)
+        testCollector expect lastEmission(2)
         testCollector expect emissions(listOf(0, 1, 2))
         testCollector expect emission(index = 0, expected = 0)
         testCollector expect emission(1, 1)
@@ -66,7 +68,9 @@ class TestCollectorTest {
             .test(testScopeRule)
 
         testCollector expect errorCount(1)
-        testCollector expect error(0, IOException::class)
+        testCollector expect error<IOException>(0)
+        testCollector expect firstError<IOException>()
+        testCollector expect lastError<IOException>()
 
         testCollector expect emissionCount(8)
         testCollector expect emissions(listOf(0, 2, 4, 6, 8, 10, 12, 14))
