@@ -25,10 +25,7 @@ bintray {
         repo = settings.repo
         name = settings.name
         version {
-            name = "${settings.name}:${version}"
-            desc = "Version ${version}"
             released = new Date()
-            vcsTag = version
         }
     }
 }
