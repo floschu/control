@@ -132,8 +132,8 @@ fun testController() {
 when using delay controls on a `Controller`, set the `Controller.scope` to a `TestCoroutineScope`.
 
 examples:
- *  [CounterControllerTest](example-counter/src/test/java/at/florianschuster/control/counterexample/CounterControllerTest.kt) for [CounterController](example-counter/src/main/java/at/florianschuster/control/counterexample/CounterController.kt)
- *  [GithubControllerTest](example-github/src/test/java/at/florianschuster/control/githubexample/search/GithubControllerTest.kt) for [GithubController](example-github/src/main/java/at/florianschuster/control/githubexample/search/GithubController.kt)
+*  [CounterControllerTest](example-counter/src/test/java/at/florianschuster/control/counterexample/CounterControllerTest.kt) for [CounterController](example-counter/src/main/java/at/florianschuster/control/counterexample/CounterController.kt)
+*  [GithubControllerTest](example-github/src/test/java/at/florianschuster/control/githubexample/search/GithubControllerTest.kt) for [GithubController](example-github/src/main/java/at/florianschuster/control/githubexample/search/GithubController.kt)
 
 ## examples
 
