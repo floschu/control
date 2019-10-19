@@ -15,7 +15,7 @@ interface GithubApi {
     @GET("search/repositories")
     suspend fun repos(@Query("q") query: String, @Query("page") page: Int): Result
 
-    companion object Factory {
+    companion object {
         operator fun invoke(
             baseUrl: String = "https://api.github.com/",
             mediaType: MediaType = MediaType.get("application/json")

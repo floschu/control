@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.map
 
 class GithubController(
     override val initialState: State = State(),
-    private val api: GithubApi = GithubApi.Factory()
+    private val api: GithubApi = GithubApi()
 ) : ControllerViewModel<GithubController.Action, GithubController.Mutation, GithubController.State>() {
 
     sealed class Action {
