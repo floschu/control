@@ -1,6 +1,6 @@
 apply plugin: "com.jfrog.bintray"
 
-version = "0.0.5"
+version = System.getenv("libraryVersionTag")
 group = "at.florianschuster.control"
 
 def settings = new Properties()

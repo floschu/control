@@ -28,8 +28,12 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
+      - name: "Get tag and save into env"
+        uses: olegtarasov/get-tag@v1
+        id: tagName
       - name: "Build, publish and upload to Bintray"
         env:
+          libraryVersionTag: ${{ steps.tagName.outputs.tag }}
           bintrayUser: ${{ secrets.BINTRAY_USER }}
           bintrayApiKey: ${{ secrets.BINTRAY_TOKEN }}
         run: ./gradlew build publish bintrayUpload --info
