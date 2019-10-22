@@ -162,10 +162,11 @@ interface Controller<Action, Mutation, State> : ObjectStore {
         get() = associatedObject(STATE_KEY) { initState() }
 
     private fun initState(): ConflatedBroadcastChannel<State> {
-        val mutationFlow: Flow<Mutation> = transformAction(privateAction).flatMapMerge {
-            Control.log { Operation.Mutate(tag, it.toString()) }
-            mutate(it).catch { e -> Control.log(e) }
-        }
+        val mutationFlow: Flow<Mutation> = transformAction(privateAction)
+            .flatMapMerge {
+                Control.log { Operation.Mutate(tag, it.toString()) }
+                mutate(it).catch { e -> Control.log(e) }
+            }
 
         val stateFlow: Flow<State> = transformMutation(mutationFlow)
             .scan(initialState) { previousState, incomingMutation ->

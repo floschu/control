@@ -1,6 +1,8 @@
 package at.florianschuster.control.util
 
 import org.junit.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class ObjectStoreTest {
     private val testObjectKey = "object"
@@ -13,7 +15,12 @@ class ObjectStoreTest {
         store.associatedObject(testObjectKey) { testObject }
 
         val retrievedTestObject = store.associatedObject<TestObject>(testObjectKey)
-        assert(testObject == retrievedTestObject)
+        assertTrue { testObject == retrievedTestObject }
+
+        val secondTestObject = TestObject()
+        val againRetrievedTestObject = store.associatedObject(testObjectKey) { secondTestObject }
+        assertTrue { testObject == againRetrievedTestObject }
+        assertFalse { secondTestObject == againRetrievedTestObject }
     }
 
     @Test
@@ -24,9 +31,9 @@ class ObjectStoreTest {
         store.clearAssociatedObjects()
 
         val retrievedTestObject = store.associatedObject<TestObject>(testObjectKey)
-        assert(retrievedTestObject == null)
+        assertTrue { retrievedTestObject == null }
     }
 
     private class Store : ObjectStore
-    private data class TestObject(val element: Int = 123)
+    class TestObject
 }

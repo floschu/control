@@ -38,9 +38,9 @@ class ControllerTest {
         controller.action(OperationController.Action)
 
         testCollector expect emissionCount(2)
-        testCollector expect emission(0, listOf("initialState", "transformedState"))
-        testCollector expect emission(
-            1, listOf(
+        testCollector expect emissions(
+            listOf("initialState", "transformedState"),
+            listOf(
                 "initialState",
                 "action",
                 "transformedAction",
@@ -120,7 +120,6 @@ class ControllerTest {
     @Test
     fun `anonymous controller is created correctly`() {
         val controller = object : Controller<Unit, Unit, Int> {
-            override val tag: String = "AnonController"
             override var scope: CoroutineScope = testScopeRule
             override val initialState: Int = 0
 
