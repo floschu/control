@@ -62,13 +62,18 @@ class ValueController : Controller<Action, Mutation, State> {
 
 ### view
 
+*   binds its interactions to the `action` processor of the `Controller`
+*   binds the `Controller`'s `state` `Flow` to its components
+
+in this example a literal view with a `Button` and a `TextView` is implemented. however that does not mean that only a view can have a `Controller` - there could also be a feature wide or a global `Controller` that controls the state of the corresponding system or app.
+
 ``` kotlin
 class View {
     private val controller = ValueController()
     
     init {
         // bind view actions to Controller.action
-        buttonSetValue.clicks()
+        setValueButton.clicks()
             .map { ValueController.Action.SetValue(3) }
             .bind(to = controller.action)
             .launchIn(scope = viewScope)
@@ -131,8 +136,8 @@ fun testController() {
 when using delay controls on a `Controller`, set the `Controller.scope` to a `TestCoroutineScope`.
 
 examples:
-*   [CounterControllerTest](example-counter/src/test/java/at/florianschuster/control/counterexample/CounterControllerTest.kt) for [CounterController](example-counter/src/main/java/at/florianschuster/control/counterexample/CounterController.kt)
-*   [GithubControllerTest](example-github/src/test/java/at/florianschuster/control/githubexample/search/GithubControllerTest.kt) for [GithubController](example-github/src/main/java/at/florianschuster/control/githubexample/search/GithubController.kt)
+*   [CounterControllerTest](example-counter/src/test/kotlin/at/florianschuster/control/counterexample/CounterControllerTest.kt) for [CounterController](example-counter/src/main/kotlin/at/florianschuster/control/counterexample/CounterController.kt)
+*   [GithubControllerTest](example-github/src/test/kotlin/at/florianschuster/control/githubexample/search/GithubControllerTest.kt) for [GithubController](example-github/src/main/kotlin/at/florianschuster/control/githubexample/search/GithubController.kt)
 
 ## examples
 
@@ -146,4 +151,5 @@ visit my [website](https://florianschuster.at/).
 
 ## reaktor
 
-control is the kotlin coroutines flow alternative of [Reaktor](https://github.com/floschu/Reaktor/) which uses [RxJava2](https://github.com/ReactiveX/RxJava) to create its unidirectional-data-flow architecture.
+control is the kotlin coroutines flow alternative of [Reaktor](https://github.com/floschu/Reaktor/) which uses [Rx
+2](https://github.com/ReactiveX/RxJava) to create its unidirectional-data-flow architecture.
