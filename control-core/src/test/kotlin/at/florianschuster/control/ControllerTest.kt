@@ -8,14 +8,10 @@ import at.florianschuster.control.test.expect
 import at.florianschuster.control.test.test
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -31,7 +27,7 @@ class ControllerTest {
         val testCollector = controller.state.test(testScopeRule)
 
         testCollector expect emissionCount(1)
-        testCollector expect emission(0, listOf("initialState"))
+        testCollector expect emission(0, listOf("initialState", "transformedState"))
     }
 
     @Test
@@ -42,14 +38,15 @@ class ControllerTest {
         controller.action(OperationController.Action)
 
         testCollector expect emissionCount(2)
-        testCollector expect emission(0, listOf("initialState"))
+        testCollector expect emission(0, listOf("initialState", "transformedState"))
         testCollector expect emission(
             1, listOf(
                 "initialState",
                 "action",
                 "transformedAction",
                 "mutation",
-                "transformedMutation"
+                "transformedMutation",
+                "transformedState"
             )
         )
     }
@@ -66,7 +63,8 @@ class ControllerTest {
                 "action",
                 "transformedAction",
                 "mutation",
-                "transformedMutation"
+                "transformedMutation",
+                "transformedState"
             ),
             controller.currentState
         )
@@ -84,7 +82,8 @@ class ControllerTest {
                 "action",
                 "transformedAction",
                 "mutation",
-                "transformedMutation"
+                "transformedMutation",
+                "transformedState"
             ),
             controller.currentState
         )
@@ -190,6 +189,11 @@ class ControllerTest {
         // 5. ["initialState"] + ["action", "transformedAction", "mutation", "transformedMutation"]
         override fun reduce(previousState: List<String>, mutation: List<String>): List<String> {
             return previousState + mutation
+        }
+
+        // 6. ["initialState", "action", "transformedAction", "mutation", "transformedMutation"] + ["transformedState"]
+        override fun transformState(state: Flow<List<String>>): Flow<List<String>> {
+            return state.map { it + "transformedState" }
         }
 
         companion object {

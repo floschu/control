@@ -115,14 +115,36 @@ interface Controller<Action, Mutation, State> : ObjectStore {
     /**
      * Transforms the [Action]. Use this function to combine with other [Flow]'s. This method is
      * called once before the [state] [Flow] is created.
+     *
+     * A possible use case would be to perform an initial action:
+     * ```
+     * override fun transformAction(action: Flow<Action>): Flow<Action> {
+     *     return action.onStart { emit(Action.InitialLoad) }
+     * }
+     * ```
      */
     fun transformAction(action: Flow<Action>): Flow<Action> = action
 
     /**
      * Transforms the [Mutation] stream. Implement this method to transform or combine with other
      * [Flow]'s. This method is called once before the [state] [Flow] is created.
+     *
+     * A possible use case would be to implement a global state:
+     * ```
+     * val userSession: Flow<Session>
+     *
+     * override fun transformMutation(mutation: Flow<Mutation>): Flow<Mutation> {
+     *     return flowOf(mutation, userSession.map { Mutation.SetSession(it) }).flattenMerge()
+     * }
+     * ```
      */
     fun transformMutation(mutation: Flow<Mutation>): Flow<Mutation> = mutation
+
+    /**
+     * Transforms the [State] stream. This method is called once after the [state] [Flow] is
+     * created.
+     */
+    fun transformState(state: Flow<State>): Flow<State> = state
 
     /**
      * Destroys this [Controller].
@@ -140,11 +162,10 @@ interface Controller<Action, Mutation, State> : ObjectStore {
         get() = associatedObject(STATE_KEY) { initState() }
 
     private fun initState(): ConflatedBroadcastChannel<State> {
-        val mutationFlow: Flow<Mutation> = transformAction(privateAction)
-            .flatMapMerge {
-                Control.log { Operation.Mutate(tag, it.toString()) }
-                mutate(it).catch { e -> Control.log(e) }
-            }
+        val mutationFlow: Flow<Mutation> = transformAction(privateAction).flatMapMerge {
+            Control.log { Operation.Mutate(tag, it.toString()) }
+            mutate(it).catch { e -> Control.log(e) }
+        }
 
         val stateFlow: Flow<State> = transformMutation(mutationFlow)
             .scan(initialState) { previousState, incomingMutation ->
@@ -163,8 +184,8 @@ interface Controller<Action, Mutation, State> : ObjectStore {
 
         val stateChannel: ConflatedBroadcastChannel<State> = ConflatedBroadcastChannel()
 
-        // todo use .share() or maybe stateFlow in future
-        stateFlow.onEach {
+        // todo use .share() or dataFlow in future
+        transformState(stateFlow).onEach {
             try {
                 stateChannel.offer(it)
             } catch (e: ClosedSendChannelException) {

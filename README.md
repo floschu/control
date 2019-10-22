@@ -140,9 +140,9 @@ examples:
 
 ### transform
 
-transform functions are called once before the `Controller.state` stream is created. they can be used to alter each stream.
+transform functions are called once for corresponding `Flow`'s.
 
-initial actions can be implemented via `transformAction`:
+an initial actions can be implemented via `transformAction`:
 
 ``` kotlin
 override fun transformAction(action: Flow<Action>): Flow<Action> {
@@ -150,7 +150,7 @@ override fun transformAction(action: Flow<Action>): Flow<Action> {
 }
 ```
 
-global states can be merged with the `Controller.state` via `transformMutation`:
+a global states can be merged with the `Controller.state` via `transformMutation`:
 
 ``` kotlin
 val userSession: Flow<Session>
