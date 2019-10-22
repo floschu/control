@@ -139,6 +139,29 @@ examples:
 *   [CounterControllerTest](example-counter/src/test/kotlin/at/florianschuster/control/counterexample/CounterControllerTest.kt) for [CounterController](example-counter/src/main/kotlin/at/florianschuster/control/counterexample/CounterController.kt)
 *   [GithubControllerTest](example-github/src/test/kotlin/at/florianschuster/control/githubexample/search/GithubControllerTest.kt) for [GithubController](example-github/src/main/kotlin/at/florianschuster/control/githubexample/search/GithubController.kt)
 
+### transform
+
+transform functions are called once before the `Controller.state` stream is created. they can be used to alter each stream
+
+initial actions can be implemented via `transformAction`:
+
+``` kotlin
+override fun transformAction(action: Flow<Action>): Flow<Action> {
+    return action.onStart { emit(Action.InitialLoad) }
+}
+```
+
+global states can be merged with the `Controller.state` via `transformMutation`:
+
+``` kotlin
+val userSession: Flow<Session>
+
+// in Controller
+override fun transformMutation(mutation: Flow<Mutation>): Flow<Mutation> {
+    return flowOf(mutation, userSession.map { Mutation.SetSession(it) }).flattenMerge()
+}
+```
+
 ## examples
 
 *   [counter](example-counter): most basic example. uses `Controller`.
