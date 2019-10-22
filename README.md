@@ -41,8 +41,7 @@ class ValueController : Controller<Action, Mutation, State> {
         val value: Int
     )
  
-    // we start with the initial state
-    // could also be set from the constructor to enable injection of initial state
+    // we start with the initial state - could also be set via the constructor to enable injection
     override val initialState = State(value = 0)
     
     // every action is transformed into [0..n] mutations
@@ -62,8 +61,8 @@ class ValueController : Controller<Action, Mutation, State> {
 
 ### view
 
-*   binds its interactions to the `action` processor of the `Controller`
-*   binds the `Controller`'s `state` `Flow` to its components
+*   binds its interactions to the `Controller.action`
+*   binds the `Controller.state` to its components
 
 in this example a literal view with a `Button` and a `TextView` is implemented. however that does not mean that only a view can have a `Controller` - there could also be a feature wide or a global `Controller` that controls the state of the corresponding system or app.
 
@@ -141,7 +140,7 @@ examples:
 
 ### transform
 
-transform functions are called once before the `Controller.state` stream is created. they can be used to alter each stream
+transform functions are called once before the `Controller.state` stream is created. they can be used to alter each stream.
 
 initial actions can be implemented via `transformAction`:
 
