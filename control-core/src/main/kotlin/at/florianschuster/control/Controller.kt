@@ -3,8 +3,8 @@ package at.florianschuster.control
 import at.florianschuster.control.configuration.Control
 import at.florianschuster.control.configuration.Operation
 import at.florianschuster.control.processor.PublishProcessor
+import at.florianschuster.control.util.AssociatedObject
 import at.florianschuster.control.util.ControllerScope
-import at.florianschuster.control.util.ObjectStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -55,7 +55,7 @@ import kotlinx.coroutines.flow.scan
  */
 @FlowPreview
 @ExperimentalCoroutinesApi
-interface Controller<Action, Mutation, State> : ObjectStore {
+interface Controller<Action, Mutation, State> {
 
     /**
      * A [String] tag that is used for [Operation] logging.
@@ -70,9 +70,9 @@ interface Controller<Action, Mutation, State> : ObjectStore {
      * before accessing [action], [state] or [currentState]
      */
     var scope: CoroutineScope
-        get() = associatedObject(SCOPE_KEY) { ControllerScope() }
+        get() = ObjectStore.scope.valueFor(this) { ControllerScope() }
         set(value) {
-            associatedObject(SCOPE_KEY) { value }
+            ObjectStore.scope.valueFor(this) { value }
         }
 
     /**
@@ -151,15 +151,17 @@ interface Controller<Action, Mutation, State> : ObjectStore {
      */
     fun cancel() {
         scope.cancel()
-        clearAssociatedObjects()
+        ObjectStore.scope.clearFor(this)
+        ObjectStore.action.clearFor(this)
+        ObjectStore.state.clearFor(this)
         Control.log { Operation.Destroyed(tag) }
     }
 
     private val privateAction: PublishProcessor<Action>
-        get() = associatedObject(ACTION_KEY) { PublishProcessor() }
+        get() = ObjectStore.action.valueFor(this) { PublishProcessor() }
 
     private val privateState: ConflatedBroadcastChannel<State>
-        get() = associatedObject(STATE_KEY) { initState() }
+        get() = ObjectStore.state.valueFor(this) { initState() }
 
     private fun initState(): ConflatedBroadcastChannel<State> {
         val mutationFlow: Flow<Mutation> = transformAction(privateAction)
@@ -199,9 +201,9 @@ interface Controller<Action, Mutation, State> : ObjectStore {
         return stateChannel
     }
 
-    companion object {
-        private const val SCOPE_KEY = "controller_scope"
-        private const val ACTION_KEY = "controller_action"
-        private const val STATE_KEY = "controller_state"
+    private companion object ObjectStore {
+        val scope = AssociatedObject()
+        val action = AssociatedObject()
+        val state = AssociatedObject()
     }
 }

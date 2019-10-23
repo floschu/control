@@ -42,7 +42,7 @@ object Versions {
 
     const val retrofit: String = "2.6.2"
 
-    const val ktlint: String = "0.35.0"
+    const val ktlint: String = "0.34.2" // available: "0.35.0"
 
     const val aapt2: String = "3.5.1-5435860"
 

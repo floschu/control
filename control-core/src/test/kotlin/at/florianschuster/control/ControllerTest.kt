@@ -134,6 +134,12 @@ class ControllerTest {
         testCollector expect emissions(0, 1, 2)
     }
 
+
+    @Test
+    fun `controller mutation stress test`() {
+        // todo
+    }
+
     // todo wait until official Flow.takeUntil
     // @Test
     // fun `cancel producing flow in mutate`() = testScopeRule.runBlockingTest {

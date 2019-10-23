@@ -60,6 +60,12 @@ object Libs {
     /**
      * https://kotlinlang.org/
      */
+    const val kotlin_compiler_embeddable: String =
+            "org.jetbrains.kotlin:kotlin-compiler-embeddable:" + Versions.org_jetbrains_kotlin
+
+    /**
+     * https://kotlinlang.org/
+     */
     const val kotlin_gradle_plugin: String = "org.jetbrains.kotlin:kotlin-gradle-plugin:" +
             Versions.org_jetbrains_kotlin
 
