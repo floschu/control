@@ -1,8 +1,8 @@
 package at.florianschuster.control.githubexample.search
 
-import at.florianschuster.control.githubexample.remote.GithubApi
-import at.florianschuster.control.githubexample.remote.Repo
-import at.florianschuster.control.githubexample.remote.Result
+import at.florianschuster.control.githubexample.GithubApi
+import at.florianschuster.control.githubexample.Repo
+import at.florianschuster.control.githubexample.Result
 import at.florianschuster.control.test.TestCollector
 import at.florianschuster.control.test.TestCoroutineScopeRule
 import at.florianschuster.control.test.emissions

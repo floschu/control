@@ -18,7 +18,7 @@ internal sealed class Operation(
     internal class Reduce(tag: String, previousState: String, mutation: String, newState: String) :
         Operation(tag, "reduce $previousState with $mutation to $newState")
 
-    internal class Destroyed(tag: String) : Operation(tag, "destroyed")
+    internal class Canceled(tag: String) : Operation(tag, "canceled")
 
     override fun toString(): String = "||||| <control> ||||| $tag -> $message |||||"
 }

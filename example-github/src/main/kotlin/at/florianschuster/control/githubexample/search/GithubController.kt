@@ -1,8 +1,9 @@
 package at.florianschuster.control.githubexample.search
 
-import at.florianschuster.control.githubexample.ControllerViewModel
-import at.florianschuster.control.githubexample.remote.GithubApi
-import at.florianschuster.control.githubexample.remote.Repo
+import androidx.lifecycle.ViewModel
+import at.florianschuster.control.Controller
+import at.florianschuster.control.githubexample.GithubApi
+import at.florianschuster.control.githubexample.Repo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
@@ -13,7 +14,8 @@ import kotlinx.coroutines.flow.map
 class GithubController(
     override val initialState: State = State(),
     private val api: GithubApi = GithubApi()
-) : ControllerViewModel<GithubController.Action, GithubController.Mutation, GithubController.State>() {
+) : Controller<GithubController.Action, GithubController.Mutation, GithubController.State>,
+    ViewModel() {
 
     sealed class Action {
         data class UpdateQuery(val text: String) : Action()
@@ -83,4 +85,9 @@ class GithubController(
             println("Search Error: $e")
             null
         }
+
+    override fun onCleared() {
+        super.onCleared()
+        cancel()
+    }
 }

@@ -47,7 +47,7 @@ class ConfigurationTest {
     fun `operations logging works correctly`() {
         assertEquals(listOf(Operation.ControlConfigured.toString()), loggedOperations)
 
-        val testOperation = Operation.Destroyed("test")
+        val testOperation = Operation.Canceled("test")
         Control.log { testOperation }
 
         assertEquals(

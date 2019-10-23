@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import at.florianschuster.control.githubexample.R
-import at.florianschuster.control.githubexample.remote.Repo
+import at.florianschuster.control.githubexample.Repo
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_repo.view.*
 

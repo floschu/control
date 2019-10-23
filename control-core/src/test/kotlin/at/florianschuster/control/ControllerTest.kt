@@ -2,8 +2,8 @@ package at.florianschuster.control
 
 import at.florianschuster.control.test.TestCoroutineScopeRule
 import at.florianschuster.control.test.emission
-import at.florianschuster.control.test.emissions
 import at.florianschuster.control.test.emissionCount
+import at.florianschuster.control.test.emissions
 import at.florianschuster.control.test.expect
 import at.florianschuster.control.test.test
 import kotlinx.coroutines.CancellationException
@@ -134,13 +134,18 @@ class ControllerTest {
         testCollector expect emissions(0, 1, 2)
     }
 
-
     @Test
-    fun `controller mutation stress test`() {
-        // todo
+    fun `after controller cancel controller can be reused`() {
+        val controller = object : Controller<Unit, Unit, Int> {
+            override val initialState = 3
+        }
+
+        assertEquals(3, controller.currentState)
+        controller.cancel()
+        assertEquals(3, controller.currentState)
     }
 
-    // todo wait until official Flow.takeUntil
+    // todo wait until official Flow.takeUntil implementation
     // @Test
     // fun `cancel producing flow in mutate`() = testScopeRule.runBlockingTest {
     //     val controller = StopwatchController(testScopeRule)

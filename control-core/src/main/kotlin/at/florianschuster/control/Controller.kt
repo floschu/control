@@ -146,14 +146,14 @@ interface Controller<Action, Mutation, State> {
     fun transformState(state: Flow<State>): Flow<State> = state
 
     /**
-     * Destroys this [Controller].
+     * Clears all resources of this [Controller] and stops the [state] stream.
      */
     fun cancel() {
         scope.cancel()
         ObjectStore.action.clearFor(this)
         ObjectStore.state.clearFor(this)
         ObjectStore.scope.clearFor(this)
-        Control.log { Operation.Destroyed(tag) }
+        Control.log { Operation.Canceled(tag) }
     }
 
     private val privateAction: PublishProcessor<Action>
@@ -184,7 +184,7 @@ interface Controller<Action, Mutation, State> {
             }
             .catch { e -> Control.log(e) }
 
-        val stateChannel: ConflatedBroadcastChannel<State> = ConflatedBroadcastChannel()
+        val stateChannel: ConflatedBroadcastChannel<State> = ConflatedBroadcastChannel(initialState)
 
         // todo use .share() or dataFlow in future
         transformState(stateFlow).onEach {
