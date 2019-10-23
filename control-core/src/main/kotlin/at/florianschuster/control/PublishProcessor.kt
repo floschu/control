@@ -1,4 +1,4 @@
-package at.florianschuster.control.processor
+package at.florianschuster.control
 
 import at.florianschuster.control.configuration.Control
 import kotlinx.coroutines.CancellationException

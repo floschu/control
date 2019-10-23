@@ -2,7 +2,6 @@ package at.florianschuster.control
 
 import at.florianschuster.control.configuration.Control
 import at.florianschuster.control.configuration.Operation
-import at.florianschuster.control.processor.PublishProcessor
 import at.florianschuster.control.util.AssociatedObject
 import at.florianschuster.control.util.ControllerScope
 import kotlinx.coroutines.CoroutineScope
@@ -151,9 +150,9 @@ interface Controller<Action, Mutation, State> {
      */
     fun cancel() {
         scope.cancel()
-        ObjectStore.scope.clearFor(this)
         ObjectStore.action.clearFor(this)
         ObjectStore.state.clearFor(this)
+        ObjectStore.scope.clearFor(this)
         Control.log { Operation.Destroyed(tag) }
     }
 

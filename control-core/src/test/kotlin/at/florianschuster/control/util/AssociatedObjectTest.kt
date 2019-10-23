@@ -1,8 +1,8 @@
 package at.florianschuster.control.util
 
 import org.junit.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.assertNull
+import kotlin.test.assertSame
 
 class AssociatedObjectTest {
     private val testObject = StoredObject()
@@ -15,7 +15,7 @@ class AssociatedObjectTest {
         associatedObject.valueFor(container) { testObject }
 
         val retrievedTestObject = associatedObject.valueFor<StoredObject>(container)
-        assertTrue { testObject == retrievedTestObject }
+        assertSame(retrievedTestObject, testObject)
     }
 
     @Test
@@ -26,9 +26,8 @@ class AssociatedObjectTest {
         associatedObject.valueFor(container) { testObject }
 
         val secondTestObject = StoredObject()
-        val againRetrievedTestObject = associatedObject.valueFor(container) { secondTestObject }
-        assertTrue { testObject == againRetrievedTestObject }
-        assertFalse { secondTestObject == againRetrievedTestObject }
+        val retrievedTestObject = associatedObject.valueFor(container) { secondTestObject }
+        assertSame(retrievedTestObject, testObject)
     }
 
     @Test
@@ -40,12 +39,18 @@ class AssociatedObjectTest {
         associatedObject.clearFor(container)
 
         val retrievedTestObject = associatedObject.valueFor<StoredObject>(container)
-        assertTrue { retrievedTestObject == null }
+        assertNull(retrievedTestObject)
     }
 
     @Test
-    fun `associated object threading test`() {
-        // todo
+    fun `store null value`() {
+        val container = Any()
+        val associatedObject = AssociatedObject()
+
+        associatedObject.valueFor(container) { null }
+
+        val retrievedTestObject = associatedObject.valueFor<Any>(container)
+        assertNull(retrievedTestObject)
     }
 
     private class StoredObject

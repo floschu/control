@@ -1,9 +1,9 @@
-package at.florianschuster.control.processor
+package at.florianschuster.control
 
 import at.florianschuster.control.test.TestCoroutineScopeRule
 import at.florianschuster.control.test.emission
-import at.florianschuster.control.test.emissions
 import at.florianschuster.control.test.emissionCount
+import at.florianschuster.control.test.emissions
 import at.florianschuster.control.test.errorCount
 import at.florianschuster.control.test.expect
 import at.florianschuster.control.test.noErrors

@@ -1,6 +1,5 @@
 package at.florianschuster.control
 
-import at.florianschuster.control.processor.PublishProcessor
 import at.florianschuster.control.util.AssociatedObject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -17,7 +16,12 @@ interface EventController<Action, Mutation, State, Event> : Controller<Action, M
     val events: PublishProcessor<Event>
         get() = ObjectStore.events.valueFor(this) { PublishProcessor(singleCollector = true) }
 
+    override fun cancel() {
+        super.cancel()
+        ObjectStore.events.clearFor(this)
+    }
+
     private companion object ObjectStore {
-        private val events = AssociatedObject()
+        val events = AssociatedObject()
     }
 }
