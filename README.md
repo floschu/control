@@ -97,7 +97,7 @@ To test a `Controller` either use `Controller.currentState`:
 
 ``` kotlin
 @Test
-fun testController() {
+fun testController() = testScope.runBlockingTest {
     // given
     val controller = ValueController().apply { scope = testScope }
 
@@ -114,7 +114,7 @@ or test with the `control-test` package:
 
 ``` kotlin
 @Test
-fun testController() {
+fun testController() = testScope.runBlockingTest {
     // given
     val controller = ValueController().apply { scope = testScope }
     val testCollector = controller.state.test(testScope)
