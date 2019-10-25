@@ -7,23 +7,15 @@ plugins {
 }
 
 val compileKotlin: KotlinCompile by tasks
-compileKotlin.kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_1_8.toString()
-}
+compileKotlin.kotlinOptions { jvmTarget = JavaVersion.VERSION_1_8.toString() }
 val compileTestKotlin: KotlinCompile by tasks
-compileTestKotlin.kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_1_8.toString()
-}
+compileTestKotlin.kotlinOptions { jvmTarget = JavaVersion.VERSION_1_8.toString() }
 
-sourceSets["main"].java.srcDir("src/main/java")
-sourceSets["main"].withConvention(KotlinSourceSet::class) {
-    kotlin.srcDir("src/main/kotlin")
-}
+sourceSets["main"].withConvention(KotlinSourceSet::class) { kotlin.srcDir("src/main/kotlin") }
 
 dependencies {
     api(Libs.kotlin_stdlib)
     api(Libs.kotlinx_coroutines_core)
-
     testImplementation(project(":control-test"))
 }
 
