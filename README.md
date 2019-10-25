@@ -151,7 +151,7 @@ override fun transformAction(action: Flow<Action>): Flow<Action> {
 }
 ```
 
-a global states can be merged with the `Controller.state` via `transformMutation`:
+a global state can be merged with the `Controller.state` via `transformMutation`:
 
 ``` kotlin
 val userSession: Flow<Session>
@@ -161,6 +161,8 @@ override fun transformMutation(mutation: Flow<Mutation>): Flow<Mutation> {
     return flowOf(mutation, userSession.map { Mutation.SetSession(it) }).flattenMerge()
 }
 ```
+
+everytime `userSession` emits a new session, its gets reduced into the `Controller.state` via `Mutation.SetSession`
 
 ## examples
 
