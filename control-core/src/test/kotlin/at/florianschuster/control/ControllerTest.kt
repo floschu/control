@@ -24,7 +24,7 @@ class ControllerTest {
     @Test
     fun `initial state only emitted once`() {
         val controller = OperationController(testScopeRule)
-        val testCollector = controller.state.test(testScopeRule)
+        val testCollector = controller.test()
 
         testCollector expect emissionCount(1)
         testCollector expect emission(0, listOf("initialState", "transformedState"))
@@ -33,7 +33,7 @@ class ControllerTest {
     @Test
     fun `each method is invoked`() {
         val controller = OperationController(testScopeRule)
-        val testCollector = controller.state.test(testScopeRule)
+        val testCollector = controller.test()
 
         controller.action(OperationController.Action)
 
@@ -97,7 +97,7 @@ class ControllerTest {
         controller.action(Unit) // 2
         controller.action(Unit) // 3
         controller.action(Unit) // 4
-        val testCollector = controller.state.test(testScopeRule)
+        val testCollector = controller.test()
         controller.action(Unit) // 5
 
         testCollector expect emissions(4, 5)
@@ -106,7 +106,7 @@ class ControllerTest {
     @Test
     fun `stream ignores error from mutate`() {
         val controller = CounterController(testScopeRule, mutateErrorIndex = 2)
-        val testCollector = controller.state.test(testScopeRule)
+        val testCollector = controller.test()
 
         controller.action(Unit)
         controller.action(Unit)
@@ -126,7 +126,7 @@ class ControllerTest {
             override fun mutate(action: Unit): Flow<Unit> = flowOf(action)
             override fun reduce(previousState: Int, mutation: Unit): Int = previousState + 1
         }
-        val testCollector = controller.state.test(testScopeRule)
+        val testCollector = controller.test()
 
         controller.action(Unit)
         controller.action(Unit)

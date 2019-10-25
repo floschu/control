@@ -41,7 +41,8 @@ class ValueController : Controller<Action, Mutation, State> {
         val value: Int
     )
  
-    // we start with the initial state - could also be set via the constructor to enable injection
+    // we start with the initial state - could also be set via 
+    // the constructor to enable injection
     override val initialState = State(value = 0)
     
     // every action is transformed into [0..n] mutations
@@ -52,7 +53,8 @@ class ValueController : Controller<Action, Mutation, State> {
         }
     }
 
-    // every mutation is used to reduce the previous state to a new state that is then published to the view
+    // every mutation is used to reduce the previous state to a 
+    // new state that is then published to the view
     override fun reduce(previousState: State, mutation: Mutation): State = when (mutation) {
         is Mutation.SetMutatedValue -> previousState.copy(value = mutation.mutatedValue)
     }
@@ -116,7 +118,7 @@ or test with the `control-test` package:
 fun testController() {
     // given
     val controller = ValueController().apply { scope = testScope }
-    val testCollector = controller.state.test(testScope)
+    val testCollector = controller.test()
 
     // when
     controller.action(ValueController.Action.SetValue(3))

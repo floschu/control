@@ -1,9 +1,14 @@
 package at.florianschuster.control.test
 
+import at.florianschuster.control.Controller
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Rule
 import org.junit.Test
 import java.io.IOException
@@ -89,5 +94,31 @@ class TestCollectorTest {
 
         channel.offer(1)
         testCollector expect emissionCount(1)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `controller test without TestCoroutineScope`() {
+        val controller = object : Controller<Unit, Unit, Int> {
+            override val initialState: Int = 0
+        }
+
+        controller.test() // throws error without TestCoroutineScope
+    }
+
+    @Test
+    fun `controller test with TestCoroutineScope`() {
+        val controller = object : Controller<Unit, Unit, Int> {
+            override var scope: CoroutineScope = TestCoroutineScope()
+            override val initialState: Int = 0
+
+            override fun mutate(action: Unit): Flow<Unit> = flowOf(Unit)
+            override fun reduce(previousState: Int, mutation: Unit): Int = previousState + 1
+        }
+
+        val testCollector = controller.test()
+
+        controller.action(Unit)
+
+        testCollector expect emissions(0, 1)
     }
 }

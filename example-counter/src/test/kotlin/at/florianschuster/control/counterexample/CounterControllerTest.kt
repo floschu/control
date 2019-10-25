@@ -21,7 +21,7 @@ class CounterControllerTest {
 
     private fun `given counter controller`() {
         controller = CounterController().apply { scope = testScopeRule }
-        stateCollector = controller.state.test(testScopeRule)
+        stateCollector = controller.test()
     }
 
     @Test

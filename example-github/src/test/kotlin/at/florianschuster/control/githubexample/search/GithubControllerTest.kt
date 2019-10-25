@@ -37,7 +37,7 @@ class GithubControllerTest {
         initialState: GithubController.State = GithubController.State()
     ) {
         controller = GithubController(initialState, githubApi).apply { scope = testScopeRule }
-        stateCollector = controller.state.test(testScopeRule)
+        stateCollector = controller.test()
     }
 
     @Test

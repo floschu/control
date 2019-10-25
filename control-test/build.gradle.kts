@@ -21,8 +21,7 @@ sourceSets["main"].withConvention(KotlinSourceSet::class) {
 }
 
 dependencies {
-    api(Libs.kotlin_stdlib)
-    api(Libs.kotlinx_coroutines_core)
+    api(project(":control-core"))
     api(Libs.junit)
     api(Libs.kotlin_test)
     api(Libs.kotlinx_coroutines_test)
