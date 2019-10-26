@@ -8,7 +8,9 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
 import org.junit.Test
 import java.io.IOException
@@ -94,6 +96,34 @@ class TestCollectorTest {
 
         channel.offer(1)
         testCollector expect emissionCount(1)
+    }
+
+    @Test
+    fun `TestCollector regular cancel`() {
+        val channel = BroadcastChannel<Int>(1)
+        val testCollector = channel.asFlow().test(testScopeRule)
+
+        channel.offer(1)
+        testCollector expect emissionCount(1)
+
+        testCollector expect noCompletion()
+
+        testCollector.cancel()
+
+        testCollector expect anyCompletion()
+        testCollector expect regularCompletion()
+    }
+
+    @Test
+    fun `TestCollector exceptional cancel`() {
+        val testCollector = flow<Int> {
+            emit(1)
+            throw IOException()
+        }.test(testScopeRule)
+
+        testCollector expect emissions(1)
+        testCollector expect errorCount(1)
+        testCollector expect exceptionalCompletion<IOException>()
     }
 
     @Test(expected = IllegalArgumentException::class)
