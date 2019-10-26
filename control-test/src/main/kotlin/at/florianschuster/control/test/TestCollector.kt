@@ -68,9 +68,23 @@ class TestCollector<T>(
         job.cancel()
     }
 
+    /**
+     * Possible completion states of the tested [Flow].
+     */
     sealed class Completion {
+        /**
+         * No completion has happened yet.
+         */
         object None : Completion()
+
+        /**
+         * The [Flow] has completed with [error].
+         */
         data class Exceptional(val error: Throwable) : Completion()
+
+        /**
+         * The [Flow] completed regularly without errors.
+         */
         object Regular : Completion()
     }
 }
