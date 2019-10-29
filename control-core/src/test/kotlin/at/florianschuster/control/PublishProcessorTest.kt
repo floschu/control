@@ -1,17 +1,17 @@
 package at.florianschuster.control
 
-import at.florianschuster.control.test.TestCoroutineScopeRule
-import at.florianschuster.control.test.emission
-import at.florianschuster.control.test.emissionCount
-import at.florianschuster.control.test.emissions
-import at.florianschuster.control.test.errorCount
-import at.florianschuster.control.test.expect
-import at.florianschuster.control.test.noErrors
-import at.florianschuster.control.test.test
+import at.florianschuster.test.flow.TestCoroutineScopeRule
+import at.florianschuster.test.flow.anyError
+import at.florianschuster.test.flow.emission
+import at.florianschuster.test.flow.emissionCount
+import at.florianschuster.test.flow.emissions
+import at.florianschuster.test.flow.expect
+import at.florianschuster.test.flow.noError
+import at.florianschuster.test.flow.testIn
 import org.junit.Rule
 import org.junit.Test
 
-class PublishProcessorTest {
+internal class PublishProcessorTest {
 
     @get:Rule
     val testScopeRule = TestCoroutineScopeRule()
@@ -20,15 +20,15 @@ class PublishProcessorTest {
     fun `emit and collect work correctly`() {
         val processor = PublishProcessor<Int>()
 
-        val testCollector = processor.test(testScopeRule)
+        val testFlow = processor.testIn(testScopeRule)
 
         processor(0)
         processor(1)
         processor(2)
 
-        testCollector expect noErrors()
-        testCollector expect emissionCount(3)
-        testCollector expect emissions(0, 1, 2)
+        testFlow expect noError()
+        testFlow expect emissionCount(3)
+        testFlow expect emissions(0, 1, 2)
     }
 
     @Test
@@ -36,45 +36,45 @@ class PublishProcessorTest {
         val processor = PublishProcessor<Int>()
 
         processor(0)
-        val testCollector = processor.test(testScopeRule)
+        val testFlow = processor.testIn(testScopeRule)
         processor(1)
 
-        testCollector expect emissionCount(1)
-        testCollector expect emission(0, 1)
+        testFlow expect emissionCount(1)
+        testFlow expect emission(0, 1)
     }
 
     @Test
     fun `only one subscriber can collect if singleCollector true`() {
         val processor = PublishProcessor<Int>(singleCollector = true)
 
-        val testCollector0 = processor.test(testScopeRule)
-        val testCollector1 = processor.test(testScopeRule)
+        val testFlow0 = processor.testIn(testScopeRule)
+        val testFlow1 = processor.testIn(testScopeRule)
 
         processor(0)
         processor(1)
         processor(2)
 
-        testCollector0 expect noErrors()
-        testCollector0 expect emissions(0, 1, 2)
+        testFlow0 expect noError()
+        testFlow0 expect emissions(0, 1, 2)
 
-        testCollector1 expect errorCount(1)
-        testCollector1 expect emissionCount(0)
+        testFlow1 expect anyError()
+        testFlow1 expect emissionCount(0)
     }
 
     @Test
     fun `all subscribers collect if singleCollector false`() {
         val processor = PublishProcessor<Int>()
 
-        val testCollector0 = processor.test(testScopeRule)
-        val testCollector1 = processor.test(testScopeRule)
-        val testCollector2 = processor.test(testScopeRule)
+        val testFlow0 = processor.testIn(testScopeRule)
+        val testFlow1 = processor.testIn(testScopeRule)
+        val testFlow2 = processor.testIn(testScopeRule)
 
         processor(0)
         processor(1)
         processor(2)
 
-        testCollector0 expect emissions(0, 1, 2)
-        testCollector1 expect emissions(0, 1, 2)
-        testCollector2 expect emissions(0, 1, 2)
+        testFlow0 expect emissions(0, 1, 2)
+        testFlow1 expect emissions(0, 1, 2)
+        testFlow2 expect emissions(0, 1, 2)
     }
 }

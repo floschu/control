@@ -1,27 +1,27 @@
 package at.florianschuster.control.counterexample
 
-import at.florianschuster.control.test.TestCollector
-import at.florianschuster.control.test.TestCoroutineScopeRule
-import at.florianschuster.control.test.emissions
-import at.florianschuster.control.test.emissionCount
-import at.florianschuster.control.test.expect
-import at.florianschuster.control.test.test
+import at.florianschuster.test.flow.TestCoroutineScopeRule
+import at.florianschuster.test.flow.TestFlow
+import at.florianschuster.test.flow.emissionCount
+import at.florianschuster.test.flow.emissions
+import at.florianschuster.test.flow.expect
+import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
-class CounterControllerTest {
+internal class CounterControllerTest {
 
     @get:Rule
     val testScopeRule = TestCoroutineScopeRule()
 
     private lateinit var controller: CounterController
-    private lateinit var stateCollector: TestCollector<CounterState>
+    private lateinit var states: TestFlow<CounterState>
 
     private fun `given counter controller`() {
         controller = CounterController().apply { scope = testScopeRule }
-        stateCollector = controller.test()
+        states = controller.state.testIn(testScopeRule)
     }
 
     @Test
@@ -34,8 +34,8 @@ class CounterControllerTest {
         advanceTimeBy(1000)
 
         // then
-        stateCollector expect emissionCount(4)
-        stateCollector expect emissions(
+        states expect emissionCount(4)
+        states expect emissions(
             CounterState(0, false),
             CounterState(0, true),
             CounterState(1, true),

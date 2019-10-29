@@ -5,7 +5,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-class ConfigurationTest {
+internal class ConfigurationTest {
 
     private val loggedErrors = mutableListOf<Throwable>()
     private val loggedOperations = mutableListOf<String>()

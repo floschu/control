@@ -1,11 +1,11 @@
 package at.florianschuster.control
 
-import at.florianschuster.control.test.TestCoroutineScopeRule
-import at.florianschuster.control.test.emission
-import at.florianschuster.control.test.emissionCount
-import at.florianschuster.control.test.emissions
-import at.florianschuster.control.test.expect
-import at.florianschuster.control.test.test
+import at.florianschuster.test.flow.TestCoroutineScopeRule
+import at.florianschuster.test.flow.emission
+import at.florianschuster.test.flow.emissionCount
+import at.florianschuster.test.flow.emissions
+import at.florianschuster.test.flow.expect
+import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +16,7 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
-class ControllerTest {
+internal class ControllerTest {
 
     @get:Rule
     val testScopeRule = TestCoroutineScopeRule()
@@ -24,7 +24,7 @@ class ControllerTest {
     @Test
     fun `initial state only emitted once`() {
         val controller = OperationController(testScopeRule)
-        val testCollector = controller.test()
+        val testCollector = controller.state.testIn(testScopeRule)
 
         testCollector expect emissionCount(1)
         testCollector expect emission(0, listOf("initialState", "transformedState"))
@@ -33,7 +33,7 @@ class ControllerTest {
     @Test
     fun `each method is invoked`() {
         val controller = OperationController(testScopeRule)
-        val testCollector = controller.test()
+        val testCollector = controller.state.testIn(testScopeRule)
 
         controller.action(OperationController.Action)
 
@@ -97,7 +97,7 @@ class ControllerTest {
         controller.action(Unit) // 2
         controller.action(Unit) // 3
         controller.action(Unit) // 4
-        val testCollector = controller.test()
+        val testCollector = controller.state.testIn(testScopeRule)
         controller.action(Unit) // 5
 
         testCollector expect emissions(4, 5)
@@ -106,7 +106,7 @@ class ControllerTest {
     @Test
     fun `stream ignores error from mutate`() {
         val controller = CounterController(testScopeRule, mutateErrorIndex = 2)
-        val testCollector = controller.test()
+        val testCollector = controller.state.testIn(testScopeRule)
 
         controller.action(Unit)
         controller.action(Unit)
@@ -126,7 +126,7 @@ class ControllerTest {
             override fun mutate(action: Unit): Flow<Unit> = flowOf(action)
             override fun reduce(previousState: Int, mutation: Unit): Int = previousState + 1
         }
-        val testCollector = controller.test()
+        val testCollector = controller.state.testIn(testScopeRule)
 
         controller.action(Unit)
         controller.action(Unit)

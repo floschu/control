@@ -4,7 +4,7 @@ import org.junit.Test
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 
-class AssociatedObjectTest {
+internal class AssociatedObjectTest {
     private val testObject = StoredObject()
 
     @Test

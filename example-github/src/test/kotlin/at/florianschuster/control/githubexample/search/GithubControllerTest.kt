@@ -3,12 +3,12 @@ package at.florianschuster.control.githubexample.search
 import at.florianschuster.control.githubexample.GithubApi
 import at.florianschuster.control.githubexample.Repo
 import at.florianschuster.control.githubexample.Result
-import at.florianschuster.control.test.TestCollector
-import at.florianschuster.control.test.TestCoroutineScopeRule
-import at.florianschuster.control.test.emissions
-import at.florianschuster.control.test.emissionCount
-import at.florianschuster.control.test.expect
-import at.florianschuster.control.test.test
+import at.florianschuster.test.flow.TestCoroutineScopeRule
+import at.florianschuster.test.flow.TestFlow
+import at.florianschuster.test.flow.emissionCount
+import at.florianschuster.test.flow.emissions
+import at.florianschuster.test.flow.expect
+import at.florianschuster.test.flow.testIn
 import io.mockk.Called
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -18,7 +18,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class GithubControllerTest {
+internal class GithubControllerTest {
 
     @get:Rule
     val testScopeRule = TestCoroutineScopeRule()
@@ -28,7 +28,7 @@ class GithubControllerTest {
         coEvery { repos(any(), 2) } returns mockResultPage2
     }
     private lateinit var controller: GithubController
-    private lateinit var stateCollector: TestCollector<GithubController.State>
+    private lateinit var states: TestFlow<GithubController.State>
 
     @Before
     fun setup() = MockKAnnotations.init(this)
@@ -37,7 +37,7 @@ class GithubControllerTest {
         initialState: GithubController.State = GithubController.State()
     ) {
         controller = GithubController(initialState, githubApi).apply { scope = testScopeRule }
-        stateCollector = controller.test()
+        states = controller.state.testIn(testScopeRule)
     }
 
     @Test
@@ -51,7 +51,7 @@ class GithubControllerTest {
 
         // then
         coVerify(exactly = 1) { githubApi.repos(query, 1) }
-        stateCollector expect emissions(
+        states expect emissions(
             GithubController.State(),
             GithubController.State(query = query),
             GithubController.State(query = query, loadingNextPage = true),
@@ -71,7 +71,7 @@ class GithubControllerTest {
 
         // then
         coVerify { githubApi.repos(any(), any()) wasNot Called }
-        stateCollector expect emissions(
+        states expect emissions(
             GithubController.State(),
             GithubController.State(query = query)
         )
@@ -90,7 +90,7 @@ class GithubControllerTest {
 
         // then
         coVerify(exactly = 1) { githubApi.repos(any(), 2) }
-        stateCollector expect emissions(
+        states expect emissions(
             GithubController.State(query = query, repos = mockReposPage1),
             GithubController.State(query, mockReposPage1, 1, true),
             GithubController.State(query, mockReposPage1 + mockReposPage2, 2, true),
@@ -109,8 +109,8 @@ class GithubControllerTest {
 
         // then
         coVerify { githubApi.repos(any(), any()) wasNot Called }
-        stateCollector expect emissionCount(1)
-        stateCollector expect emissions(initialState)
+        states expect emissionCount(1)
+        states expect emissions(initialState)
     }
 
     @Test
@@ -125,7 +125,7 @@ class GithubControllerTest {
 
         // then
         coVerify(exactly = 1) { githubApi.repos(query, 1) }
-        stateCollector expect emissions(
+        states expect emissions(
             GithubController.State(),
             GithubController.State(query = query),
             GithubController.State(query = query, loadingNextPage = true),

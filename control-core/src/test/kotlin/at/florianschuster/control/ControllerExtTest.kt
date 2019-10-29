@@ -9,7 +9,7 @@ import org.junit.Test
 import java.io.IOException
 import kotlin.test.assertEquals
 
-class ControllerExtTest {
+internal class ControllerExtTest {
     @Test
     fun `changesFrom just emits changes`() = runBlockingTest {
         val testData = flow {

@@ -30,5 +30,5 @@ dependencies {
     implementation(Libs.corbind)
     implementation(Libs.corbind_core)
 
-    testImplementation(project(":control-test"))
+    testImplementation(Libs.flow_extensions)
 }

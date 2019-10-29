@@ -16,7 +16,8 @@ sourceSets["main"].withConvention(KotlinSourceSet::class) { kotlin.srcDir("src/m
 dependencies {
     api(Libs.kotlin_stdlib)
     api(Libs.kotlinx_coroutines_core)
-    testImplementation(project(":control-test"))
+
+    testImplementation(Libs.flow_extensions)
 }
 
 apply(from = "$rootDir/gradle/deploy.gradle")

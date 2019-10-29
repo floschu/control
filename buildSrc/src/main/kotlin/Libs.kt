@@ -21,12 +21,6 @@ object Libs {
             Versions.org_jetbrains_kotlinx_kotlinx_coroutines
 
     /**
-     * https://github.com/Kotlin/kotlinx.coroutines
-     */
-    const val kotlinx_coroutines_test: String = "org.jetbrains.kotlinx:kotlinx-coroutines-test:" +
-            Versions.org_jetbrains_kotlinx_kotlinx_coroutines
-
-    /**
      * https://github.com/LDRAlighieri/Corbind/
      */
     const val corbind: String = "ru.ldralighieri.corbind:corbind:" +
@@ -89,12 +83,6 @@ object Libs {
             Versions.org_jetbrains_kotlin
 
     /**
-     * https://kotlinlang.org/
-     */
-    const val kotlin_test: String = "org.jetbrains.kotlin:kotlin-test:" +
-            Versions.org_jetbrains_kotlin
-
-    /**
      * https://developer.android.com/studio
      */
     const val com_android_tools_build_gradle: String = "com.android.tools.build:gradle:" +
@@ -129,6 +117,12 @@ object Libs {
             Versions.constraintlayout
 
     /**
+     * https://github.com/floschu/flow-test-extensions
+     */
+    const val flow_extensions: String = "at.florianschuster.test:flow-extensions:" +
+            Versions.flow_extensions
+
+    /**
      * https://developer.android.com/jetpack/androidx
      */
     const val activity_ktx: String = "androidx.activity:activity-ktx:" + Versions.activity_ktx
@@ -157,11 +151,6 @@ object Libs {
      * https://developer.android.com/studio
      */
     const val aapt2: String = "com.android.tools.build:aapt2:" + Versions.aapt2
-
-    /**
-     * http://junit.org
-     */
-    const val junit: String = "junit:junit:" + Versions.junit
 
     /**
      * http://mockk.io

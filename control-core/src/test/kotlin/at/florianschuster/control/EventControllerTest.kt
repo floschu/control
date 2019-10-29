@@ -1,11 +1,11 @@
 package at.florianschuster.control
 
-import at.florianschuster.control.test.TestCoroutineScopeRule
-import at.florianschuster.control.test.emission
-import at.florianschuster.control.test.emissionCount
-import at.florianschuster.control.test.expect
-import at.florianschuster.control.test.noErrors
-import at.florianschuster.control.test.test
+import at.florianschuster.test.flow.TestCoroutineScopeRule
+import at.florianschuster.test.flow.emission
+import at.florianschuster.test.flow.emissionCount
+import at.florianschuster.test.flow.expect
+import at.florianschuster.test.flow.noError
+import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
 import org.junit.Test
 
-class EventControllerTest {
+internal class EventControllerTest {
 
     @get:Rule
     val testScopeRule = TestCoroutineScopeRule()
@@ -25,7 +25,7 @@ class EventControllerTest {
             mutateEventIndex = 2,
             reduceEventIndex = 4
         )
-        val eventsCollector = controller.events.test(testScopeRule)
+        val eventsCollector = controller.events.testIn(testScopeRule)
 
         controller.action(Unit)
         controller.action(Unit)
@@ -37,7 +37,7 @@ class EventControllerTest {
         controller.action(Unit)
         eventsCollector expect emissionCount(2)
 
-        eventsCollector expect noErrors()
+        eventsCollector expect noError()
         eventsCollector expect emission(0, TestEventController.EVENT_MUTATE)
         eventsCollector expect emission(1, TestEventController.EVENT_REDUCE)
     }

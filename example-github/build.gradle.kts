@@ -36,6 +36,6 @@ dependencies {
     implementation(Libs.retrofit)
     implementation(Libs.retrofit2_kotlinx_serialization_converter)
 
-    testImplementation(project(":control-test"))
+    testImplementation(Libs.flow_extensions)
     testImplementation(Libs.mockk)
 }

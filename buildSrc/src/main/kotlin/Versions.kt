@@ -34,6 +34,8 @@ object Versions {
 
     const val constraintlayout: String = "2.0.0-beta1"
 
+    const val flow_extensions: String = "0.0.3"
+
     const val activity_ktx: String = "1.0.0"
 
     const val lint_gradle: String = "26.5.1"
@@ -45,8 +47,6 @@ object Versions {
     const val ktlint: String = "0.34.2" // available: "0.35.0"
 
     const val aapt2: String = "3.5.1-5435860"
-
-    const val junit: String = "4.12"
 
     const val mockk: String = "1.9.3"
 

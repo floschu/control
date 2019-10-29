@@ -11,7 +11,6 @@ repositories {
 
 dependencies {
     implementation("at.florianschuster.control:control-core:$version")
-    testImplementation("at.florianschuster.control:control-test:$version")
 }
 ```
 
@@ -112,23 +111,23 @@ fun testController() = testScope.runBlockingTest {
 }
 ```
 
-or test with the `control-test` package:
+or test with a [TestFlow](https://github.com/floschu/flow-test-extensions) contained in the flow-test-extensions:
 
 ``` kotlin
 @Test
 fun testController() = testScope.runBlockingTest {
     // given
     val controller = ValueController().apply { scope = testScope }
-    val testCollector = controller.test()
+    val testFlow = controller.state.test(testScope)
 
     // when
     controller.action(ValueController.Action.SetValue(3))
     advanceTimeBy(5000)
 
     // then
-    testCollector expect noErrors()
-    testCollector expect emissionCount(2)
-    testCollector expect emissions(
+    testFlow expect noErrors()
+    testFlow expect emissionCount(2)
+    testFlow expect emissions(
         ValueController.State(0), // initial state
         ValueController.State(3) // after action
     )
