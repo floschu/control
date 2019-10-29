@@ -118,7 +118,7 @@ or test with a [TestFlow](https://github.com/floschu/flow-test-extensions) conta
 fun testController() = testScope.runBlockingTest {
     // given
     val controller = ValueController().apply { scope = testScope }
-    val testFlow = controller.state.test(testScope)
+    val testFlow = controller.state.testIn(testScope)
 
     // when
     controller.action(ValueController.Action.SetValue(3))
