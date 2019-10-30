@@ -90,7 +90,7 @@ class View {
     }
 }
 ```
-here [Corbind](https://github.com/LDRAlighieri/Corbind) is used to transform android view events into a `Flow`
+here [FlowBinding](https://github.com/ReactiveCircus/FlowBinding) is used to transform android view events into a `Flow`
 
 ### test
 

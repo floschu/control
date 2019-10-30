@@ -9,7 +9,7 @@ import kotlinx.android.synthetic.main.activity_counter.*
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import ru.ldralighieri.corbind.view.clicks
+import reactivecircus.flowbinding.android.view.clicks
 
 class CounterActivity : AppCompatActivity(R.layout.activity_counter) {
     private val controller: CounterController by lazy { CounterController() }

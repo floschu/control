@@ -27,8 +27,8 @@ dependencies {
     implementation(Libs.appcompat)
     implementation(Libs.constraintlayout)
     implementation(Libs.lifecycle_runtime_ktx)
-    implementation(Libs.corbind)
-    implementation(Libs.corbind_core)
+    implementation(Libs.flowbinding_android)
+    implementation(Libs.flowbinding_core)
 
     testImplementation(Libs.flow_extensions)
 }

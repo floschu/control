@@ -16,7 +16,7 @@ object Versions {
 
     const val org_jetbrains_kotlinx_kotlinx_coroutines: String = "1.3.2"
 
-    const val ru_ldralighieri_corbind: String = "1.2.0"
+    const val io_github_reactivecircus_flowbinding: String = "0.5.0"
 
     const val org_jetbrains_kotlin: String = "1.3.50"
 

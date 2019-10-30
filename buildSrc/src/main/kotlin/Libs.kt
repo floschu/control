@@ -20,23 +20,16 @@ object Libs {
     const val kotlinx_coroutines_core: String = "org.jetbrains.kotlinx:kotlinx-coroutines-core:" +
             Versions.org_jetbrains_kotlinx_kotlinx_coroutines
 
-    /**
-     * https://github.com/LDRAlighieri/Corbind/
-     */
-    const val corbind: String = "ru.ldralighieri.corbind:corbind:" +
-            Versions.ru_ldralighieri_corbind
+    const val flowbinding_android: String =
+            "io.github.reactivecircus.flowbinding:flowbinding-android:" +
+            Versions.io_github_reactivecircus_flowbinding
 
-    /**
-     * https://github.com/LDRAlighieri/Corbind/
-     */
-    const val corbind_core: String = "ru.ldralighieri.corbind:corbind-core:" +
-            Versions.ru_ldralighieri_corbind
+    const val flowbinding_core: String = "io.github.reactivecircus.flowbinding:flowbinding-core:" +
+            Versions.io_github_reactivecircus_flowbinding
 
-    /**
-     * https://github.com/LDRAlighieri/Corbind/
-     */
-    const val corbind_recyclerview: String = "ru.ldralighieri.corbind:corbind-recyclerview:" +
-            Versions.ru_ldralighieri_corbind
+    const val flowbinding_recyclerview: String =
+            "io.github.reactivecircus.flowbinding:flowbinding-recyclerview:" +
+            Versions.io_github_reactivecircus_flowbinding
 
     /**
      * https://kotlinlang.org/

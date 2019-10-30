@@ -17,8 +17,8 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.sample
-import ru.ldralighieri.corbind.recyclerview.scrollEvents
-import ru.ldralighieri.corbind.widget.textChanges
+import reactivecircus.flowbinding.android.widget.textChanges
+import reactivecircus.flowbinding.recyclerview.scrollEvents
 
 class GithubActivity : AppCompatActivity(R.layout.activity_github) {
     private val controller: GithubController by viewModels()
