@@ -10,11 +10,9 @@ import at.florianschuster.test.flow.emissions
 import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.testIn
 import io.mockk.Called
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -29,9 +27,6 @@ internal class GithubControllerTest {
     }
     private lateinit var controller: GithubController
     private lateinit var states: TestFlow<GithubController.State>
-
-    @Before
-    fun setup() = MockKAnnotations.init(this)
 
     private fun `given github search controller`(
         initialState: GithubController.State = GithubController.State()
