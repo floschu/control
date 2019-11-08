@@ -94,7 +94,9 @@ here [FlowBinding](https://github.com/ReactiveCircus/FlowBinding) is used to tra
 
 ### test
 
-To test a `Controller` either use `Controller.currentState`:
+testing with control is really easy.
+
+to test a `Controller` either use `Controller.currentState`:
 
 ``` kotlin
 @Test
@@ -111,7 +113,7 @@ fun testController() = testScope.runBlockingTest {
 }
 ```
 
-or test with a [TestFlow](https://github.com/floschu/flow-test-extensions) contained in the flow-test-extensions:
+or test with a TestFlow ([flow-test-extensions](https://github.com/floschu/flow-test-extensions)):
 
 ``` kotlin
 @Test
@@ -142,9 +144,9 @@ examples:
 
 ### transform
 
-transform functions are called once for corresponding `Flow`'s.
+transform functions are called once for corresponding `Flow`'s in a `Controller`.
 
-an initial actions can be implemented via `transformAction`:
+an initial action can be implemented via `transformAction`:
 
 ``` kotlin
 override fun transformAction(action: Flow<Action>): Flow<Action> {
