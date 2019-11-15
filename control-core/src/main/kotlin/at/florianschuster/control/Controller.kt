@@ -69,9 +69,9 @@ interface Controller<Action, Mutation, State> {
      * before accessing [action], [state] or [currentState]
      */
     var scope: CoroutineScope
-        get() = ObjectStore.scope.valueFor(this) { ControllerScope() }
+        get() = associatedScope.valueFor(this) { ControllerScope() }
         set(value) {
-            ObjectStore.scope.valueFor(this) { value }
+            associatedScope.valueFor(this) { value }
         }
 
     /**
@@ -150,17 +150,17 @@ interface Controller<Action, Mutation, State> {
      */
     fun cancel() {
         scope.cancel()
-        ObjectStore.action.clearFor(this)
-        ObjectStore.state.clearFor(this)
-        ObjectStore.scope.clearFor(this)
+        associatedAction.clearFor(this)
+        associatedAction.clearFor(this)
+        associatedAction.clearFor(this)
         Control.log { Operation.Canceled(tag) }
     }
 
     private val privateAction: PublishProcessor<Action>
-        get() = ObjectStore.action.valueFor(this) { PublishProcessor() }
+        get() = associatedState.valueFor(this) { PublishProcessor() }
 
     private val privateState: ConflatedBroadcastChannel<State>
-        get() = ObjectStore.state.valueFor(this) { initState() }
+        get() = associatedState.valueFor(this) { initState() }
 
     private fun initState(): ConflatedBroadcastChannel<State> {
         val mutationFlow: Flow<Mutation> = transformAction(privateAction)
@@ -200,9 +200,9 @@ interface Controller<Action, Mutation, State> {
         return stateChannel
     }
 
-    private companion object ObjectStore {
-        val scope = AssociatedObject()
-        val action = AssociatedObject()
-        val state = AssociatedObject()
+    companion object {
+        private val associatedScope = AssociatedObject()
+        private val associatedAction = AssociatedObject()
+        private val associatedState = AssociatedObject()
     }
 }

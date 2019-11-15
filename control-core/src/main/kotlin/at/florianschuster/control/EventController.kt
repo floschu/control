@@ -14,14 +14,14 @@ import kotlinx.coroutines.FlowPreview
 interface EventController<Action, Mutation, State, Event> : Controller<Action, Mutation, State> {
 
     val events: PublishProcessor<Event>
-        get() = ObjectStore.events.valueFor(this) { PublishProcessor(singleCollector = true) }
+        get() = associatedEvents.valueFor(this) { PublishProcessor(singleCollector = true) }
 
     override fun cancel() {
         super.cancel()
-        ObjectStore.events.clearFor(this)
+        associatedEvents.clearFor(this)
     }
 
-    private companion object ObjectStore {
-        val events = AssociatedObject()
+    companion object {
+        private val associatedEvents = AssociatedObject()
     }
 }
