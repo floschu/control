@@ -151,13 +151,13 @@ interface Controller<Action, Mutation, State> {
     fun cancel() {
         scope.cancel()
         associatedAction.clearFor(this)
-        associatedAction.clearFor(this)
-        associatedAction.clearFor(this)
+        associatedState.clearFor(this)
+        associatedScope.clearFor(this)
         Control.log { Operation.Canceled(tag) }
     }
 
     private val privateAction: PublishProcessor<Action>
-        get() = associatedState.valueFor(this) { PublishProcessor() }
+        get() = associatedAction.valueFor(this) { PublishProcessor() }
 
     private val privateState: ConflatedBroadcastChannel<State>
         get() = associatedState.valueFor(this) { initState() }
