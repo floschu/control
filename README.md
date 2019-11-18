@@ -68,8 +68,9 @@ class ValueController : Controller<Action, Mutation, State> {
 in this example a literal view with a `Button` and a `TextView` is implemented. however that does not mean that only a view can have a `Controller` - there could also be a feature wide or a global `Controller` that controls the state of the corresponding system or app.
 
 ``` kotlin
-class View {
-    internal val controller = ValueController()
+class View(
+    private val controller : ValueController = ValueController()
+) {
     
     init {
         // bind view actions to Controller.action
@@ -84,8 +85,9 @@ class View {
             .map { "$it" }
             .bind(to = valueTextView::setText)
             .launchIn(scope = viewScope)
+    }
     
-        // later at some point
+    fun onDestroy() {
         controller.cancel()
     }
 }
@@ -152,8 +154,9 @@ if the stub is enabled, `Controller.mutate()` and `Controller.reduce()` are not 
 @Test
 fun valueButtonClickTriggersCorrectAction() {
     // given
-    val view = View()
-    val controller = view.controller.apply { stubEnabled = true }
+    val controller = ValueController().apply { stubEnabled = true }
+    val view = View(controller)
+    
     
     // when
     onView(withId(R.id.setValueButton)).perform(click())
@@ -169,8 +172,8 @@ fun valueButtonClickTriggersCorrectAction() {
 fun stubbedStateUpdatesTextViewText() {
     // given
     val testValue = 42
-    val view = View()
-    val controller = view.controller.apply { stubEnabled = true }
+    val controller = ValueController().apply { stubEnabled = true }
+    val view = View(controller)
     
     // when
     controller.stub.state(ValueController.State(value = testValue))
