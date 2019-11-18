@@ -1,6 +1,7 @@
 package at.florianschuster.control.util
 
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 
@@ -12,7 +13,7 @@ internal class AssociatedObjectTest {
         val container = Any()
         val associatedObject = AssociatedObject()
 
-        associatedObject.valueFor(container) { testObject }
+        associatedObject.valueForOrCreate(container) { testObject }
 
         val retrievedTestObject = associatedObject.valueFor<StoredObject>(container)
         assertSame(retrievedTestObject, testObject)
@@ -23,10 +24,10 @@ internal class AssociatedObjectTest {
         val container = Any()
         val associatedObject = AssociatedObject()
 
-        associatedObject.valueFor(container) { testObject }
+        associatedObject.valueForOrCreate(container) { testObject }
 
         val secondTestObject = StoredObject()
-        val retrievedTestObject = associatedObject.valueFor(container) { secondTestObject }
+        val retrievedTestObject = associatedObject.valueForOrCreate(container) { secondTestObject }
         assertSame(retrievedTestObject, testObject)
     }
 
@@ -35,7 +36,7 @@ internal class AssociatedObjectTest {
         val container = Any()
         val associatedObject = AssociatedObject()
 
-        associatedObject.valueFor(container) { testObject }
+        associatedObject.valueForOrCreate(container) { testObject }
         associatedObject.clearFor(container)
 
         val retrievedTestObject = associatedObject.valueFor<StoredObject>(container)
@@ -47,10 +48,22 @@ internal class AssociatedObjectTest {
         val container = Any()
         val associatedObject = AssociatedObject()
 
-        associatedObject.valueFor(container) { null }
+        associatedObject.valueForOrCreate(container) { null }
 
         val retrievedTestObject = associatedObject.valueFor<Any>(container)
         assertNull(retrievedTestObject)
+    }
+
+    @Test
+    fun `set value does overwrite`() {
+        val container = Any()
+        val associatedObject = AssociatedObject()
+
+        associatedObject.setValue(container, 14)
+        assertEquals(14, associatedObject.valueFor<Int>(container))
+
+        associatedObject.setValue(container, -24)
+        assertEquals(-24, associatedObject.valueFor<Int>(container))
     }
 
     private class StoredObject

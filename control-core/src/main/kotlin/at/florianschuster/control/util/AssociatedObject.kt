@@ -10,8 +10,12 @@ internal class AssociatedObject {
         return store[key] as? Value
     }
 
-    fun <Value> valueFor(key: Any, creator: () -> Value): Value {
+    fun <Value> valueForOrCreate(key: Any, creator: () -> Value): Value {
         return valueFor(key) ?: creator().also { store[key] = it }
+    }
+
+    fun <Value> setValue(key: Any, value: Value) {
+        store[key] = value
     }
 
     fun clearFor(key: Any) {

@@ -8,6 +8,6 @@ import kotlinx.coroutines.SupervisorJob
 /**
  * Default [CoroutineScope] used in [Controller].
  */
-internal class ControllerScope : CoroutineScope {
+class ControllerScope internal constructor() : CoroutineScope {
     override val coroutineContext: CoroutineContext = SupervisorJob() + Dispatchers.IO
 }

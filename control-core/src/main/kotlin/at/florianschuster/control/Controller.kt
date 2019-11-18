@@ -65,13 +65,16 @@ interface Controller<Action, Mutation, State> {
      * A [CoroutineScope] used to launch the [state] [Flow] in.
      * Per default [ControllerScope] is used.
      *
-     * CAUTION: This has to be set before the [state] [Flow] is created, meaning
+     * For testing with delay controls this can be overwritten with [TestCoroutineScope].
+     *
+     * This has be set before the [state] [Flow] is created, meaning
      * before accessing [action], [state] or [currentState]
      */
     var scope: CoroutineScope
-        get() = associatedScope.valueFor(this) { ControllerScope() }
+        get() = AssociatedMap.Scope().valueForOrCreate(this) { ControllerScope() }
         set(value) {
-            associatedScope.valueFor(this) { value }
+            AssociatedMap.Scope().setValue(this, value)
+            Control.log { Operation.ScopeSet(tag, value::class.java.simpleName) }
         }
 
     /**
@@ -82,21 +85,21 @@ interface Controller<Action, Mutation, State> {
     /**
      * The current [State].
      */
-    val currentState: State get() = privateState.value
+    val currentState: State get() = _state.value
 
     /**
      * The [Action] from the view. Bind user inputs to this [PublishProcessor].
      */
     val action: PublishProcessor<Action>
         get() {
-            privateState // init state stream
-            return privateAction
+            _state // init state stream
+            return _action
         }
 
     /**
      * The [State] [Flow]. Use this to observe the state changes.
      */
-    val state: Flow<State> get() = privateState.asFlow()
+    val state: Flow<State> get() = _state.asFlow()
 
     /**
      * Converts an [Action] to a [Mutation]. This is the place to perform side-effects such as
@@ -150,20 +153,42 @@ interface Controller<Action, Mutation, State> {
      */
     fun cancel() {
         scope.cancel()
-        associatedAction.clearFor(this)
-        associatedState.clearFor(this)
-        associatedScope.clearFor(this)
+        AssociatedMap.values().forEach { it().clearFor(this) }
         Control.log { Operation.Canceled(tag) }
     }
 
-    private val privateAction: PublishProcessor<Action>
-        get() = associatedAction.valueFor(this) { PublishProcessor() }
+    /**
+     * Set to true if you want to enable stubbing with [Stub].
+     *
+     * This has be set before binding [Controller.action] or [Controller.state].
+     */
+    var stubEnabled: Boolean
+        get() = AssociatedMap.StubEnabled().valueForOrCreate(this) { false }
+        set(value) {
+            AssociatedMap.StubEnabled().setValue(this, value)
+            Control.log { Operation.StubEnabled(tag, value) }
+        }
 
-    private val privateState: ConflatedBroadcastChannel<State>
-        get() = associatedState.valueFor(this) { initState() }
+    /**
+     * Use this [Stub] for View testing.
+     */
+    val stub: Stub<Action, Mutation, State>
+        get() = AssociatedMap.Stub().valueForOrCreate(this) { Stub(this) }
+
+    private val _action: PublishProcessor<Action>
+        get() = when {
+            stubEnabled -> stub.action
+            else -> AssociatedMap.Action().valueForOrCreate(this) { PublishProcessor<Action>() }
+        }
+
+    private val _state: ConflatedBroadcastChannel<State>
+        get() = when {
+            stubEnabled -> stub.state
+            else -> AssociatedMap.State().valueForOrCreate(this, ::initState)
+        }
 
     private fun initState(): ConflatedBroadcastChannel<State> {
-        val mutationFlow: Flow<Mutation> = transformAction(privateAction)
+        val mutationFlow: Flow<Mutation> = transformAction(_action)
             .flatMapMerge {
                 Control.log { Operation.Mutate(tag, it.toString()) }
                 mutate(it).catch { e -> Control.log(e) }
@@ -186,7 +211,7 @@ interface Controller<Action, Mutation, State> {
 
         val stateChannel: ConflatedBroadcastChannel<State> = ConflatedBroadcastChannel(initialState)
 
-        // todo use .share() or dataFlow in future
+        // todo use .share() or ConnectedFlow
         transformState(stateFlow).onEach {
             try {
                 stateChannel.offer(it)
@@ -201,8 +226,12 @@ interface Controller<Action, Mutation, State> {
     }
 
     companion object {
-        private val associatedScope = AssociatedObject()
-        private val associatedAction = AssociatedObject()
-        private val associatedState = AssociatedObject()
+        private enum class AssociatedMap(
+            private val associatedObject: AssociatedObject = AssociatedObject()
+        ) {
+            Scope, Action, State, Stub, StubEnabled;
+
+            operator fun invoke(): AssociatedObject = associatedObject
+        }
     }
 }

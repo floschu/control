@@ -8,14 +8,20 @@ import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 internal class ControllerTest {
 
     @get:Rule
@@ -145,6 +151,68 @@ internal class ControllerTest {
         assertEquals(3, controller.currentState)
     }
 
+    @Test
+    fun `stub actions are recorded correctly`() {
+        val expectedActions = listOf(
+            listOf("one"),
+            listOf("two"),
+            listOf("three")
+        )
+        val controller = OperationController(testScopeRule)
+        controller.stubEnabled = true
+
+        controller.action(expectedActions[0])
+        controller.action(expectedActions[1])
+        controller.action(expectedActions[2])
+
+        assertEquals(expectedActions, controller.stub.actions)
+    }
+
+    @Test
+    fun `stub set state`() {
+        val controller = OperationController(testScopeRule)
+        controller.stubEnabled = true
+
+        val testFlow = controller.state.testIn(testScopeRule)
+
+        controller.stub.setState(listOf("state0"))
+        controller.stub.setState(listOf("state1"))
+        controller.stub.setState(listOf("state2"))
+
+        assertEquals(listOf("state2"), controller.currentState)
+        testFlow expect emissions(
+            listOf("initialState"),
+            listOf("state0"),
+            listOf("state1"),
+            listOf("state2")
+        )
+    }
+
+    @Test
+    fun `stub action does not trigger state machine`() {
+        val controller = OperationController(testScopeRule)
+        controller.stubEnabled = true
+
+        controller.action(listOf("test"))
+
+        assertEquals(listOf("initialState"), controller.currentState)
+    }
+
+    @Test
+    fun `overwrite scope`() {
+        val testScope = TestCoroutineScope()
+
+        val controller = object : Controller<Unit, Unit, Unit> {
+            override val initialState: Unit = Unit
+        }
+
+        assertNotEquals(testScope, controller.scope)
+
+        controller.scope = testScope
+
+        assertEquals(testScope, controller.scope)
+    }
+
     // todo wait until official Flow.takeUntil implementation
     // @Test
     // fun `cancel producing flow in mutate`() = testScopeRule.runBlockingTest {
@@ -187,8 +255,8 @@ internal class ControllerTest {
         }
 
         // 3. ["action", "transformedAction"] + ["mutation"]
-        override fun mutate(incomingAction: List<String>): Flow<List<String>> {
-            return flowOf(incomingAction + "mutation")
+        override fun mutate(action: List<String>): Flow<List<String>> {
+            return flowOf(action + "mutation")
         }
 
         // 4. ["action", "transformedAction", "mutation"] + ["transformedMutation"]

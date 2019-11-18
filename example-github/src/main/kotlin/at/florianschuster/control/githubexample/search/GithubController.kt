@@ -11,11 +11,26 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
+/**
+ * AAC [ViewModel] implementation
+ */
+class GithubControllerViewModel(
+    private val controller: GithubController = GithubController()
+) : ViewModel(), Controller<GithubController.Action, GithubController.Mutation, GithubController.State> by controller {
+
+    override fun onCleared() {
+        super.onCleared()
+        controller.cancel() // todo canceled?
+    }
+}
+
+/**
+ * This is Kotlin only, it could live in a kotlin only module
+ */
 class GithubController(
     override val initialState: State = State(),
     private val api: GithubApi = GithubApi()
-) : Controller<GithubController.Action, GithubController.Mutation, GithubController.State>,
-    ViewModel() {
+) : Controller<GithubController.Action, GithubController.Mutation, GithubController.State> {
 
     sealed class Action {
         data class UpdateQuery(val text: String) : Action()
@@ -56,16 +71,15 @@ class GithubController(
         }
     }
 
-    override fun reduce(previousState: State, mutation: Mutation): State =
-        when (mutation) {
-            is Mutation.SetQuery -> previousState.copy(query = mutation.query)
-            is Mutation.SetRepos -> previousState.copy(repos = mutation.repos, page = 1)
-            is Mutation.AppendRepos -> previousState.copy(
-                repos = previousState.repos + mutation.repos,
-                page = previousState.page + 1
-            )
-            is Mutation.SetLoadingNextPage -> previousState.copy(loadingNextPage = mutation.loading)
-        }
+    override fun reduce(previousState: State, mutation: Mutation): State = when (mutation) {
+        is Mutation.SetQuery -> previousState.copy(query = mutation.query)
+        is Mutation.SetRepos -> previousState.copy(repos = mutation.repos, page = 1)
+        is Mutation.AppendRepos -> previousState.copy(
+            repos = previousState.repos + mutation.repos,
+            page = previousState.page + 1
+        )
+        is Mutation.SetLoadingNextPage -> previousState.copy(loadingNextPage = mutation.loading)
+    }
 
     /**
      * Search with [Flow]
@@ -85,9 +99,4 @@ class GithubController(
             println("Search Error: $e")
             null
         }
-
-    override fun onCleared() {
-        super.onCleared()
-        cancel()
-    }
 }

@@ -14,14 +14,22 @@ import kotlinx.coroutines.FlowPreview
 interface EventController<Action, Mutation, State, Event> : Controller<Action, Mutation, State> {
 
     val events: PublishProcessor<Event>
-        get() = associatedEvents.valueFor(this) { PublishProcessor(singleCollector = true) }
+        get() = AssociatedMap.Events().valueForOrCreate(this) {
+            PublishProcessor(singleCollector = true)
+        }
 
     override fun cancel() {
         super.cancel()
-        associatedEvents.clearFor(this)
+        AssociatedMap.values().forEach { it().clearFor(this) }
     }
 
     companion object {
-        private val associatedEvents = AssociatedObject()
+        private enum class AssociatedMap(
+            private val associatedObject: AssociatedObject = AssociatedObject()
+        ) {
+            Events;
+
+            operator fun invoke(): AssociatedObject = associatedObject
+        }
     }
 }

@@ -3,7 +3,6 @@ package at.florianschuster.control.counterexample
 import at.florianschuster.control.Controller
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.flow
 
 // action triggered by view
@@ -21,14 +20,14 @@ sealed class CounterMutation {
 
 // immutable state
 data class CounterState(
-    val value: Int,
-    val loading: Boolean
+    val value: Int = 0,
+    val loading: Boolean = false
 )
 
 class CounterController : Controller<CounterAction, CounterMutation, CounterState> {
 
     // we start with the initial state
-    override val initialState: CounterState = CounterState(0, false)
+    override val initialState: CounterState = CounterState(value = 0, loading = false)
 
     // every action is transformed into [0..n] mutations
     override fun mutate(action: CounterAction): Flow<CounterMutation> = when (action) {

@@ -69,12 +69,12 @@ in this example a literal view with a `Button` and a `TextView` is implemented. 
 
 ``` kotlin
 class View {
-    private val controller = ValueController()
+    internal val controller = ValueController()
     
     init {
         // bind view actions to Controller.action
         setValueButton.clicks()
-            .map { ValueController.Action.SetValue(3) }
+            .map { ValueController.Action.SetValue(value = 3) }
             .bind(to = controller.action)
             .launchIn(scope = viewScope)
             
@@ -94,7 +94,7 @@ here [FlowBinding](https://github.com/ReactiveCircus/FlowBinding) is used to tra
 
 ### test
 
-testing with control is really easy.
+#### controller testing
 
 to test a `Controller` either use `Controller.currentState`:
 
@@ -141,6 +141,49 @@ when using delay controls on a `Controller`, set the `Controller.scope` to a `Te
 examples:
 *   [CounterControllerTest](example-counter/src/test/kotlin/at/florianschuster/control/counterexample/CounterControllerTest.kt) for [CounterController](example-counter/src/main/kotlin/at/florianschuster/control/counterexample/CounterController.kt)
 *   [GithubControllerTest](example-github/src/test/kotlin/at/florianschuster/control/githubexample/search/GithubControllerTest.kt) for [GithubController](example-github/src/main/kotlin/at/florianschuster/control/githubexample/search/GithubController.kt)
+
+#### consumer/view testing
+
+a consumer or view that binds its ui to a controller, can be tested by setting the `Controller.stub` to enabled.
+
+if the stub is enabled, `Controller.mutate()` and `Controller.reduce()` are not executed.
+
+``` kotlin
+@Test
+fun valueButtonClickTriggersCorrectAction() {
+    // given
+    val view = View()
+    val controller = view.controller.apply { stubEnabled = true }
+    
+    // when
+    onView(withId(R.id.setValueButton)).perform(click())
+    
+    // then
+    assertEquals(
+        ValueController.Action.SetValue(value = 3), 
+        controller.stub.actions.last()
+    )
+}
+
+@Test
+fun stubbedStateUpdatesTextViewText() {
+    // given
+    val testValue = 42
+    val view = View()
+    val controller = view.controller.apply { stubEnabled = true }
+    
+    // when
+    controller.stub.state(ValueController.State(value = testValue))
+    
+    // then
+    onView(withId(R.id.valueTextView))
+        .check(matches(withText("$testValue")))
+}
+```
+
+examples:
+*   [CounterActivityTest](example-counter/src/androidTest/kotlin/at/florianschuster/control/counterexample/CounterActivityTest.kt) for [CounterActivity](example-counter/src/main/kotlin/at/florianschuster/control/counterexample/CounterActivity.kt)
+*   [GithubActivityTest](example-github/src/androidTest/kotlin/at/florianschuster/control/githubexample/search/GithubActivityTest.kt) for [GithubActivity](example-github/src/main/kotlin/at/florianschuster/control/githubexample/search/GithubActivity.kt)
 
 ### transform
 

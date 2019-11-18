@@ -20,13 +20,22 @@ object Libs {
     const val kotlinx_coroutines_core: String = "org.jetbrains.kotlinx:kotlinx-coroutines-core:" +
             Versions.org_jetbrains_kotlinx_kotlinx_coroutines
 
+    /**
+     * https://github.com/reactivecircus/FlowBinding
+     */
     const val flowbinding_android: String =
             "io.github.reactivecircus.flowbinding:flowbinding-android:" +
             Versions.io_github_reactivecircus_flowbinding
 
+    /**
+     * https://github.com/reactivecircus/FlowBinding
+     */
     const val flowbinding_core: String = "io.github.reactivecircus.flowbinding:flowbinding-core:" +
             Versions.io_github_reactivecircus_flowbinding
 
+    /**
+     * https://github.com/reactivecircus/FlowBinding
+     */
     const val flowbinding_recyclerview: String =
             "io.github.reactivecircus.flowbinding:flowbinding-recyclerview:" +
             Versions.io_github_reactivecircus_flowbinding
@@ -76,6 +85,21 @@ object Libs {
             Versions.org_jetbrains_kotlin
 
     /**
+     * https://developer.android.com/testing
+     */
+    const val core_ktx: String = "androidx.test:core-ktx:" + Versions.androidx_test
+
+    /**
+     * https://developer.android.com/testing
+     */
+    const val androidx_test_rules: String = "androidx.test:rules:" + Versions.androidx_test
+
+    /**
+     * https://developer.android.com/testing
+     */
+    const val androidx_test_runner: String = "androidx.test:runner:" + Versions.androidx_test
+
+    /**
      * https://developer.android.com/studio
      */
     const val com_android_tools_build_gradle: String = "com.android.tools.build:gradle:" +
@@ -116,9 +140,15 @@ object Libs {
             Versions.flow_extensions
 
     /**
+     * https://developer.android.com/testing
+     */
+    const val espresso_core: String = "androidx.test.espresso:espresso-core:" +
+            Versions.espresso_core
+
+    /**
      * https://developer.android.com/jetpack/androidx
      */
-    const val activity_ktx: String = "androidx.activity:activity-ktx:" + Versions.activity_ktx
+    const val fragment_ktx: String = "androidx.fragment:fragment-ktx:" + Versions.fragment_ktx
 
     /**
      * https://developer.android.com/studio
@@ -129,6 +159,11 @@ object Libs {
      * https://developer.android.com/jetpack/androidx
      */
     const val appcompat: String = "androidx.appcompat:appcompat:" + Versions.appcompat
+
+    /**
+     * https://developer.android.com/testing
+     */
+    const val junit_ktx: String = "androidx.test.ext:junit-ktx:" + Versions.junit_ktx
 
     /**
      * https://github.com/square/retrofit/

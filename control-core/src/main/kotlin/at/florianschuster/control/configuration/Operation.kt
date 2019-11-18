@@ -9,6 +9,9 @@ internal sealed class Operation(
 ) {
     internal object ControlConfigured : Operation("library", "was configured")
 
+    internal class ScopeSet(tag: String, scopeName: String) :
+        Operation(tag, "scope set to $scopeName")
+
     internal class Initialized(tag: String, initialState: String) :
         Operation(tag, "initialized with $initialState")
 
@@ -19,6 +22,9 @@ internal sealed class Operation(
         Operation(tag, "reduce $previousState with $mutation to $newState")
 
     internal class Canceled(tag: String) : Operation(tag, "canceled")
+
+    internal class StubEnabled(tag: String, enabled: Boolean) :
+        Operation(tag, "stub ${if (enabled) "enabled" else "not enabled"}")
 
     override fun toString(): String = "||||| <control> ||||| $tag -> $message |||||"
 }
