@@ -187,8 +187,8 @@ fun stubbedStateUpdatesTextViewText() {
 ```
 
 examples:
-*   [CounterActivityTest](example-counter/src/androidTest/kotlin/at/florianschuster/control/counterexample/CounterActivityTest.kt) for [CounterActivity](example-counter/src/main/kotlin/at/florianschuster/control/counterexample/CounterActivity.kt)
-*   [GithubActivityTest](example-github/src/androidTest/kotlin/at/florianschuster/control/githubexample/search/GithubActivityTest.kt) for [GithubActivity](example-github/src/main/kotlin/at/florianschuster/control/githubexample/search/GithubActivity.kt)
+*   [CounterActivityTest](example-counter/src/androidTest/kotlin/at/florianschuster/control/counterexample/CounterViewTest.kt) for [CounterActivity](example-counter/src/main/kotlin/at/florianschuster/control/counterexample/CounterView.kt)
+*   [GithubActivityTest](example-github/src/androidTest/kotlin/at/florianschuster/control/githubexample/search/GithubViewTest.kt) for [GithubActivity](example-github/src/main/kotlin/at/florianschuster/control/githubexample/search/GithubView.kt)
 
 ### transform
 
