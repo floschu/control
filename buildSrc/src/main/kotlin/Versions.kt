@@ -12,9 +12,10 @@ import org.gradle.plugin.use.PluginDependencySpec
  * YOU are responsible for updating manually the dependency version.
  */
 object Versions {
-    const val org_jetbrains_kotlinx_kotlinx_serialization: String = "0.13.0"
+    const val org_jetbrains_kotlinx_kotlinx_serialization: String = "0.14.0"
 
     const val org_jetbrains_kotlinx_kotlinx_coroutines: String = "1.3.2"
+             // available: "1.3.2-1.3.60"
 
     const val io_github_reactivecircus_flowbinding: String = "0.5.0"
 
@@ -61,7 +62,7 @@ object Versions {
      * See issue 19: How to update Gradle itself?
      * https://github.com/jmfayard/buildSrcVersions/issues/19
      */
-    const val gradleLatestVersion: String = "6.0"
+    const val gradleLatestVersion: String = "6.0.1"
 }
 
 /**
@@ -70,4 +71,4 @@ object Versions {
  */
 val PluginDependenciesSpec.buildSrcVersions: PluginDependencySpec
     inline get() =
-        id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
+            id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
