@@ -54,7 +54,6 @@ dependencies {
     androidTestImplementation(Libs.espresso_core)
     androidTestImplementation(Libs.androidx_test_rules)
     androidTestImplementation(Libs.androidx_test_runner)
-    // androidTestImplementation("androidx.test.espresso:espresso-contrib:3.2.0")
     androidTestImplementation(Libs.flow_extensions)
     androidTestImplementation(Libs.mockk)
 }

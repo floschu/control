@@ -14,7 +14,6 @@ import at.florianschuster.control.changesFrom
 import at.florianschuster.control.githubexample.R
 import kotlinx.android.synthetic.main.view_github.*
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -35,7 +34,6 @@ class GithubView : Fragment(R.layout.view_github) {
 
             // action
             searchEditText.textChanges()
-                .drop(1)
                 .debounce(500)
                 .map { it.toString() }
                 .map { GithubController.Action.UpdateQuery(it) }
