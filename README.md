@@ -146,9 +146,11 @@ examples:
 
 #### consumer/view testing
 
-a consumer or view that binds its ui to a controller, can be tested by setting the `Controller.stub` to enabled.
+a consumer or view that binds its ui to a controller, can be tested by setting the `Controller.stubEnabled` to true and then using `Controller.stub` for stubbing.
 
 if the stub is enabled, `Controller.mutate()` and `Controller.reduce()` are not executed.
+
+to check if actions are correctly triggered by a consumer use `Controler.stub.actions` to get an ordered `List<Action>`. to check if state is correctly rendered use `Controller.stub.state(State)` to instantly trigger a `Controller.state` emission.
 
 ``` kotlin
 @Test
