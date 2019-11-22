@@ -1,7 +1,6 @@
 package at.florianschuster.control
 
-import at.florianschuster.control.configuration.Control
-import kotlinx.coroutines.CancellationException
+import at.florianschuster.control.util.safeOffer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.BroadcastChannel
@@ -35,10 +34,6 @@ class PublishProcessor<T>(
     }
 
     override fun invoke(value: T) {
-        try {
-            channel.offer(value)
-        } catch (e: CancellationException) {
-            Control.log(e)
-        }
+        channel.safeOffer(value)
     }
 }

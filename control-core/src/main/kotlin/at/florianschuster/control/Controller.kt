@@ -4,11 +4,11 @@ import at.florianschuster.control.configuration.Control
 import at.florianschuster.control.configuration.Operation
 import at.florianschuster.control.util.AssociatedObject
 import at.florianschuster.control.util.ControllerScope
+import at.florianschuster.control.util.safeOffer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.scan
 
 /**
@@ -190,21 +191,14 @@ interface Controller<Action, Mutation, State> {
     private fun initState(): ConflatedBroadcastChannel<State> {
         val mutationFlow: Flow<Mutation> = transformAction(_action)
             .flatMapMerge {
-                Control.log { Operation.Mutate(tag, it.toString()) }
+                Control.log { Operation.Mutate(tag, it) }
                 mutate(it).catch { e -> Control.log(e) }
             }
 
         val stateFlow: Flow<State> = transformMutation(mutationFlow)
             .scan(initialState) { previousState, incomingMutation ->
                 val reducedState = reduce(previousState, incomingMutation)
-                Control.log {
-                    Operation.Reduce(
-                        tag,
-                        previousState.toString(),
-                        incomingMutation.toString(),
-                        reducedState.toString()
-                    )
-                }
+                Control.log { Operation.Reduce(tag, previousState, incomingMutation, reducedState) }
                 reducedState
             }
             .catch { e -> Control.log(e) }
@@ -212,15 +206,10 @@ interface Controller<Action, Mutation, State> {
         val stateChannel: ConflatedBroadcastChannel<State> = ConflatedBroadcastChannel(initialState)
 
         // todo use .share() or ConnectedFlow
-        transformState(stateFlow).onEach {
-            try {
-                stateChannel.offer(it)
-            } catch (e: ClosedSendChannelException) {
-                Control.log(e)
-            }
-        }.launchIn(scope)
-
-        Control.log { Operation.Initialized(tag, initialState.toString()) }
+        transformState(stateFlow)
+            .onStart { Control.log { Operation.Initialized(tag, initialState) } }
+            .onEach { stateChannel.safeOffer(it) }
+            .launchIn(scope)
 
         return stateChannel
     }
