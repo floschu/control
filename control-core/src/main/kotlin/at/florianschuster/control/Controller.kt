@@ -205,7 +205,7 @@ interface Controller<Action, Mutation, State> {
 
         val stateChannel: ConflatedBroadcastChannel<State> = ConflatedBroadcastChannel(initialState)
 
-        // todo use .share() or ConnectedFlow
+        // todo use .share() if available
         transformState(stateFlow)
             .onStart { Control.log { Operation.Initialized(tag, initialState) } }
             .onEach { stateChannel.safeOffer(it) }

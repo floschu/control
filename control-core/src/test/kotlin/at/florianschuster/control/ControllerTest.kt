@@ -1,5 +1,6 @@
 package at.florianschuster.control
 
+import at.florianschuster.control.configuration.configureControl
 import at.florianschuster.test.flow.TestCoroutineScopeRule
 import at.florianschuster.test.flow.emission
 import at.florianschuster.test.flow.emissionCount
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.test.TestCoroutineScope
+import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -24,27 +26,36 @@ import kotlin.test.assertNotEquals
 @ExperimentalCoroutinesApi
 internal class ControllerTest {
 
+    companion object {
+
+        @BeforeClass
+        @JvmStatic
+        fun setup() {
+            configureControl { operations(logger = ::println) }
+        }
+    }
+
     @get:Rule
     val testScopeRule = TestCoroutineScopeRule()
 
     @Test
     fun `initial state only emitted once`() {
         val controller = OperationController(testScopeRule)
-        val testCollector = controller.state.testIn(testScopeRule)
+        val testFlow = controller.state.testIn(testScopeRule)
 
-        testCollector expect emissionCount(1)
-        testCollector expect emission(0, listOf("initialState", "transformedState"))
+        testFlow expect emissionCount(1)
+        testFlow expect emission(0, listOf("initialState", "transformedState"))
     }
 
     @Test
     fun `each method is invoked`() {
         val controller = OperationController(testScopeRule)
-        val testCollector = controller.state.testIn(testScopeRule)
+        val testFlow = controller.state.testIn(testScopeRule)
 
         controller.action(OperationController.Action)
 
-        testCollector expect emissionCount(2)
-        testCollector expect emissions(
+        testFlow expect emissionCount(2)
+        testFlow expect emissions(
             listOf("initialState", "transformedState"),
             listOf(
                 "initialState",
@@ -103,16 +114,16 @@ internal class ControllerTest {
         controller.action(Unit) // 2
         controller.action(Unit) // 3
         controller.action(Unit) // 4
-        val testCollector = controller.state.testIn(testScopeRule)
+        val testFlow = controller.state.testIn(testScopeRule)
         controller.action(Unit) // 5
 
-        testCollector expect emissions(4, 5)
+        testFlow expect emissions(4, 5)
     }
 
     @Test
     fun `stream ignores error from mutate`() {
         val controller = CounterController(testScopeRule, mutateErrorIndex = 2)
-        val testCollector = controller.state.testIn(testScopeRule)
+        val testFlow = controller.state.testIn(testScopeRule)
 
         controller.action(Unit)
         controller.action(Unit)
@@ -120,7 +131,7 @@ internal class ControllerTest {
         controller.action(Unit)
         controller.action(Unit)
 
-        testCollector expect emissions(0, 1, 2, 3, 4, 5)
+        testFlow expect emissions(0, 1, 2, 3, 4, 5)
     }
 
     @Test
@@ -132,12 +143,12 @@ internal class ControllerTest {
             override fun mutate(action: Unit): Flow<Unit> = flowOf(action)
             override fun reduce(previousState: Int, mutation: Unit): Int = previousState + 1
         }
-        val testCollector = controller.state.testIn(testScopeRule)
+        val testFlow = controller.state.testIn(testScopeRule)
 
         controller.action(Unit)
         controller.action(Unit)
 
-        testCollector expect emissions(0, 1, 2)
+        testFlow expect emissions(0, 1, 2)
     }
 
     @Test
@@ -213,7 +224,7 @@ internal class ControllerTest {
         assertEquals(testScope, controller.scope)
     }
 
-    // todo wait until official Flow.takeUntil implementation
+    // todo wait for Flow.takeUntil
     // @Test
     // fun `cancel producing flow in mutate`() = testScopeRule.runBlockingTest {
     //     val controller = StopwatchController(testScopeRule)
@@ -297,7 +308,6 @@ internal class ControllerTest {
         override fun reduce(previousState: Int, mutation: Unit): Int = previousState + 1
     }
 
-    // todo wait until official Flow.takeUntil
     // private class StopwatchController(
     //     override var scope: CoroutineScope
     // ) : Controller<StopwatchController.Action, Int, Int> {

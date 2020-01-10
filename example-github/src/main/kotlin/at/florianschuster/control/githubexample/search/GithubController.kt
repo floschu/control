@@ -20,7 +20,7 @@ class GithubControllerViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        controller.cancel() // todo canceled?
+        controller.cancel()
     }
 }
 
