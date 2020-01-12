@@ -12,16 +12,19 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 
 fun test() {
-    val vm = CounterViewModel(setValueUseCase = flowOf(1, 2, 3))
-    vm.actions.offer(CounterAction.Increment)
+    val vm: ViewModelType<CounterEvent, CounterState> = CounterViewModel(
+        setValueUseCase = flowOf(1, 2, 3)
+    )
+    vm.events.offer(CounterEvent.Increment)
     vm.state.onEach { it.value }
     vm.currentState
     vm.initialState
 }
 
-sealed class CounterAction {
-    object Increment : CounterAction()
-    object Decrement : CounterAction()
+sealed class CounterEvent {
+    object Increment : CounterEvent()
+    object Decrement : CounterEvent()
+    // data class SetValue(val value: Int) : CounterAction()
 }
 
 data class CounterState(
@@ -30,43 +33,43 @@ data class CounterState(
 
 class CounterViewModel(
     private val setValueUseCase: Flow<Int>
-) : ViewModel(), StoreProvider<CounterAction, CounterState> {
+) : ViewModel(), ViewModelType<CounterEvent, CounterState> {
 
     override val initialState: CounterState = CounterState()
 
-    sealed class CounterMutation {
-        object IncrementValue : CounterMutation()
-        object DecrementValue : CounterMutation()
-        data class SetValue(val value: Int) : CounterMutation()
+    sealed class CounterUpdate {
+        object IncrementValue : CounterUpdate()
+        object DecrementValue : CounterUpdate()
+        data class SetValue(val value: Int) : CounterUpdate()
     }
 
-    override val store = Store(
+    override val machine = Machine(
         scope = viewModelScope,
         initialState = initialState,
-        actionSideEffects = ::actionSideEffects,
-        mutator = ::mutator,
-        mutationSideEffects = ::mutationSideEffects,
-        reducer = ::reducer
+        eventSideEffects = ::eventSideEffects,
+        eventHandler = ::eventHandler,
+        updateSideEffects = ::updateSideEffects,
+        updater = ::updater
     )
 
-    private fun actionSideEffects(actions: Flow<CounterAction>): Flow<CounterAction> =
-        actions.onStart { emit(CounterAction.Increment) }
+    private fun eventSideEffects(actions: Flow<CounterEvent>): Flow<CounterEvent> =
+        actions.onStart { emit(CounterEvent.Increment) }
 
-    private fun mutator(action: CounterAction): Flow<CounterMutation> = when (action) {
-        is CounterAction.Increment -> flow {
+    private fun eventHandler(event: CounterEvent): Flow<CounterUpdate> = when (event) {
+        is CounterEvent.Increment -> flow {
             delay(1000)
-            emit(CounterMutation.IncrementValue)
+            emit(CounterUpdate.IncrementValue)
         }
-        is CounterAction.Decrement -> flowOf(CounterMutation.DecrementValue)
+        is CounterEvent.Decrement -> flowOf(CounterUpdate.DecrementValue)
     }
 
-    private fun mutationSideEffects(mutations: Flow<CounterMutation>): Flow<CounterMutation> =
-        flowOf(mutations, setValueUseCase.map { CounterMutation.SetValue(it) }).flattenMerge()
+    private fun updateSideEffects(mutations: Flow<CounterUpdate>): Flow<CounterUpdate> =
+        flowOf(mutations, setValueUseCase.map { CounterUpdate.SetValue(it) }).flattenMerge()
 
-    private fun reducer(previousState: CounterState, mutation: CounterMutation): CounterState =
-        when (mutation) {
-            is CounterMutation.IncrementValue -> previousState.copy(value = previousState.value + 1)
-            is CounterMutation.DecrementValue -> previousState.copy(value = previousState.value - 1)
-            is CounterMutation.SetValue -> previousState.copy(value = mutation.value)
+    private fun updater(previousState: CounterState, update: CounterUpdate): CounterState =
+        when (update) {
+            is CounterUpdate.IncrementValue -> previousState.copy(value = previousState.value + 1)
+            is CounterUpdate.DecrementValue -> previousState.copy(value = previousState.value - 1)
+            is CounterUpdate.SetValue -> previousState.copy(value = update.value)
         }
 }
