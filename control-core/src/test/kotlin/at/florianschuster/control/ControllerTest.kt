@@ -1,6 +1,5 @@
 package at.florianschuster.control
 
-import at.florianschuster.control.configuration.configureControl
 import at.florianschuster.test.flow.TestCoroutineScopeRule
 import at.florianschuster.test.flow.emission
 import at.florianschuster.test.flow.emissionCount
@@ -11,29 +10,18 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.test.TestCoroutineScope
-import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @FlowPreview
 @ExperimentalCoroutinesApi
 internal class ControllerTest {
-
-    companion object {
-
-        @BeforeClass
-        @JvmStatic
-        fun setup() {
-            configureControl { operations(logger = ::println) }
-        }
-    }
 
     @get:Rule
     val testScopeRule = TestCoroutineScopeRule()
@@ -52,7 +40,7 @@ internal class ControllerTest {
         val controller = OperationController(testScopeRule)
         val testFlow = controller.state.testIn(testScopeRule)
 
-        controller.action(OperationController.Action)
+        controller.dispatch(listOf("action"))
 
         testFlow expect emissionCount(2)
         testFlow expect emissions(
@@ -72,26 +60,7 @@ internal class ControllerTest {
     fun `current state`() {
         val controller = OperationController(testScopeRule)
 
-        controller.action(OperationController.Action)
-
-        assertEquals(
-            listOf(
-                "initialState",
-                "action",
-                "transformedAction",
-                "mutation",
-                "transformedMutation",
-                "transformedState"
-            ),
-            controller.currentState
-        )
-    }
-
-    @Test
-    fun `state is created when accessing action`() {
-        val controller = OperationController(testScopeRule)
-
-        controller.action(OperationController.Action)
+        controller.dispatch(listOf("action"))
 
         assertEquals(
             listOf(
@@ -108,58 +77,55 @@ internal class ControllerTest {
 
     @Test
     fun `collector receives latest and following states`() {
-        val controller = CounterController(testScopeRule) // 0
+        val controller = CounterProxy(testScopeRule) // 0
 
-        controller.action(Unit) // 1
-        controller.action(Unit) // 2
-        controller.action(Unit) // 3
-        controller.action(Unit) // 4
+        controller.dispatch(Unit) // 1
+        controller.dispatch(Unit) // 2
+        controller.dispatch(Unit) // 3
+        controller.dispatch(Unit) // 4
         val testFlow = controller.state.testIn(testScopeRule)
-        controller.action(Unit) // 5
+        controller.dispatch(Unit) // 5
 
         testFlow expect emissions(4, 5)
     }
 
     @Test
     fun `stream ignores error from mutate`() {
-        val controller = CounterController(testScopeRule, mutateErrorIndex = 2)
+        val controller = CounterProxy(testScopeRule, mutateErrorIndex = 2)
         val testFlow = controller.state.testIn(testScopeRule)
 
-        controller.action(Unit)
-        controller.action(Unit)
-        controller.action(Unit)
-        controller.action(Unit)
-        controller.action(Unit)
+        controller.dispatch(Unit)
+        controller.dispatch(Unit)
+        controller.dispatch(Unit)
+        controller.dispatch(Unit)
+        controller.dispatch(Unit)
 
         testFlow expect emissions(0, 1, 2, 3, 4, 5)
     }
 
     @Test
     fun `anonymous controller is created correctly`() {
-        val controller = object : Controller<Unit, Unit, Int> {
-            override var scope: CoroutineScope = testScopeRule
-            override val initialState: Int = 0
-
-            override fun mutate(action: Unit): Flow<Unit> = flowOf(action)
-            override fun reduce(previousState: Int, mutation: Unit): Int = previousState + 1
-        }
+        val controller = Controller<Unit, Unit, Int>(
+            scope = testScopeRule,
+            initialState = 0,
+            mutator = { flowOf(it) },
+            reducer = { previousState, _ -> previousState + 1 }
+        )
         val testFlow = controller.state.testIn(testScopeRule)
 
-        controller.action(Unit)
-        controller.action(Unit)
+        controller.dispatch(Unit)
+        controller.dispatch(Unit)
 
         testFlow expect emissions(0, 1, 2)
     }
 
     @Test
-    fun `after controller cancel controller can be reused`() {
-        val controller = object : Controller<Unit, Unit, Int> {
-            override val initialState = 3
-        }
+    fun `controller cancel`() {
+        val controller = Controller<Unit, Unit, Int>(initialState = 3)
 
-        assertEquals(3, controller.currentState)
+        assertFalse(controller.stateJob.isCancelled)
         controller.cancel()
-        assertEquals(3, controller.currentState)
+        assertTrue(controller.stateJob.isCancelled)
     }
 
     @Test
@@ -172,9 +138,9 @@ internal class ControllerTest {
         val controller = OperationController(testScopeRule)
         controller.stubEnabled = true
 
-        controller.action(expectedActions[0])
-        controller.action(expectedActions[1])
-        controller.action(expectedActions[2])
+        controller.dispatch(expectedActions[0])
+        controller.dispatch(expectedActions[1])
+        controller.dispatch(expectedActions[2])
 
         assertEquals(expectedActions, controller.stub.actions)
     }
@@ -204,24 +170,9 @@ internal class ControllerTest {
         val controller = OperationController(testScopeRule)
         controller.stubEnabled = true
 
-        controller.action(listOf("test"))
+        controller.dispatch(listOf("test"))
 
         assertEquals(listOf("initialState"), controller.currentState)
-    }
-
-    @Test
-    fun `overwrite scope`() {
-        val testScope = TestCoroutineScope()
-
-        val controller = object : Controller<Unit, Unit, Unit> {
-            override val initialState: Unit = Unit
-        }
-
-        assertNotEquals(testScope, controller.scope)
-
-        controller.scope = testScope
-
-        assertEquals(testScope, controller.scope)
     }
 
     // todo wait for Flow.takeUntil
@@ -253,81 +204,80 @@ internal class ControllerTest {
     //     assertEquals(10, controller.currentState) // 2+3+4+1
     // }
 
-    private class OperationController(
-        override var scope: CoroutineScope
-    ) : Controller<List<String>, List<String>, List<String>> {
+    @Suppress("TestFunctionName")
+    private fun OperationController(
+        scope: CoroutineScope
+    ): Controller<List<String>, List<String>, List<String>> = Controller(
+        scope = scope,
 
         // 1. ["initialState"]
-        override val initialState: List<String> = listOf("initialState")
+        initialState = listOf("initialState"),
 
         // 2. ["action"] + ["transformedAction"]
-        override fun transformAction(action: Flow<List<String>>): Flow<List<String>> {
-            return action.map { it + "transformedAction" }
-        }
+        actionsTransformer = { actions ->
+            actions.map { it + "transformedAction" }
+        },
 
         // 3. ["action", "transformedAction"] + ["mutation"]
-        override fun mutate(action: List<String>): Flow<List<String>> {
-            return flowOf(action + "mutation")
-        }
+        mutator = { flowOf(it + "mutation") },
 
         // 4. ["action", "transformedAction", "mutation"] + ["transformedMutation"]
-        override fun transformMutation(mutation: Flow<List<String>>): Flow<List<String>> {
-            return mutation.map { it + "transformedMutation" }
-        }
+        mutationsTransformer = { mutations ->
+            mutations.map { it + "transformedMutation" }
+        },
 
         // 5. ["initialState"] + ["action", "transformedAction", "mutation", "transformedMutation"]
-        override fun reduce(previousState: List<String>, mutation: List<String>): List<String> {
-            return previousState + mutation
-        }
+        reducer = { previousState, mutation -> previousState + mutation },
 
         // 6. ["initialState", "action", "transformedAction", "mutation", "transformedMutation"] + ["transformedState"]
-        override fun transformState(state: Flow<List<String>>): Flow<List<String>> {
-            return state.map { it + "transformedState" }
-        }
+        statesTransformer = { states -> states.map { it + "transformedState" } }
+    )
 
-        companion object {
-            val Action: List<String> = listOf("action")
-        }
+    private fun CounterProxy(
+        scope: CoroutineScope,
+        mutateErrorIndex: Int? = null
+    ): Proxy<Unit, Int> = object : Proxy<Unit, Int> {
+
+        override val controller = Controller<Unit, Unit, Int>(
+            scope = scope,
+            initialState = 0,
+            mutator = { action ->
+                when (currentState) {
+                    mutateErrorIndex -> flow {
+                        emit(action)
+                        throw CancellationException()
+                    }
+                    else -> flowOf(action)
+                }
+            },
+            reducer = { previousState, _ -> previousState + 1 }
+        )
     }
 
-    private class CounterController(
-        override var scope: CoroutineScope,
-        val mutateErrorIndex: Int? = null
-    ) : Controller<Unit, Unit, Int> {
-
-        override val initialState: Int = 0
-
-        override fun mutate(action: Unit): Flow<Unit> = when (currentState) {
-            mutateErrorIndex -> flow {
-                emit(action)
-                throw CancellationException()
-            }
-            else -> flowOf(action)
-        }
-
-        override fun reduce(previousState: Int, mutation: Unit): Int = previousState + 1
-    }
-
-    // private class StopwatchController(
-    //     override var scope: CoroutineScope
-    // ) : Controller<StopwatchController.Action, Int, Int> {
+    // class StopwatchProxy(
+    //     scope: CoroutineScope
+    // ) : Proxy<StopwatchProxy.Action, Int> {
     //
     //     enum class Action { Start, Stop }
     //
-    //     override val initialState: Int = 0
+    //     override val controller = Controller<Action, Int, Int>(
     //
-    //     override fun mutate(action: Action): Flow<Int> = when (action) {
-    //         Action.Start -> {
-    //             flow {
-    //                 while (true) {
-    //                     delay(1000)
-    //                     emit(1)
+    //         initialState = 0,
+    //         scope = scope,
+    //         mutator = { action ->
+    //             when (action) {
+    //                 Action.Start -> {
+    //                     flow {
+    //                         while (true) {
+    //                             delay(1000)
+    //                             emit(1)
+    //                         }
+    //                     }.takeUntil(this@StopwatchController.action.filter { it == Action.Stop })
     //                 }
-    //             }.takeUntil(this@StopwatchController.action.filter { it == Action.Stop })
-    //         }
-    //         Action.Stop -> emptyFlow()
-    //     }
-    //
-    //     override fun reduce(previousState: Int, mutation: Int): Int = previousState + mutation
+    //                 Action.Stop -> emptyFlow()
+    //             }
+    //         },
+    //         reducer = { previousState, mutation -> previousState + mutation }
+    //     )
     // }
 }

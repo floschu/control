@@ -22,7 +22,7 @@ import reactivecircus.flowbinding.android.widget.textChanges
 import reactivecircus.flowbinding.recyclerview.scrollEvents
 
 class GithubView : Fragment(R.layout.view_github) {
-    private val controller: GithubControllerViewModel by viewModels { ControllerViewModelFactory }
+    private val viewModel: GithubViewModel by viewModels { ControllerViewModelFactory }
     private val adapter = RepoAdapter()
 
     init {
@@ -36,23 +36,23 @@ class GithubView : Fragment(R.layout.view_github) {
             searchEditText.textChanges()
                 .debounce(500)
                 .map { it.toString() }
-                .map { GithubController.Action.UpdateQuery(it) }
-                .bind(to = controller.action)
+                .map { GithubAction.UpdateQuery(it) }
+                .bind(to = viewModel::dispatch)
                 .launchIn(scope = lifecycleScope)
 
             repoRecyclerView.scrollEvents()
                 .sample(500)
                 .filter { it.view.shouldLoadMore() }
-                .map { GithubController.Action.LoadNextPage }
-                .bind(to = controller.action)
+                .map { GithubAction.LoadNextPage }
+                .bind(to = viewModel::dispatch)
                 .launchIn(scope = lifecycleScope)
 
             // state
-            controller.state.changesFrom { it.repos }
+            viewModel.state.changesFrom { it.repos }
                 .bind(to = adapter::submitList)
                 .launchIn(scope = lifecycleScope)
 
-            controller.state.changesFrom { it.loadingNextPage }
+            viewModel.state.changesFrom { it.loadingNextPage }
                 .map { if (it) View.VISIBLE else View.GONE }
                 .bind(to = loadingProgressBar::setVisibility)
                 .launchIn(scope = lifecycleScope)
@@ -67,7 +67,7 @@ class GithubView : Fragment(R.layout.view_github) {
     companion object {
         internal var ControllerViewModelFactory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                GithubControllerViewModel() as T
+                GithubViewModel() as T
         }
     }
 }

@@ -1,6 +1,5 @@
 package at.florianschuster.control
 
-import at.florianschuster.control.configuration.Control
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -18,9 +17,10 @@ fun <State, SubState> Flow<State>.changesFrom(
 ): Flow<SubState> = map { mapper(it) }.distinctUntilChanged()
 
 /**
- * Binds a [Flow] to an UI target or a [PublishProcessor].
- * Also handles errors as defined in [Control].
+ * Binds a [Flow] to an non suspending block. Also provides an [errorHandler] for logging.
  */
 @ExperimentalCoroutinesApi
-fun <T> Flow<T>.bind(to: (T) -> Unit): Flow<T> =
-    onEach { to(it) }.catch { e -> Control.log(e) }
+fun <T> Flow<T>.bind(
+    to: (T) -> Unit,
+    errorHandler: ((Throwable) -> Unit)? = null
+): Flow<T> = onEach { to(it) }.catch { e -> errorHandler?.invoke(e) }
