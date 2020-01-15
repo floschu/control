@@ -122,7 +122,7 @@ class Controller<Action, Mutation, State>(
 ) {
 
     private val actionChannel = BroadcastChannel<Action>(1)
-    private val stateChannel = ConflatedBroadcastChannel<State>(initialState)
+    private val stateChannel = ConflatedBroadcastChannel(initialState)
 
     /**
      * Use this [Stub] for View testing.

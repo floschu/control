@@ -11,7 +11,7 @@ sealed class LogConfiguration {
         message: String? = null
     ) = "||||| <control> ||||| $tag -> $function${if (message != null) ": $message" else ""} |||||"
 
-    abstract fun log(function: String, message: String?)
+    internal abstract fun log(function: String, message: String?)
 
     /**
      * No logging.
