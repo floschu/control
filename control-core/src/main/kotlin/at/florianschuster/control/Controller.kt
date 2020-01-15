@@ -122,7 +122,7 @@ class Controller<Action, Mutation, State>(
 ) {
 
     private val actionChannel = BroadcastChannel<Action>(1)
-    private val stateChannel = ConflatedBroadcastChannel<State>()
+    private val stateChannel = ConflatedBroadcastChannel<State>(initialState)
 
     /**
      * Use this [Stub] for View testing.
@@ -163,7 +163,7 @@ class Controller<Action, Mutation, State>(
             field = value
         }
 
-    internal val stateJob: Job
+    private val stateJob: Job
 
     /**
      * Whether the [Controller] is cancelled.

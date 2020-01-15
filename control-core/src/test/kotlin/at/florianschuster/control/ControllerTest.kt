@@ -125,9 +125,9 @@ internal class ControllerTest {
         val controller = Controller<Unit, Unit, Int>(initialState = 3)
         val testFlow = controller.state.testIn(testScopeRule)
 
-        assertFalse(controller.stateJob.isCancelled)
+        assertFalse(controller.cancelled)
         controller.cancel()
-        assertTrue(controller.stateJob.isCancelled)
+        assertTrue(controller.cancelled)
 
         testFlow expect regularCompletion()
     }
