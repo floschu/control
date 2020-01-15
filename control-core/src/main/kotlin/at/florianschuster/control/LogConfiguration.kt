@@ -1,7 +1,7 @@
 package at.florianschuster.control
 
 /**
- * TODO
+ * Configuration to define how a [Controller] logs its errors and operations.
  */
 sealed class LogConfiguration {
 
@@ -13,22 +13,34 @@ sealed class LogConfiguration {
 
     abstract fun log(function: String, message: String?)
 
+    /**
+     * No logging.
+     */
     object None : LogConfiguration() {
         override fun log(function: String, message: String?) = Unit
     }
 
+    /**
+     * Simple logging, uses [println]. Only logs errors and operation names.
+     */
     data class Simple(val tag: String) : LogConfiguration() {
         override fun log(function: String, message: String?) {
             println(createMessage(tag, function))
         }
     }
 
+    /**
+     * Elaborate logging, uses [println]. Logs errors and operation names and contents.
+     */
     data class Elaborate(val tag: String) : LogConfiguration() {
         override fun log(function: String, message: String?) {
             println(createMessage(tag, function, message))
         }
     }
 
+    /**
+     * A custom logger can be attached through [logger].
+     */
     data class Custom(
         val tag: String,
         val elaborate: Boolean = true,

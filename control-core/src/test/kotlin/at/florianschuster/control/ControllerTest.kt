@@ -5,6 +5,7 @@ import at.florianschuster.test.flow.emission
 import at.florianschuster.test.flow.emissionCount
 import at.florianschuster.test.flow.emissions
 import at.florianschuster.test.flow.expect
+import at.florianschuster.test.flow.regularCompletion
 import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -122,10 +123,13 @@ internal class ControllerTest {
     @Test
     fun `controller cancel`() {
         val controller = Controller<Unit, Unit, Int>(initialState = 3)
+        val testFlow = controller.state.testIn(testScopeRule)
 
         assertFalse(controller.stateJob.isCancelled)
         controller.cancel()
         assertTrue(controller.stateJob.isCancelled)
+
+        testFlow expect regularCompletion()
     }
 
     @Test

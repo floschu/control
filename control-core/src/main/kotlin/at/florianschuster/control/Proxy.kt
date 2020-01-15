@@ -3,7 +3,11 @@ package at.florianschuster.control
 import kotlinx.coroutines.flow.Flow
 
 /**
- * TODO
+ * A proxy interface that contains a [Controller] but only exposes [Action] and [State].
+ * It also proxy's [Controller.dispatch], [Controller.currentState], [Controller.state]
+ * and [Controller.stub].
+ *
+ * This could be implemented by a Presenter or a ViewModel.
  */
 interface Proxy<Action, State> {
     val controller: Controller<Action, *, State>

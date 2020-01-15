@@ -19,7 +19,37 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.scan
 
 /**
- * TODO
+ * A [Controller] is an UI-independent class that stores and controls the state of a view/a
+ * consumer. The role of a [Controller] is to separate business logic away from a view to
+ * bundle information and make unit testing easy. Every view/consumer should have its own
+ * [Controller] and delegates all logic to it. A [Controller] has no dependency to a view,
+ * so it can easily be unit tested.
+ *
+ * <pre>
+ *                  [Action] via [action]
+ *          +-----------------------------------+
+ *          |                                   |
+ *     +----+-----+                    +--------v-------+
+ *     |          |                    |                |
+ *     |   View   |                    |  [Controller]  |
+ *     |          |                    |                |
+ *     +----^-----+                    +--------+-------+
+ *          |                                  |
+ *          +----------------------------------+
+ *                  [State] via [state]
+ * </pre>
+ *
+ * Internally the [Controller]...
+ * 1. ... receives an [Action] via [Controller.dispatch] and handles it inside the
+ * [mutator]. Here all asynchronous side effects happen such as e.g. API calls.
+ * The function then returns a [Flow] of 0..n [Mutation].
+ * 2. ... receives a [Mutation] in [reducer]. Here the previous [State] and the incoming
+ * [Mutation] are reduced into a new [State] which is then published via [state].
+ *
+ * The [Controller] "lives" as long as the [state] [Flow] is active. How long it stays active
+ * depends: on the one hand it is tied to the [scope], meaning when [scope] is cancelled, the
+ * [Controller] dies. On the other hand when [Controller.cancel] is called, the [Controller]
+ * dies too.
  */
 @FlowPreview
 @ExperimentalCoroutinesApi
@@ -174,8 +204,16 @@ class Controller<Action, Mutation, State>(
     /**
      * Cancels the [Controller]. Once a [Controller] is cancelled, the state [Flow] is unusable.
      * Check whether a Controller is cancelled with [Controller.cancelled]
+     *
+     * @return State the last [currentState] of the [Controller]
      */
-    fun cancel() {
+    fun cancel(): State {
+        val currentState = this.currentState
+
+        stateChannel.cancel()
+        actionChannel.cancel()
         stateJob.cancel()
+
+        return currentState
     }
 }
