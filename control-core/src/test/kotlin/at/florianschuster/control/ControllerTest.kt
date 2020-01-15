@@ -9,11 +9,17 @@ import at.florianschuster.test.flow.regularCompletion
 import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -121,12 +127,28 @@ internal class ControllerTest {
     }
 
     @Test
-    fun `controller cancel`() {
+    fun `cancel controller cancels controller flow and channels`() {
         val controller = Controller<Unit, Unit, Int>(initialState = 3)
         val testFlow = controller.state.testIn(testScopeRule)
 
         assertFalse(controller.cancelled)
         controller.cancel()
+        assertTrue(controller.cancelled)
+
+        testFlow expect regularCompletion()
+    }
+
+    @Test
+    fun `cancel scope cancels controller flow and channels`() {
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
+        val controller = Controller<Unit, Unit, Int>(
+            initialState = 3,
+            scope = scope
+        )
+        val testFlow = controller.state.testIn(testScopeRule)
+
+        assertFalse(controller.cancelled)
+        scope.cancel()
         assertTrue(controller.cancelled)
 
         testFlow expect regularCompletion()

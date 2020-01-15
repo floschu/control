@@ -195,9 +195,7 @@ class Controller<Action, Mutation, State>(
                 logConfiguration.log("state", "$newState")
                 stateChannel.send(newState)
             }
-            .onCompletion { error ->
-                logConfiguration.log("finished", if (error != null) "$error" else null)
-            }
+            .onCompletion { error -> finish(error) }
             .launchIn(scope)
     }
 
@@ -209,11 +207,16 @@ class Controller<Action, Mutation, State>(
      */
     fun cancel(): State {
         val currentState = this.currentState
-
-        stateChannel.cancel()
-        actionChannel.cancel()
-        stateJob.cancel()
-
+        finish(null)
+        println("cancel")
         return currentState
+    }
+
+    private fun finish(error: Throwable?) {
+        if (!stateJob.isCancelled) stateJob.cancel()
+        if (!stateChannel.isClosedForSend) stateChannel.cancel()
+        if (!actionChannel.isClosedForSend) actionChannel.cancel()
+
+        logConfiguration.log("finished", if (error != null) "$error" else null)
     }
 }
