@@ -116,13 +116,14 @@ class Controller<Action, Mutation, State>(
     statesTransformer: (states: Flow<State>) -> Flow<State> = { it },
 
     /**
-     *
+     * Configuration to define how a [Controller] logs its state errors and operations.
      */
     var logConfiguration: LogConfiguration = LogConfiguration.None
 ) {
 
     private val actionChannel = BroadcastChannel<Action>(1)
     private val stateChannel = ConflatedBroadcastChannel(initialState)
+    private val stateFlowJob: Job
 
     /**
      * Use this [Stub] for View testing.
@@ -163,12 +164,10 @@ class Controller<Action, Mutation, State>(
             field = value
         }
 
-    private val stateJob: Job
-
     /**
      * Whether the [Controller] is cancelled.
      */
-    val cancelled: Boolean get() = stateJob.isCancelled
+    val cancelled: Boolean get() = stateFlowJob.isCancelled
 
     init {
         val mutationFlow: Flow<Mutation> = actionsTransformer(actionChannel.asFlow())
@@ -188,7 +187,7 @@ class Controller<Action, Mutation, State>(
                 logConfiguration.log("reducer error", "$error")
             }
 
-        stateJob = statesTransformer(stateFlow)
+        stateFlowJob = statesTransformer(stateFlow)
             .distinctUntilChanged()
             .onStart { logConfiguration.log("initialized", "$initialState") }
             .onEach { newState ->
@@ -213,7 +212,7 @@ class Controller<Action, Mutation, State>(
     }
 
     private fun finish(error: Throwable?) {
-        if (!stateJob.isCancelled) stateJob.cancel()
+        if (!stateFlowJob.isCancelled) stateFlowJob.cancel()
         if (!stateChannel.isClosedForSend) stateChannel.cancel()
         if (!actionChannel.isClosedForSend) actionChannel.cancel()
 

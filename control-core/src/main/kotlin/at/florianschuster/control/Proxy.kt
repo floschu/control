@@ -27,9 +27,4 @@ interface Proxy<Action, State> {
      * See [Controller.state] for more details.
      */
     val state: Flow<State> get() = controller.state
-
-    /**
-     * See [Controller.stub] for more details.
-     */
-    val stub: Stub<Action, *, State> get() = controller.stub
 }

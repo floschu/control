@@ -56,20 +56,20 @@ internal class GithubViewTest {
         // then
         assertEquals(
             GithubAction.UpdateQuery(testQuery),
-            viewModel.stub.actions.last()
+            viewModel.controller.stub.actions.last()
         )
     }
 
     @Test
     fun whenStateOffersLoadingNextPageThenProgressBarIsShown() {
         // when
-        viewModel.stub.setState(GithubState(loadingNextPage = true))
+        viewModel.controller.stub.setState(GithubState(loadingNextPage = true))
 
         // then
         onView(withId(R.id.loadingProgressBar)).check(matches(isDisplayed()))
 
         // when
-        viewModel.stub.setState(GithubState(loadingNextPage = false))
+        viewModel.controller.stub.setState(GithubState(loadingNextPage = false))
 
         // then
         onView(withId(R.id.loadingProgressBar)).check(matches(not(isDisplayed())))

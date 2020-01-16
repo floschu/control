@@ -1,7 +1,7 @@
 package at.florianschuster.control
 
 /**
- * Configuration to define how a [Controller] logs its errors and operations.
+ * Configuration to define how a [Controller] logs its state errors and operations.
  */
 sealed class LogConfiguration {
 
