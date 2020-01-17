@@ -128,11 +128,6 @@ class Controller<Action, Mutation, State>(
     private val stateFlowJob: Job
 
     /**
-     * Use this [Stub] for View testing.
-     */
-    val stub: Stub<Action, Mutation, State> by lazy { Stub(this) }
-
-    /**
      * The [State] [Flow]. Use this to observe the state changes.
      */
     val state: Flow<State>
@@ -165,6 +160,11 @@ class Controller<Action, Mutation, State>(
             logConfiguration.log("stub", if (value) "enabled" else "disabled")
             field = value
         }
+
+    /**
+     * Use this [Stub] for View testing.
+     */
+    val stub: Stub<Action, Mutation, State> by lazy { Stub(this) }
 
     /**
      * Whether the [Controller] is cancelled.
