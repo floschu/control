@@ -10,9 +10,11 @@ internal class LogConfigurationTest {
 
     @Test
     fun `setting default log configuration`() {
-        assertEquals(LogConfiguration.None, LogConfiguration.DEFAULT)
         LogConfiguration.DEFAULT = LogConfiguration.Simple("tag")
         assertEquals(LogConfiguration.Simple("tag"), LogConfiguration.DEFAULT)
+
+        LogConfiguration.DEFAULT = LogConfiguration.None
+        assertEquals(LogConfiguration.None, LogConfiguration.DEFAULT)
     }
 
     @Test
