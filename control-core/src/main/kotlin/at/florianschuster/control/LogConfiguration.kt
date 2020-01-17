@@ -9,16 +9,15 @@ sealed class LogConfiguration {
         tag: String,
         function: String,
         message: String? = null
-    ) = "||||| <control> ||||| $tag -> $function${if (message != null) ": $message" else ""} |||||"
+    ) = "||| <control> ||| $tag -> $function${if (message != null) ": $message" else ""} |||"
 
-    internal abstract fun log(function: String, message: String?)
+    internal fun log(function: String, error: Throwable?) = log(function, "$error")
+    internal open fun log(function: String, message: String?) = Unit
 
     /**
      * No logging.
      */
-    object None : LogConfiguration() {
-        override fun log(function: String, message: String?) = Unit
-    }
+    object None : LogConfiguration()
 
     /**
      * Simple logging, uses [println]. Only logs errors and operation names.
@@ -49,5 +48,14 @@ sealed class LogConfiguration {
         override fun log(function: String, message: String?) {
             logger(createMessage(tag, function, if (elaborate) message else null))
         }
+    }
+
+    companion object {
+
+        /**
+         * The default [LogConfiguration] that is used by a [Controller].
+         * Set this to change it for all [Controller]'s.
+         */
+        var DEFAULT: LogConfiguration = None
     }
 }

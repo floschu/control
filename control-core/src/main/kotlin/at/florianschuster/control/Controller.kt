@@ -117,8 +117,10 @@ class Controller<Action, Mutation, State>(
 
     /**
      * Configuration to define how a [Controller] logs its state errors and operations.
+     * You can change the configuration for this [Controller] here or change the
+     * [LogConfiguration.DEFAULT] for all.
      */
-    var logConfiguration: LogConfiguration = LogConfiguration.None
+    var logConfiguration: LogConfiguration = LogConfiguration.DEFAULT
 ) {
 
     private val actionChannel = BroadcastChannel<Action>(1)
@@ -160,7 +162,7 @@ class Controller<Action, Mutation, State>(
      */
     var stubEnabled: Boolean = false
         set(value) {
-            logConfiguration.log("stub ${if (value) "enabled" else "disabled"}", null)
+            logConfiguration.log("stub", if (value) "enabled" else "disabled")
             field = value
         }
 
@@ -174,7 +176,7 @@ class Controller<Action, Mutation, State>(
             .flatMapMerge { action ->
                 logConfiguration.log("action", "$action")
                 mutator(action).catch { error ->
-                    logConfiguration.log("mutator error", "$error")
+                    logConfiguration.log("mutator error", error)
                 }
             }
 
@@ -184,7 +186,7 @@ class Controller<Action, Mutation, State>(
                 reducer(previousState, mutation)
             }
             .catch { error ->
-                logConfiguration.log("reducer error", "$error")
+                logConfiguration.log("reducer error", error)
             }
 
         stateFlowJob = statesTransformer(stateFlow)
@@ -194,7 +196,10 @@ class Controller<Action, Mutation, State>(
                 logConfiguration.log("state", "$newState")
                 stateChannel.send(newState)
             }
-            .onCompletion { error -> finish(error) }
+            .onCompletion { error ->
+                cleanUp()
+                logConfiguration.log("finished", error)
+            }
             .launchIn(scope)
     }
 
@@ -206,16 +211,14 @@ class Controller<Action, Mutation, State>(
      */
     fun cancel(): State {
         val currentState = this.currentState
-        finish(null)
-        println("cancel")
+        cleanUp()
+        logConfiguration.log("finished", "via [Controller.cancel]")
         return currentState
     }
 
-    private fun finish(error: Throwable?) {
+    private fun cleanUp() {
         if (!stateFlowJob.isCancelled) stateFlowJob.cancel()
         if (!stateChannel.isClosedForSend) stateChannel.cancel()
         if (!actionChannel.isClosedForSend) actionChannel.cancel()
-
-        logConfiguration.log("finished", if (error != null) "$error" else null)
     }
 }
