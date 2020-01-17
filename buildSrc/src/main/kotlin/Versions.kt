@@ -50,9 +50,9 @@ object Versions {
 
     const val retrofit: String = "2.7.1"
 
-    const val ktlint: String = "0.36.0"
+    const val ktlint: String = "0.35.0" // available: "0.36.0"
 
-    const val aapt2: String = "3.5.2-5435860" // available: "3.5.3-5435860"
+    const val aapt2: String = "3.5.3-5435860"
 
     const val mockk: String = "1.9.3"
 
@@ -61,7 +61,7 @@ object Versions {
      * See issue 19: How to update Gradle itself?
      * https://github.com/jmfayard/buildSrcVersions/issues/19
      */
-    const val gradleLatestVersion: String = "6.0.1"
+    const val gradleLatestVersion: String = "6.1"
 }
 
 /**
@@ -70,4 +70,4 @@ object Versions {
  */
 val PluginDependenciesSpec.buildSrcVersions: PluginDependencySpec
     inline get() =
-        id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
+            id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)

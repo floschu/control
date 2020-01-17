@@ -1,11 +1,15 @@
 package at.florianschuster.control
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 
+@ExperimentalCoroutinesApi
+@FlowPreview
 class Stub<Action, Mutation, State> internal constructor(
     controller: Controller<Action, Mutation, State>
 ) {
