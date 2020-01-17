@@ -33,7 +33,7 @@ jobs:
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage.xml
+          file: ./control-core/build/reports/jacoco/test/jacocoTestReport.xml
           fail_ci_if_error: true
 
   assemble:
