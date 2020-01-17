@@ -8,6 +8,9 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 
+/**
+ * Use this stub for view testing.
+ */
 @ExperimentalCoroutinesApi
 @FlowPreview
 class Stub<Action, Mutation, State> internal constructor(

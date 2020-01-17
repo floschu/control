@@ -22,12 +22,12 @@ a [Controller](control-core/src/main/java/at/florianschuster/control/Controller.
 
 ## wiki
 
-1. [controller](https://github.com/floschu/control/wiki/1.-controller)
-2. [view/consumer](https://github.com/floschu/control/wiki/2.-view-or-consumer)
-3. [proxy](https://github.com/floschu/control/wiki/3.-proxy)
-4. [transformations](https://github.com/floschu/control/wiki/4.-transformations)
-5. [controller testing](https://github.com/floschu/control/wiki/5.-controller-testing)
-6. [view/consumer testing](https://github.com/floschu/control/wiki/6.-consumer-or-view-testing)
+1.   [controller](https://github.com/floschu/control/wiki/1.-controller)
+2.   [view/consumer](https://github.com/floschu/control/wiki/2.-view-or-consumer)
+3.   [proxy](https://github.com/floschu/control/wiki/3.-proxy)
+4.   [transformations](https://github.com/floschu/control/wiki/4.-transformations)
+5.   [controller testing](https://github.com/floschu/control/wiki/5.-controller-testing)
+6.   [view/consumer testing](https://github.com/floschu/control/wiki/6.-consumer-or-view-testing)
 
 ## examples
 
