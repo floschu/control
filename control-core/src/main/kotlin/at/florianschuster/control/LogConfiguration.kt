@@ -11,13 +11,16 @@ sealed class LogConfiguration {
         message: String? = null
     ) = "||| <control> ||| $tag -> $function${if (message != null) ": $message" else ""} |||"
 
-    internal open fun log(function: String, error: Throwable) = log(function, "$error")
-    internal open fun log(function: String, message: String?) = Unit
+    internal abstract fun log(function: String, error: Throwable)
+    internal abstract fun log(function: String, message: String?)
 
     /**
      * No logging.
      */
-    object None : LogConfiguration()
+    object None : LogConfiguration() {
+        override fun log(function: String, message: String?) = Unit
+        override fun log(function: String, error: Throwable) = Unit
+    }
 
     /**
      * Simple logging, uses [println]. Only logs errors and operation names.
@@ -25,6 +28,10 @@ sealed class LogConfiguration {
     data class Simple(val tag: String) : LogConfiguration() {
         override fun log(function: String, message: String?) {
             println(createMessage(tag, function))
+        }
+
+        override fun log(function: String, error: Throwable) {
+            println(createMessage(tag, function, "$error"))
         }
     }
 
@@ -35,10 +42,14 @@ sealed class LogConfiguration {
         override fun log(function: String, message: String?) {
             println(createMessage(tag, function, message))
         }
+
+        override fun log(function: String, error: Throwable) {
+            println(createMessage(tag, function, "$error"))
+        }
     }
 
     /**
-     * A custom logger can be attached.
+     * A custom logger.
      * Operations can be logged through [operations]. Errors can be logged through [errors].
      */
     data class Custom(
@@ -52,7 +63,7 @@ sealed class LogConfiguration {
         }
 
         override fun log(function: String, error: Throwable) {
-            if (errors != null) errors.invoke(error) else super.log(function, error)
+            if (errors != null) errors.invoke(error) else log(function, "$error")
         }
     }
 
