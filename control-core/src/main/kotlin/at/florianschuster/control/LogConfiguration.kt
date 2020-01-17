@@ -11,7 +11,7 @@ sealed class LogConfiguration {
         message: String? = null
     ) = "||| <control> ||| $tag -> $function${if (message != null) ": $message" else ""} |||"
 
-    internal fun log(function: String, error: Throwable?) = log(function, "$error")
+    internal open fun log(function: String, error: Throwable) = log(function, "$error")
     internal open fun log(function: String, message: String?) = Unit
 
     /**
@@ -38,15 +38,21 @@ sealed class LogConfiguration {
     }
 
     /**
-     * A custom logger can be attached through [logger].
+     * A custom logger can be attached.
+     * Operations can be logged through [operations]. Errors can be logged through [errors].
      */
     data class Custom(
         val tag: String,
         val elaborate: Boolean = true,
-        val logger: (String) -> Unit
+        val operations: ((String) -> Unit)? = null,
+        val errors: ((Throwable) -> Unit)? = null
     ) : LogConfiguration() {
         override fun log(function: String, message: String?) {
-            logger(createMessage(tag, function, if (elaborate) message else null))
+            operations?.invoke(createMessage(tag, function, if (elaborate) message else null))
+        }
+
+        override fun log(function: String, error: Throwable) {
+            if (errors != null) errors.invoke(error) else super.log(function, error)
         }
     }
 

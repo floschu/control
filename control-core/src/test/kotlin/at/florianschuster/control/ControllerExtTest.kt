@@ -17,7 +17,7 @@ internal class ControllerExtTest {
     @Before
     fun setup() {
         logList.clear()
-        LogConfiguration.DEFAULT = LogConfiguration.Custom("tag") { logList.add(it) }
+        LogConfiguration.DEFAULT = LogConfiguration.Custom("tag", operations = { logList.add(it) })
     }
 
     @Test

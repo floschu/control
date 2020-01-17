@@ -40,7 +40,7 @@ class GithubViewModel(
         scope = viewModelScope,
         mutator = ::mutate,
         reducer = ::reduce,
-        logConfiguration = LogConfiguration.Custom(tag = "GithubViewModel", logger = ::println)
+        logConfiguration = LogConfiguration.Custom(tag = "GithubViewModel", operations = ::println)
     )
 
     private fun mutate(action: GithubAction): Flow<Mutation> = when (action) {

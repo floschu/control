@@ -10,14 +10,13 @@ internal class LogConfigurationTest {
 
     @Test
     fun `setting default log configuration`() {
-        LogConfiguration.DEFAULT
         assertEquals(LogConfiguration.None, LogConfiguration.DEFAULT)
         LogConfiguration.DEFAULT = LogConfiguration.Simple("tag")
         assertEquals(LogConfiguration.Simple("tag"), LogConfiguration.DEFAULT)
     }
 
     @Test
-    fun `none log methods are not called`() {
+    fun `none log, methods are not called`() {
         val noneLogConfiguration = spyk(LogConfiguration.None)
         noneLogConfiguration.log(function, message)
         noneLogConfiguration.log(function, exception)
@@ -25,7 +24,7 @@ internal class LogConfigurationTest {
     }
 
     @Test
-    fun `simple log methods are called`() {
+    fun `simple log, methods are called`() {
         val simpleLogConfiguration = spyk(LogConfiguration.Simple("test"))
         simpleLogConfiguration.log(function, message)
         simpleLogConfiguration.log(function, exception)
@@ -33,7 +32,7 @@ internal class LogConfigurationTest {
     }
 
     @Test
-    fun `elaborate log methods are called`() {
+    fun `elaborate log, methods are called`() {
         val elaborateLogConfiguration = spyk(LogConfiguration.Elaborate("test"))
         elaborateLogConfiguration.log(function, message)
         elaborateLogConfiguration.log(function, exception)
@@ -41,12 +40,42 @@ internal class LogConfigurationTest {
     }
 
     @Test
-    fun `custom log methods are called`() {
+    fun `custom log, only logger provided`() {
         val customLogs = mutableListOf<String>()
-        val customLogConfiguration = LogConfiguration.Custom("test") { customLogs.add(it) }
+        val customLogConfiguration = LogConfiguration.Custom(
+            "test",
+            operations = { customLogs.add(it) }
+        )
         customLogConfiguration.log(function, message)
         customLogConfiguration.log(function, exception)
         assertEquals(2, customLogs.count())
+    }
+
+    @Test
+    fun `custom log, only error provided`() {
+        val customErrorLogs = mutableListOf<Throwable>()
+        val customLogConfiguration = LogConfiguration.Custom(
+            "test",
+            errors = { customErrorLogs.add(it) }
+        )
+        customLogConfiguration.log(function, message)
+        customLogConfiguration.log(function, exception)
+        assertEquals(1, customErrorLogs.count())
+    }
+
+    @Test
+    fun `custom log, all provided`() {
+        val customLogs = mutableListOf<String>()
+        val customErrorLogs = mutableListOf<Throwable>()
+        val customLogConfiguration = LogConfiguration.Custom(
+            "test",
+            operations = { customLogs.add(it) },
+            errors = { customErrorLogs.add(it) }
+        )
+        customLogConfiguration.log(function, message)
+        customLogConfiguration.log(function, exception)
+        assertEquals(1, customLogs.count())
+        assertEquals(1, customErrorLogs.count())
     }
 
     companion object {

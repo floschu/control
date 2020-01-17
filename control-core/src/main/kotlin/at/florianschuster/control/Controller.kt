@@ -198,7 +198,8 @@ class Controller<Action, Mutation, State>(
             }
             .onCompletion { error ->
                 cleanUp()
-                logConfiguration.log("finished", error)
+                if (error != null) logConfiguration.log("finished", error)
+                else logConfiguration.log("finished", "regularly")
             }
             .launchIn(scope)
     }
