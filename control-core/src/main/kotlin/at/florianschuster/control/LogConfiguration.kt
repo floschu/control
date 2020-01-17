@@ -5,7 +5,7 @@ package at.florianschuster.control
  */
 sealed class LogConfiguration {
 
-    protected fun createMessage(
+    internal fun createMessage(
         tag: String,
         function: String,
         message: String? = null

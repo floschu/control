@@ -28,6 +28,7 @@ dependencies {
     api(Libs.kotlin_stdlib)
     api(Libs.kotlinx_coroutines_core)
 
+    testImplementation(Libs.mockk)
     testImplementation(Libs.flow_extensions)
 }
 
