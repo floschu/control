@@ -51,8 +51,8 @@ import kotlinx.coroutines.flow.scan
  * [Controller] dies. On the other hand when [Controller.cancel] is called, the [Controller]
  * dies too.
  */
-@FlowPreview
 @ExperimentalCoroutinesApi
+@FlowPreview
 class Controller<Action, Mutation, State>(
 
     /**

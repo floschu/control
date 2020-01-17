@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.onEach
 import reactivecircus.flowbinding.android.view.clicks
 
 class CounterView : Fragment(R.layout.view_counter) {
+
     private val controller: Controller<CounterAction, CounterMutation, CounterState> =
         ControllerProvider()
 

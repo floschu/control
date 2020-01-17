@@ -10,10 +10,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import at.florianschuster.control.bind
-import at.florianschuster.control.changesFrom
 import at.florianschuster.control.githubexample.R
 import kotlinx.android.synthetic.main.view_github.*
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -22,6 +22,7 @@ import reactivecircus.flowbinding.android.widget.textChanges
 import reactivecircus.flowbinding.recyclerview.scrollEvents
 
 class GithubView : Fragment(R.layout.view_github) {
+
     private val viewModel: GithubViewModel by viewModels { ControllerViewModelFactory }
     private val adapter = RepoAdapter()
 
@@ -44,15 +45,18 @@ class GithubView : Fragment(R.layout.view_github) {
                 .sample(500)
                 .filter { it.view.shouldLoadMore() }
                 .map { GithubAction.LoadNextPage }
+                .bind(to=viewModel)
                 .bind(to = viewModel::dispatch)
                 .launchIn(scope = lifecycleScope)
 
             // state
-            viewModel.state.changesFrom { it.repos }
+            viewModel.state.map { it.repos }
+                .distinctUntilChanged()
                 .bind(to = adapter::submitList)
                 .launchIn(scope = lifecycleScope)
 
-            viewModel.state.changesFrom { it.loadingNextPage }
+            viewModel.state.map { it.loadingNextPage }
+                .distinctUntilChanged()
                 .map { if (it) View.VISIBLE else View.GONE }
                 .bind(to = loadingProgressBar::setVisibility)
                 .launchIn(scope = lifecycleScope)
@@ -66,6 +70,7 @@ class GithubView : Fragment(R.layout.view_github) {
 
     companion object {
         internal var ControllerViewModelFactory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T =
                 GithubViewModel() as T
         }
