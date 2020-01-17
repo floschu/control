@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("java-library")
     id("kotlin")
+    id("jacoco")
 }
 
 val compileKotlin: KotlinCompile by tasks
@@ -12,6 +13,16 @@ val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions { jvmTarget = JavaVersion.VERSION_1_8.toString() }
 
 sourceSets["main"].withConvention(KotlinSourceSet::class) { kotlin.srcDir("src/main/kotlin") }
+
+tasks {
+    getByName<JacocoReport>("jacocoTestReport") {
+        reports {
+            xml.isEnabled = true
+            html.isEnabled = false
+            csv.isEnabled = false
+        }
+    }
+}
 
 dependencies {
     api(Libs.kotlin_stdlib)

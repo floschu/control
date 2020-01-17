@@ -1,4 +1,4 @@
-package at.florianschuster.control.util
+package at.florianschuster.control
 
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineScope

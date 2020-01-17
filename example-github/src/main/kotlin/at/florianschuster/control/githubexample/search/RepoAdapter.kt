@@ -17,6 +17,7 @@ class RepoAdapter : ListAdapter<Repo, RepoViewHolder>(
         override fun areContentsTheSame(oldItem: Repo, newItem: Repo): Boolean = oldItem == newItem
     }
 ) {
+
     var onClick: (Repo) -> Unit = {}
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepoViewHolder =

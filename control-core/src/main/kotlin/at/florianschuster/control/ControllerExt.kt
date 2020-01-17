@@ -1,26 +1,35 @@
 package at.florianschuster.control
 
-import at.florianschuster.control.configuration.Control
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 /**
- * Maps changes from a [State] Flow and only emits those that are distinct
- * from their immediate predecessors.
+ * Binds a [Flow] to an non suspending block.
  */
 @ExperimentalCoroutinesApi
-fun <State, SubState> Flow<State>.changesFrom(
-    mapper: (State) -> SubState
-): Flow<SubState> = map { mapper(it) }.distinctUntilChanged()
+fun <T> Flow<T>.bind(
+    to: (T) -> Unit
+): Flow<T> = onEach { to(it) }.catch { error ->
+    LogConfiguration.DEFAULT.log("bind", error)
+}
 
 /**
- * Binds a [Flow] to an UI target or a [PublishProcessor].
- * Also handles errors as defined in [Control].
+ * Binds a [Flow] of [Action] to [Controller.dispatch].
  */
 @ExperimentalCoroutinesApi
-fun <T> Flow<T>.bind(to: (T) -> Unit): Flow<T> =
-    onEach { to(it) }.catch { e -> Control.log(e) }
+@FlowPreview
+fun <Action> Flow<Action>.bind(
+    to: Controller<Action, *, *>
+): Flow<Action> = bind(to::dispatch)
+
+/**
+ * Binds a [Flow] of [Action] to [Proxy.dispatch].
+ */
+@ExperimentalCoroutinesApi
+@FlowPreview
+fun <Action> Flow<Action>.bind(
+    to: Proxy<Action, *>
+): Flow<Action> = bind(to::dispatch)

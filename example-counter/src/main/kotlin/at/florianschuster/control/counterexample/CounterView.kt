@@ -4,15 +4,18 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import at.florianschuster.control.bind
+import at.florianschuster.control.Controller
 import kotlinx.android.synthetic.main.view_counter.*
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import reactivecircus.flowbinding.android.view.clicks
 
 class CounterView : Fragment(R.layout.view_counter) {
-    private val controller: CounterController = ControllerProvider()
+
+    private val controller: Controller<CounterAction, CounterMutation, CounterState> =
+        ControllerProvider()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -20,25 +23,25 @@ class CounterView : Fragment(R.layout.view_counter) {
         // action
         increaseButton.clicks()
             .map { CounterAction.Increment }
-            .bind(to = controller.action)
+            .onEach { controller.dispatch(it) }
             .launchIn(scope = lifecycleScope)
 
         decreaseButton.clicks()
             .map { CounterAction.Decrement }
-            .bind(to = controller.action)
+            .onEach { controller.dispatch(it) }
             .launchIn(scope = lifecycleScope)
 
         // state
         controller.state.map { it.value }
             .distinctUntilChanged()
             .map { "$it" }
-            .bind(to = valueTextView::setText)
+            .onEach { valueTextView.text = it }
             .launchIn(scope = lifecycleScope)
 
         controller.state.map { it.loading }
             .distinctUntilChanged()
             .map { if (it) View.VISIBLE else View.GONE }
-            .bind(to = loadingProgressBar::setVisibility)
+            .onEach { loadingProgressBar.visibility = it }
             .launchIn(scope = lifecycleScope)
     }
 
@@ -48,6 +51,7 @@ class CounterView : Fragment(R.layout.view_counter) {
     }
 
     companion object {
-        internal var ControllerProvider: () -> CounterController = { CounterController() }
+        internal var ControllerProvider: () -> Controller<CounterAction, CounterMutation, CounterState> =
+            { CounterController() }
     }
 }

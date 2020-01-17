@@ -8,6 +8,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import at.florianschuster.control.Controller
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import org.junit.Before
@@ -24,7 +25,7 @@ class CounterViewTest {
     @get:Rule
     val activityRule = activityScenarioRule<TestActivity>()
 
-    private lateinit var controller: CounterController
+    private lateinit var controller: Controller<CounterAction, CounterMutation, CounterState>
 
     @Before
     fun setup() {

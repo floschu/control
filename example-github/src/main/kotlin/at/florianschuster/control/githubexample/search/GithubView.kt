@@ -10,10 +10,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import at.florianschuster.control.bind
-import at.florianschuster.control.changesFrom
 import at.florianschuster.control.githubexample.R
 import kotlinx.android.synthetic.main.view_github.*
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -22,7 +22,8 @@ import reactivecircus.flowbinding.android.widget.textChanges
 import reactivecircus.flowbinding.recyclerview.scrollEvents
 
 class GithubView : Fragment(R.layout.view_github) {
-    private val controller: GithubControllerViewModel by viewModels { ControllerViewModelFactory }
+
+    private val viewModel: GithubViewModel by viewModels { ControllerViewModelFactory }
     private val adapter = RepoAdapter()
 
     init {
@@ -36,23 +37,26 @@ class GithubView : Fragment(R.layout.view_github) {
             searchEditText.textChanges()
                 .debounce(500)
                 .map { it.toString() }
-                .map { GithubController.Action.UpdateQuery(it) }
-                .bind(to = controller.action)
+                .map { GithubAction.UpdateQuery(it) }
+                .bind(to = viewModel::dispatch)
                 .launchIn(scope = lifecycleScope)
 
             repoRecyclerView.scrollEvents()
                 .sample(500)
                 .filter { it.view.shouldLoadMore() }
-                .map { GithubController.Action.LoadNextPage }
-                .bind(to = controller.action)
+                .map { GithubAction.LoadNextPage }
+                .bind(to=viewModel)
+                .bind(to = viewModel::dispatch)
                 .launchIn(scope = lifecycleScope)
 
             // state
-            controller.state.changesFrom { it.repos }
+            viewModel.state.map { it.repos }
+                .distinctUntilChanged()
                 .bind(to = adapter::submitList)
                 .launchIn(scope = lifecycleScope)
 
-            controller.state.changesFrom { it.loadingNextPage }
+            viewModel.state.map { it.loadingNextPage }
+                .distinctUntilChanged()
                 .map { if (it) View.VISIBLE else View.GONE }
                 .bind(to = loadingProgressBar::setVisibility)
                 .launchIn(scope = lifecycleScope)
@@ -66,8 +70,9 @@ class GithubView : Fragment(R.layout.view_github) {
 
     companion object {
         internal var ControllerViewModelFactory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                GithubControllerViewModel() as T
+                GithubViewModel() as T
         }
     }
 }

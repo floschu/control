@@ -8,6 +8,7 @@ import at.florianschuster.test.flow.TestFlow
 import at.florianschuster.test.flow.emissionCount
 import at.florianschuster.test.flow.emissions
 import at.florianschuster.test.flow.expect
+import at.florianschuster.test.flow.lastEmission
 import at.florianschuster.test.flow.testIn
 import io.mockk.Called
 import io.mockk.coEvery
@@ -16,23 +17,23 @@ import io.mockk.mockk
 import org.junit.Rule
 import org.junit.Test
 
-internal class GithubControllerTest {
+internal class GithubViewModelTest {
 
     @get:Rule
-    val testScopeRule = TestCoroutineScopeRule()
+    val testScopeRule = TestCoroutineScopeRule(overrideMainDispatcher = true)
 
     private val githubApi: GithubApi = mockk {
         coEvery { repos(any(), 1) } returns mockResultPage1
         coEvery { repos(any(), 2) } returns mockResultPage2
     }
-    private lateinit var controller: GithubController
-    private lateinit var states: TestFlow<GithubController.State>
+    private lateinit var sut: GithubViewModel
+    private lateinit var states: TestFlow<GithubState>
 
     private fun `given github search controller`(
-        initialState: GithubController.State = GithubController.State()
+        initialState: GithubState = GithubState()
     ) {
-        controller = GithubController(initialState, githubApi).apply { scope = testScopeRule }
-        states = controller.state.testIn(testScopeRule)
+        sut = GithubViewModel(initialState, githubApi)
+        states = sut.state.testIn(testScopeRule)
     }
 
     @Test
@@ -42,16 +43,16 @@ internal class GithubControllerTest {
         `given github search controller`()
 
         // when
-        controller.action(GithubController.Action.UpdateQuery(query))
+        sut.dispatch(GithubAction.UpdateQuery(query))
 
         // then
         coVerify(exactly = 1) { githubApi.repos(query, 1) }
         states expect emissions(
-            GithubController.State(),
-            GithubController.State(query = query),
-            GithubController.State(query = query, loadingNextPage = true),
-            GithubController.State(query, mockReposPage1, 1, true),
-            GithubController.State(query, mockReposPage1, 1, false)
+            GithubState(),
+            GithubState(query = query),
+            GithubState(query = query, loadingNextPage = true),
+            GithubState(query, mockReposPage1, 1, true),
+            GithubState(query, mockReposPage1, 1, false)
         )
     }
 
@@ -62,14 +63,11 @@ internal class GithubControllerTest {
         `given github search controller`()
 
         // when
-        controller.action(GithubController.Action.UpdateQuery(query))
+        sut.dispatch(GithubAction.UpdateQuery(query))
 
         // then
         coVerify { githubApi.repos(any(), any()) wasNot Called }
-        states expect emissions(
-            GithubController.State(),
-            GithubController.State(query = query)
-        )
+        states expect lastEmission(GithubState(query = query))
     }
 
     @Test
@@ -77,30 +75,30 @@ internal class GithubControllerTest {
         // given
         val query = "control"
         `given github search controller`(
-            GithubController.State(query = query, repos = mockReposPage1)
+            GithubState(query = query, repos = mockReposPage1)
         )
 
         // when
-        controller.action(GithubController.Action.LoadNextPage)
+        sut.dispatch(GithubAction.LoadNextPage)
 
         // then
         coVerify(exactly = 1) { githubApi.repos(any(), 2) }
         states expect emissions(
-            GithubController.State(query = query, repos = mockReposPage1),
-            GithubController.State(query, mockReposPage1, 1, true),
-            GithubController.State(query, mockReposPage1 + mockReposPage2, 2, true),
-            GithubController.State(query, mockReposPage1 + mockReposPage2, 2, false)
+            GithubState(query = query, repos = mockReposPage1),
+            GithubState(query, mockReposPage1, 1, true),
+            GithubState(query, mockReposPage1 + mockReposPage2, 2, true),
+            GithubState(query, mockReposPage1 + mockReposPage2, 2, false)
         )
     }
 
     @Test
     fun `load next page only when currently not loading`() {
         // given
-        val initialState = GithubController.State(loadingNextPage = true)
+        val initialState = GithubState(loadingNextPage = true)
         `given github search controller`(initialState)
 
         // when
-        controller.action(GithubController.Action.LoadNextPage)
+        sut.dispatch(GithubAction.LoadNextPage)
 
         // then
         coVerify { githubApi.repos(any(), any()) wasNot Called }
@@ -116,15 +114,15 @@ internal class GithubControllerTest {
         `given github search controller`()
 
         // when
-        controller.action(GithubController.Action.UpdateQuery(query))
+        sut.dispatch(GithubAction.UpdateQuery(query))
 
         // then
         coVerify(exactly = 1) { githubApi.repos(query, 1) }
         states expect emissions(
-            GithubController.State(),
-            GithubController.State(query = query),
-            GithubController.State(query = query, loadingNextPage = true),
-            GithubController.State(query = query, loadingNextPage = false)
+            GithubState(),
+            GithubState(query = query),
+            GithubState(query = query, loadingNextPage = true),
+            GithubState(query = query, loadingNextPage = false)
         )
     }
 

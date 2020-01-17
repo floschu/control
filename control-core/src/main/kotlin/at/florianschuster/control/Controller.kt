@@ -1,30 +1,29 @@
 package at.florianschuster.control
 
-import at.florianschuster.control.configuration.Control
-import at.florianschuster.control.configuration.Operation
-import at.florianschuster.control.util.AssociatedObject
-import at.florianschuster.control.util.ControllerScope
-import at.florianschuster.control.util.safeOffer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.scan
 
 /**
- * A [Controller] is an UI-independent class that controls the state of a view. The role
- * of a [Controller] is to separate business logic and control flow away from a view. Every
- * view should have its own [Controller] and delegates all logic to it. A [Controller] has no
- * dependency to a view, so it can easily be unit tested.
+ * A [Controller] is an UI-independent class that stores and controls the state of a view/a
+ * consumer. The role of a [Controller] is to separate business logic away from a view to
+ * bundle information and make unit testing easy. Every view/consumer should have its own
+ * [Controller] and delegates all logic to it. A [Controller] has no dependency to a view,
+ * so it can easily be unit tested.
  *
  * <pre>
  *                  [Action] via [action]
@@ -41,186 +40,185 @@ import kotlinx.coroutines.flow.scan
  * </pre>
  *
  * Internally the [Controller]...
- * 1. ... receives an [Action] via [action] and handles it inside [Controller.mutate]. Here all
- * asynchronous side effects happen such as e.g. API calls. The function then returns a
- * [Flow] of [Mutation].
- * 2. ... receives a [Mutation] in [Controller.reduce]. Here the previous [State] and the incoming
+ * 1. ... receives an [Action] via [Controller.dispatch] and handles it inside the
+ * [mutator]. Here all asynchronous side effects happen such as e.g. API calls.
+ * The function then returns a [Flow] of 0..n [Mutation].
+ * 2. ... receives a [Mutation] in [reducer]. Here the previous [State] and the incoming
  * [Mutation] are reduced into a new [State] which is then published via [state].
  *
- * To support global states (such as e.g. a user session) there is a [Controller.transformMutation]
- * that takes global states and maps them to a [Controller] specific [Mutation]. When the global
- * state changes, a new [Mutation] is triggered and the current [State] is reduced.
- *
- * After you are done, call [Controller.cancel] to clear up resources.
+ * The [Controller] "lives" as long as the [state] [Flow] is active. How long it stays active
+ * depends: on the one hand it is tied to the [scope], meaning when [scope] is cancelled, the
+ * [Controller] dies. On the other hand when [Controller.cancel] is called, the [Controller]
+ * dies too.
  */
-@FlowPreview
 @ExperimentalCoroutinesApi
-interface Controller<Action, Mutation, State> {
+@FlowPreview
+class Controller<Action, Mutation, State>(
 
     /**
-     * A [String] tag that is used for [Operation] logging.
+     * The initial [State].
      */
-    val tag: String get() = this::class.java.simpleName
+    val initialState: State,
 
     /**
      * A [CoroutineScope] used to launch the [state] [Flow] in.
      * Per default [ControllerScope] is used.
      *
      * For testing with delay controls this can be overwritten with [TestCoroutineScope].
-     *
-     * This has be set before the [state] [Flow] is created, meaning
-     * before accessing [action], [state] or [currentState]
      */
-    var scope: CoroutineScope
-        get() = AssociatedMap.Scope().valueForOrCreate(this) { ControllerScope() }
-        set(value) {
-            AssociatedMap.Scope().setValue(this, value)
-            Control.log { Operation.ScopeSet(tag, value::class.java.simpleName) }
-        }
+    internal val scope: CoroutineScope = ControllerScope(),
 
     /**
-     * The initial [State].
+     * Converts an [Action] to 0..n [Mutation]'s. This is the place to perform side-effects
+     * such as async or suspending tasks.
      */
-    val initialState: State
+    mutator: (action: Action) -> Flow<Mutation> = { emptyFlow() },
 
     /**
-     * The current [State].
+     * Generates a new state with the previous [State] and the incoming [Mutation]. It is purely
+     * functional, it does not perform any side-effects. This method is called every time
+     * a [Mutation] is committed via the [mutator].
      */
-    val currentState: State get() = _state.value
+    reducer: (previousState: State, mutation: Mutation) -> State = { state, _ -> state },
 
     /**
-     * The [Action] from the view. Bind user inputs to this [PublishProcessor].
-     */
-    val action: PublishProcessor<Action>
-        get() {
-            _state // init state stream
-            return _action
-        }
-
-    /**
-     * The [State] [Flow]. Use this to observe the state changes.
-     */
-    val state: Flow<State> get() = _state.asFlow()
-
-    /**
-     * Converts an [Action] to a [Mutation]. This is the place to perform side-effects such as
-     * async or suspending tasks.
-     */
-    fun mutate(action: Action): Flow<Mutation> = emptyFlow()
-
-    /**
-     * Generates a new state with the previous [State] and the incoming [Mutation]. The method
-     * should be purely functional, it should not perform any side-effects. This method is called
-     * every time a [Mutation] is committed via [mutate].
-     */
-    fun reduce(previousState: State, mutation: Mutation): State = previousState
-
-    /**
-     * Transforms the [Action]. Use this function to combine with other [Flow]'s. This method is
-     * called once before the [state] [Flow] is created.
+     * Transforms the [Action] stream. Use this to combine with other [Flow]'s. This method
+     * is called once before the [state] [Flow] is created.
      *
      * A possible use case would be to perform an initial action:
      * ```
-     * override fun transformAction(action: Flow<Action>): Flow<Action> {
-     *     return action.onStart { emit(Action.InitialLoad) }
+     * val actionsTransformer: (actions: Flow<Action>) -> Flow<Action> = { actions ->
+     *     actions.onStart { emit(Action.InitialLoad) }
      * }
      * ```
      */
-    fun transformAction(action: Flow<Action>): Flow<Action> = action
+    actionsTransformer: (actions: Flow<Action>) -> Flow<Action> = { it },
 
     /**
-     * Transforms the [Mutation] stream. Implement this method to transform or combine with other
+     * Transforms the [Mutation] stream. Implement this to transform or combine with other
      * [Flow]'s. This method is called once before the [state] [Flow] is created.
      *
      * A possible use case would be to implement a global state:
      * ```
      * val userSession: Flow<Session>
      *
-     * override fun transformMutation(mutation: Flow<Mutation>): Flow<Mutation> {
-     *     return flowOf(mutation, userSession.map { Mutation.SetSession(it) }).flattenMerge()
+     * val mutationsTransformer: (mutations: Flow<Mutation>) -> Flow<Mutation> = { mutations ->
+     *     flowOf(mutations, userSession.map { Mutation.SetSession(it) }).flattenMerge()
      * }
      * ```
      */
-    fun transformMutation(mutation: Flow<Mutation>): Flow<Mutation> = mutation
+    mutationsTransformer: (mutations: Flow<Mutation>) -> Flow<Mutation> = { it },
 
     /**
      * Transforms the [State] stream. This method is called once after the [state] [Flow] is
      * created.
      */
-    fun transformState(state: Flow<State>): Flow<State> = state
+    statesTransformer: (states: Flow<State>) -> Flow<State> = { it },
 
     /**
-     * Clears all resources of this [Controller] and stops the [state] stream.
+     * Configuration to define how a [Controller] logs its state errors and operations.
+     * You can change the configuration for this [Controller] here or change the
+     * [LogConfiguration.DEFAULT] for all.
      */
-    fun cancel() {
-        scope.cancel()
-        AssociatedMap.values().forEach { it().clearFor(this) }
-        Control.log { Operation.Canceled(tag) }
+    var logConfiguration: LogConfiguration = LogConfiguration.DEFAULT
+) {
+
+    private val actionChannel = BroadcastChannel<Action>(1)
+    private val stateChannel = ConflatedBroadcastChannel(initialState)
+    private val stateFlowJob: Job
+
+    /**
+     * The [State] [Flow]. Use this to observe the state changes.
+     */
+    val state: Flow<State>
+        get() = if (stubEnabled) stub.stateChannel.asFlow() else stateChannel.asFlow()
+
+    /**
+     * The current [State].
+     */
+    val currentState: State
+        get() = if (stubEnabled) stub.stateChannel.value else stateChannel.value
+
+    /**
+     * Dispatches an [Action] to be processed by this [Controller].
+     */
+    fun dispatch(action: Action) {
+        if (stubEnabled) {
+            stub.actionChannel.offer(action)
+        } else {
+            actionChannel.offer(action)
+        }
     }
 
     /**
      * Set to true if you want to enable stubbing with [Stub].
      *
-     * This has be set before binding [Controller.action] or [Controller.state].
+     * This has be set before binding [Controller.state].
      */
-    var stubEnabled: Boolean
-        get() = AssociatedMap.StubEnabled().valueForOrCreate(this) { false }
+    var stubEnabled: Boolean = false
         set(value) {
-            AssociatedMap.StubEnabled().setValue(this, value)
-            Control.log { Operation.StubEnabled(tag, value) }
+            logConfiguration.log("stub", if (value) "enabled" else "disabled")
+            field = value
         }
 
     /**
      * Use this [Stub] for View testing.
      */
-    val stub: Stub<Action, Mutation, State>
-        get() = AssociatedMap.Stub().valueForOrCreate(this) { Stub(this) }
+    val stub: Stub<Action, Mutation, State> by lazy { Stub(this) }
 
-    private val _action: PublishProcessor<Action>
-        get() = when {
-            stubEnabled -> stub.action
-            else -> AssociatedMap.Action().valueForOrCreate(this) { PublishProcessor<Action>() }
-        }
+    /**
+     * Whether the [Controller] is cancelled.
+     */
+    val cancelled: Boolean get() = stateFlowJob.isCancelled
 
-    private val _state: ConflatedBroadcastChannel<State>
-        get() = when {
-            stubEnabled -> stub.state
-            else -> AssociatedMap.State().valueForOrCreate(this, ::initState)
-        }
-
-    private fun initState(): ConflatedBroadcastChannel<State> {
-        val mutationFlow: Flow<Mutation> = transformAction(_action)
-            .flatMapMerge {
-                Control.log { Operation.Mutate(tag, it) }
-                mutate(it).catch { e -> Control.log(e) }
+    init {
+        val mutationFlow: Flow<Mutation> = actionsTransformer(actionChannel.asFlow())
+            .flatMapMerge { action ->
+                logConfiguration.log("action", "$action")
+                mutator(action).catch { error ->
+                    logConfiguration.log("mutator error", error)
+                }
             }
 
-        val stateFlow: Flow<State> = transformMutation(mutationFlow)
-            .scan(initialState) { previousState, incomingMutation ->
-                val reducedState = reduce(previousState, incomingMutation)
-                Control.log { Operation.Reduce(tag, previousState, incomingMutation, reducedState) }
-                reducedState
+        val stateFlow: Flow<State> = mutationsTransformer(mutationFlow)
+            .scan(initialState) { previousState, mutation ->
+                logConfiguration.log("mutation", "$mutation")
+                reducer(previousState, mutation)
             }
-            .catch { e -> Control.log(e) }
+            .catch { error ->
+                logConfiguration.log("reducer error", error)
+            }
 
-        val stateChannel: ConflatedBroadcastChannel<State> = ConflatedBroadcastChannel(initialState)
-
-        // todo use .share() if available
-        transformState(stateFlow)
-            .onStart { Control.log { Operation.Initialized(tag, initialState) } }
-            .onEach { stateChannel.safeOffer(it) }
+        stateFlowJob = statesTransformer(stateFlow)
+            .distinctUntilChanged()
+            .onStart { logConfiguration.log("initialized", "$initialState") }
+            .onEach { newState ->
+                logConfiguration.log("state", "$newState")
+                stateChannel.send(newState)
+            }
+            .onCompletion { error ->
+                cleanUp()
+                logConfiguration.log("finished", error)
+            }
             .launchIn(scope)
-
-        return stateChannel
     }
 
-    companion object {
-        private enum class AssociatedMap(
-            private val associatedObject: AssociatedObject = AssociatedObject()
-        ) {
-            Scope, Action, State, Stub, StubEnabled;
+    /**
+     * Cancels the [Controller]. Once a [Controller] is cancelled, the state [Flow] is unusable.
+     * Check whether a Controller is cancelled with [Controller.cancelled]
+     *
+     * @return State the last [currentState] of the [Controller]
+     */
+    fun cancel(): State {
+        val currentState = this.currentState
+        cleanUp()
+        logConfiguration.log("finished", "via [Controller.cancel]")
+        return currentState
+    }
 
-            operator fun invoke(): AssociatedObject = associatedObject
-        }
+    private fun cleanUp() {
+        if (!stateFlowJob.isCancelled) stateFlowJob.cancel()
+        if (!stateChannel.isClosedForSend) stateChannel.cancel()
+        if (!actionChannel.isClosedForSend) actionChannel.cancel()
     }
 }

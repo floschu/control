@@ -1,5 +1,6 @@
 package at.florianschuster.control.counterexample
 
+import at.florianschuster.control.Controller
 import at.florianschuster.test.flow.TestCoroutineScopeRule
 import at.florianschuster.test.flow.TestFlow
 import at.florianschuster.test.flow.emissionCount
@@ -16,11 +17,11 @@ internal class CounterControllerTest {
     @get:Rule
     val testScopeRule = TestCoroutineScopeRule()
 
-    private lateinit var controller: CounterController
+    private lateinit var controller: Controller<CounterAction, CounterMutation, CounterState>
     private lateinit var states: TestFlow<CounterState>
 
     private fun `given counter controller`() {
-        controller = CounterController().apply { scope = testScopeRule }
+        controller = CounterController(testScopeRule)
         states = controller.state.testIn(testScopeRule)
     }
 
@@ -30,7 +31,7 @@ internal class CounterControllerTest {
         `given counter controller`()
 
         // when
-        controller.action(CounterAction.Increment)
+        controller.dispatch(CounterAction.Increment)
         advanceTimeBy(1000)
 
         // then
@@ -49,11 +50,11 @@ internal class CounterControllerTest {
         `given counter controller`()
 
         // when
-        controller.action(CounterAction.Increment)
-        controller.action(CounterAction.Increment)
-        controller.action(CounterAction.Decrement)
-        controller.action(CounterAction.Decrement)
-        controller.action(CounterAction.Decrement)
+        controller.dispatch(CounterAction.Increment)
+        controller.dispatch(CounterAction.Increment)
+        controller.dispatch(CounterAction.Decrement)
+        controller.dispatch(CounterAction.Decrement)
+        controller.dispatch(CounterAction.Decrement)
 
         advanceTimeBy(5000)
 

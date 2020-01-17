@@ -17,6 +17,7 @@ buildscript {
 plugins {
     buildSrcVersions
     id("org.jlleitschuh.gradle.ktlint").version(Versions.org_jlleitschuh_gradle_ktlint_gradle_plugin)
+    id("jacoco")
 }
 
 allprojects {

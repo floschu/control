@@ -18,7 +18,6 @@ jobs:
         run: ./gradlew lint
 
   test:
-    needs: lint
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
@@ -31,7 +30,7 @@ jobs:
         run: ./gradlew test
 
   assemble:
-    needs: lint
+    needs: [lint, test]
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
@@ -42,3 +41,22 @@ jobs:
           java-version: 1.8
       - name: "Assemble"
         run: ./gradlew assemble
+
+  codecoverage:
+    needs: [lint, test, assemble]
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v1
+      - name: "Set up Java"
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: "Create coverage reports"
+        run: ./gradlew check jacocoTestReport
+      - name: "Upload coverage to codecov"
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./control-core/build/reports/jacoco/test/jacocoTestReport.xml
+          fail_ci_if_error: true
