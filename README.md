@@ -22,6 +22,8 @@ a [Controller](control-core/src/main/java/at/florianschuster/control/Controller.
 
 ## wiki
 
+visit the wiki for more detailed information:
+
 1. [controller](https://github.com/floschu/control/wiki/1.-controller)
 2. [view/consumer](https://github.com/floschu/control/wiki/2.-view-or-consumer)
 3. [proxy](https://github.com/floschu/control/wiki/3.-proxy)
