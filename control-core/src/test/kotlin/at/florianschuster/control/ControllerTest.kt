@@ -7,7 +7,6 @@ import at.florianschuster.test.flow.emissions
 import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.regularCompletion
 import at.florianschuster.test.flow.testIn
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,6 +18,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import org.junit.Rule
 import org.junit.Test
+import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -94,8 +94,8 @@ internal class ControllerTest {
     }
 
     @Test
-    fun `stream ignores error from mutate`() {
-        val controller = CounterProxy(testScopeRule, mutateErrorIndex = 2)
+    fun `stream ignores error from mutator`() {
+        val controller = CounterProxy(testScopeRule, mutatorErrorIndex = 2)
         val testFlow = controller.state.testIn(testScopeRule)
 
         controller.dispatch(Unit)
@@ -198,35 +198,6 @@ internal class ControllerTest {
         assertEquals(listOf("initialState"), controller.currentState)
     }
 
-    // todo wait for Flow.takeUntil
-    // @Test
-    // fun `cancel producing flow in mutate`() = testScopeRule.runBlockingTest {
-    //     val controller = StopwatchController(testScopeRule)
-    //
-    //     controller.action(StopwatchController.Action.Start)
-    //     testScopeRule.advanceTimeBy(2000)
-    //     controller.action(StopwatchController.Action.Stop)
-    //
-    //     controller.action(StopwatchController.Action.Start)
-    //     testScopeRule.advanceTimeBy(3000)
-    //     controller.action(StopwatchController.Action.Stop)
-    //
-    //     controller.action(StopwatchController.Action.Start)
-    //     testScopeRule.advanceTimeBy(4000)
-    //     controller.action(StopwatchController.Action.Stop)
-    //
-    //     // this should be ignored
-    //     controller.action(StopwatchController.Action.Start)
-    //     testScopeRule.advanceTimeBy(500)
-    //     controller.action(StopwatchController.Action.Stop)
-    //
-    //     controller.action(StopwatchController.Action.Start)
-    //     testScopeRule.advanceTimeBy(1000)
-    //     controller.action(StopwatchController.Action.Stop)
-    //
-    //     assertEquals(10, controller.currentState) // 2+3+4+1
-    // }
-
     @Suppress("TestFunctionName")
     private fun OperationController(
         scope: CoroutineScope
@@ -256,9 +227,10 @@ internal class ControllerTest {
         statesTransformer = { states -> states.map { it + "transformedState" } }
     )
 
+    @Suppress("TestFunctionName")
     private fun CounterProxy(
         scope: CoroutineScope,
-        mutateErrorIndex: Int? = null
+        mutatorErrorIndex: Int? = null
     ): Proxy<Unit, Int> = object : Proxy<Unit, Int> {
 
         override val controller = Controller<Unit, Unit, Int>(
@@ -266,9 +238,9 @@ internal class ControllerTest {
             initialState = 0,
             mutator = { action ->
                 when (currentState) {
-                    mutateErrorIndex -> flow {
+                    mutatorErrorIndex -> flow {
                         emit(action)
-                        throw CancellationException()
+                        throw IOException()
                     }
                     else -> flowOf(action)
                 }
@@ -276,31 +248,4 @@ internal class ControllerTest {
             reducer = { previousState, _ -> previousState + 1 }
         )
     }
-
-    // class StopwatchProxy(
-    //     scope: CoroutineScope
-    // ) : Proxy<StopwatchProxy.Action, Int> {
-    //
-    //     enum class Action { Start, Stop }
-    //
-    //     override val controller = Controller<Action, Int, Int>(
-    //
-    //         initialState = 0,
-    //         scope = scope,
-    //         mutator = { action ->
-    //             when (action) {
-    //                 Action.Start -> {
-    //                     flow {
-    //                         while (true) {
-    //                             delay(1000)
-    //                             emit(1)
-    //                         }
-    //                     }.takeUntil(this@StopwatchController.action.filter { it == Action.Stop })
-    //                 }
-    //                 Action.Stop -> emptyFlow()
-    //             }
-    //         },
-    //         reducer = { previousState, mutation -> previousState + mutation }
-    //     )
-    // }
 }
