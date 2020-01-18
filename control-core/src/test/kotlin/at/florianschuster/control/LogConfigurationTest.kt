@@ -46,6 +46,7 @@ internal class LogConfigurationTest {
         val customLogs = mutableListOf<String>()
         val customLogConfiguration = LogConfiguration.Custom(
             "test",
+            elaborate = true,
             operations = { customLogs.add(it) }
         )
         customLogConfiguration.log(function, message)
@@ -71,6 +72,7 @@ internal class LogConfigurationTest {
         val customErrorLogs = mutableListOf<Throwable>()
         val customLogConfiguration = LogConfiguration.Custom(
             "test",
+            elaborate = false,
             operations = { customLogs.add(it) },
             errors = { customErrorLogs.add(it) }
         )
