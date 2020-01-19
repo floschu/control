@@ -10,7 +10,7 @@ import org.junit.Test
 import java.io.IOException
 import kotlin.test.assertEquals
 
-internal class ControllerExtTest {
+internal class ControlExtTest {
 
     private val logList = mutableListOf<String>()
 
