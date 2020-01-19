@@ -1,15 +1,16 @@
 package at.florianschuster.control.githubexample.search
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import at.florianschuster.control.Controller
-import at.florianschuster.control.Proxy
 import at.florianschuster.control.LogConfiguration
+import at.florianschuster.control.Proxy
 import at.florianschuster.control.githubexample.GithubApi
 import at.florianschuster.control.githubexample.Repo
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 
 sealed class GithubAction {
     data class UpdateQuery(val text: String) : GithubAction()
@@ -37,7 +38,6 @@ class GithubViewModel(
 
     override val controller: Controller<GithubAction, Mutation, GithubState> = Controller(
         initialState = initialState,
-        scope = viewModelScope,
         mutator = ::mutate,
         reducer = ::reduce,
         logConfiguration = LogConfiguration.Custom(tag = "GithubViewModel", operations = ::println)
@@ -75,10 +75,18 @@ class GithubViewModel(
             is Mutation.SetLoadingNextPage -> previousState.copy(loadingNextPage = mutation.loading)
         }
 
-    private suspend fun search(query: String, page: Int): List<Repo>? = try {
-        api.repos(query, page).items
-    } catch (e: Exception) {
-        println("Search Error: $e")
-        null
+    private suspend fun search(query: String, page: Int): List<Repo>? =
+        withContext(Dispatchers.IO) {
+            try {
+                api.repos(query, page).items
+            } catch (e: Exception) {
+                println("Search Error: $e")
+                null
+            }
+        }
+
+    override fun onCleared() {
+        super.onCleared()
+        cancel()
     }
 }
