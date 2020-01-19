@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import at.florianschuster.control.Controller
 import kotlinx.android.synthetic.main.view_counter.*
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
@@ -14,8 +13,7 @@ import reactivecircus.flowbinding.android.view.clicks
 
 class CounterView : Fragment(R.layout.view_counter) {
 
-    private val controller: Controller<CounterAction, CounterMutation, CounterState> =
-        ControllerProvider()
+    private val controller: CounterController = ControllerProvider()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -51,7 +49,6 @@ class CounterView : Fragment(R.layout.view_counter) {
     }
 
     companion object {
-        internal var ControllerProvider: () -> Controller<CounterAction, CounterMutation, CounterState> =
-            { CounterController() }
+        internal var ControllerProvider: () -> CounterController = { CounterController() }
     }
 }

@@ -30,9 +30,11 @@ interface Proxy<Action, State> {
      * See [Controller.state] for more details.
      */
     val state: Flow<State> get() = controller.state
-
-    /**
-     * See [Controller.cancel] for more details.
-     */
-    fun cancel() = controller.cancel()
 }
+
+/**
+ * See [Controller.cancel] for more details.
+ */
+@ExperimentalCoroutinesApi
+@FlowPreview
+fun <State> Proxy<*, State>.cancel() = controller.cancel()

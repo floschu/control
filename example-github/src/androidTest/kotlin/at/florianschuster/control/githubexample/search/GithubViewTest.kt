@@ -38,7 +38,7 @@ internal class GithubViewTest {
     @Before
     fun setup() {
         viewModel = GithubViewModel().apply { controller.stubEnabled = true }
-        GithubView.ControllerViewModelFactory = object : ViewModelProvider.Factory {
+        GithubView.GithubViewModelFactory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T = viewModel as T
         }
         activityRule.scenario.onActivity { it.setFragment(GithubView()) }

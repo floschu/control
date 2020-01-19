@@ -32,7 +32,7 @@ internal class GithubViewModelTest {
     private fun `given github search controller`(
         initialState: GithubState = GithubState()
     ) {
-        sut = GithubViewModel(initialState, githubApi)
+        sut = GithubViewModel(initialState, githubApi, testScopeRule)
         states = sut.state.testIn(testScopeRule)
     }
 

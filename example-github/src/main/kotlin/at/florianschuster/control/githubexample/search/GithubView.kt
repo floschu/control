@@ -23,7 +23,7 @@ import reactivecircus.flowbinding.recyclerview.scrollEvents
 
 class GithubView : Fragment(R.layout.view_github) {
 
-    private val viewModel: GithubViewModel by viewModels { ControllerViewModelFactory }
+    private val viewModel: GithubViewModel by viewModels { GithubViewModelFactory }
     private val adapter = RepoAdapter()
 
     init {
@@ -45,7 +45,7 @@ class GithubView : Fragment(R.layout.view_github) {
                 .sample(500)
                 .filter { it.view.shouldLoadMore() }
                 .map { GithubAction.LoadNextPage }
-                .bind(to=viewModel)
+                .bind(to = viewModel)
                 .bind(to = viewModel::dispatch)
                 .launchIn(scope = lifecycleScope)
 
@@ -69,10 +69,9 @@ class GithubView : Fragment(R.layout.view_github) {
     }
 
     companion object {
-        internal var ControllerViewModelFactory = object : ViewModelProvider.Factory {
+        internal var GithubViewModelFactory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                GithubViewModel() as T
+            override fun <T : ViewModel> create(modelClass: Class<T>): T = GithubViewModel() as T
         }
     }
 }

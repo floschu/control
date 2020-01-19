@@ -9,27 +9,29 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 
 // action triggered by view
-enum class CounterAction {
+internal enum class CounterAction {
     Increment, Decrement
 }
 
 // mutation that is used to alter the state
-sealed class CounterMutation {
+internal sealed class CounterMutation {
     object IncreaseValue : CounterMutation()
     object DecreaseValue : CounterMutation()
     data class SetLoading(val loading: Boolean) : CounterMutation()
 }
 
 // immutable state
-data class CounterState(
+internal data class CounterState(
     val value: Int = 0,
     val loading: Boolean = false
 )
 
+internal typealias CounterController = Controller<CounterAction, CounterMutation, CounterState>
+
 @Suppress("FunctionName")
 internal fun CounterController(
     scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-): Controller<CounterAction, CounterMutation, CounterState> = Controller(
+): CounterController = Controller(
 
     // scope that the state flow is launched in
     scope = scope,
