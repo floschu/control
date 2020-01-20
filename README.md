@@ -20,8 +20,6 @@ dependencies {
 
 a [Controller](control-core/src/main/kotlin/at/florianschuster/control/Controller.kt) is an ui-independent class that controls the state of a view. The role of a `Controller` is to separate business logic and control flow away from the view. a `Controller` has no dependency to a view, so it can easily be unit tested.
 
-<p align="center"><img alt="flow" width="800" src=".media/controller_flow.png"></p>
-
 ## wiki
 
 visit the wiki for more detailed information:
