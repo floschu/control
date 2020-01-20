@@ -198,8 +198,10 @@ class Controller<Action, Mutation, State>(
             }
             .onCompletion { error ->
                 cleanUp()
-                if (error != null) logConfiguration.log("finished", error)
-                else logConfiguration.log("finished", "regularly")
+
+                val functionName = "finished"
+                if (error != null) logConfiguration.log(functionName, error)
+                else logConfiguration.log(functionName, "regularly")
             }
             .launchIn(scope)
     }

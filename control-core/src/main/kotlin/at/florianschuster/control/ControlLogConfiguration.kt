@@ -31,7 +31,7 @@ sealed class ControlLogConfiguration {
         }
 
         override fun log(function: String, error: Throwable) {
-            println(createMessage(tag, function, "$error"))
+            println(createMessage(tag, function, error.toString()))
         }
     }
 
@@ -44,7 +44,7 @@ sealed class ControlLogConfiguration {
         }
 
         override fun log(function: String, error: Throwable) {
-            println(createMessage(tag, function, "$error"))
+            println(createMessage(tag, function, error.toString()))
         }
     }
 
@@ -63,7 +63,7 @@ sealed class ControlLogConfiguration {
         }
 
         override fun log(function: String, error: Throwable) {
-            if (errors != null) errors.invoke(error) else log(function, "$error")
+            if (errors != null) errors.invoke(error) else log(function, error.toString())
         }
     }
 
