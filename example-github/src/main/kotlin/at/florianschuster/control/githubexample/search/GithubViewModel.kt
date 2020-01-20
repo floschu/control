@@ -3,7 +3,7 @@ package at.florianschuster.control.githubexample.search
 import androidx.lifecycle.ViewModel
 import at.florianschuster.control.Controller
 import at.florianschuster.control.ControllerScope
-import at.florianschuster.control.LogConfiguration
+import at.florianschuster.control.ControlLogConfiguration
 import at.florianschuster.control.Proxy
 import at.florianschuster.control.githubexample.GithubApi
 import at.florianschuster.control.githubexample.Repo
@@ -42,7 +42,7 @@ internal class GithubViewModel(
         scope = scope,
         mutator = ::mutate,
         reducer = ::reduce,
-        logConfiguration = LogConfiguration.Custom(tag = "GithubViewModel", operations = ::println)
+        logConfiguration = ControlLogConfiguration.Custom(tag = "github_vm", operations = ::println)
     )
 
     private fun mutate(action: GithubAction): Flow<Mutation> = when (action) {

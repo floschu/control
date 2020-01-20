@@ -6,20 +6,20 @@ import org.junit.Test
 import java.io.IOException
 import kotlin.test.assertEquals
 
-internal class LogConfigurationTest {
+internal class ControlLogConfigurationTest {
 
     @Test
     fun `setting default log configuration`() {
-        LogConfiguration.DEFAULT = LogConfiguration.Simple("tag")
-        assertEquals(LogConfiguration.Simple("tag"), LogConfiguration.DEFAULT)
+        ControlLogConfiguration.default = ControlLogConfiguration.Simple("tag")
+        assertEquals(ControlLogConfiguration.Simple("tag"), ControlLogConfiguration.default)
 
-        LogConfiguration.DEFAULT = LogConfiguration.None
-        assertEquals(LogConfiguration.None, LogConfiguration.DEFAULT)
+        ControlLogConfiguration.default = ControlLogConfiguration.None
+        assertEquals(ControlLogConfiguration.None, ControlLogConfiguration.default)
     }
 
     @Test
     fun `none log, methods are not called`() {
-        val noneLogConfiguration = spyk(LogConfiguration.None)
+        val noneLogConfiguration = spyk(ControlLogConfiguration.None)
         noneLogConfiguration.log(function, message)
         noneLogConfiguration.log(function, exception)
         verify(exactly = 0) { noneLogConfiguration.createMessage(any(), any(), any()) }
@@ -27,7 +27,7 @@ internal class LogConfigurationTest {
 
     @Test
     fun `simple log, methods are called`() {
-        val simpleLogConfiguration = spyk(LogConfiguration.Simple("test"))
+        val simpleLogConfiguration = spyk(ControlLogConfiguration.Simple("test"))
         simpleLogConfiguration.log(function, message)
         simpleLogConfiguration.log(function, exception)
         verify(exactly = 2) { simpleLogConfiguration.createMessage(any(), any(), any()) }
@@ -35,7 +35,7 @@ internal class LogConfigurationTest {
 
     @Test
     fun `elaborate log, methods are called`() {
-        val elaborateLogConfiguration = spyk(LogConfiguration.Elaborate("test"))
+        val elaborateLogConfiguration = spyk(ControlLogConfiguration.Elaborate("test"))
         elaborateLogConfiguration.log(function, message)
         elaborateLogConfiguration.log(function, exception)
         verify(exactly = 2) { elaborateLogConfiguration.createMessage(any(), any(), any()) }
@@ -44,7 +44,7 @@ internal class LogConfigurationTest {
     @Test
     fun `custom log, only logger provided`() {
         val customLogs = mutableListOf<String>()
-        val customLogConfiguration = LogConfiguration.Custom(
+        val customLogConfiguration = ControlLogConfiguration.Custom(
             "test",
             elaborate = true,
             operations = { customLogs.add(it) }
@@ -57,7 +57,7 @@ internal class LogConfigurationTest {
     @Test
     fun `custom log, only error provided`() {
         val customErrorLogs = mutableListOf<Throwable>()
-        val customLogConfiguration = LogConfiguration.Custom(
+        val customLogConfiguration = ControlLogConfiguration.Custom(
             "test",
             errors = { customErrorLogs.add(it) }
         )
@@ -70,7 +70,7 @@ internal class LogConfigurationTest {
     fun `custom log, all provided`() {
         val customLogs = mutableListOf<String>()
         val customErrorLogs = mutableListOf<Throwable>()
-        val customLogConfiguration = LogConfiguration.Custom(
+        val customLogConfiguration = ControlLogConfiguration.Custom(
             "test",
             elaborate = false,
             operations = { customLogs.add(it) },

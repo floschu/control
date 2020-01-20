@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.onEach
 fun <T> Flow<T>.bind(
     to: (T) -> Unit
 ): Flow<T> = onEach { to(it) }.catch { error ->
-    LogConfiguration.DEFAULT.log("bind", error)
+    ControlLogConfiguration.default.log("bind", error)
 }
 
 /**

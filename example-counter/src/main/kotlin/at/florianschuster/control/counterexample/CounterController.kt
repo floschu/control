@@ -1,12 +1,14 @@
 package at.florianschuster.control.counterexample
 
 import at.florianschuster.control.Controller
-import at.florianschuster.control.LogConfiguration
+import at.florianschuster.control.ControlLogConfiguration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+
+internal typealias CounterController = Controller<CounterAction, CounterMutation, CounterState>
 
 // action triggered by view
 internal enum class CounterAction {
@@ -25,8 +27,6 @@ internal data class CounterState(
     val value: Int = 0,
     val loading: Boolean = false
 )
-
-internal typealias CounterController = Controller<CounterAction, CounterMutation, CounterState>
 
 @Suppress("FunctionName")
 internal fun CounterController(
@@ -68,5 +68,5 @@ internal fun CounterController(
     },
 
     // used for logging
-    logConfiguration = LogConfiguration.Elaborate("CounterController")
+    logConfiguration = ControlLogConfiguration.Elaborate("CounterController")
 )

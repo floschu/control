@@ -118,9 +118,9 @@ class Controller<Action, Mutation, State>(
     /**
      * Configuration to define how a [Controller] logs its state errors and operations.
      * You can change the configuration for this [Controller] here or change the
-     * [LogConfiguration.DEFAULT] for all.
+     * [ControlLogConfiguration.default] for all.
      */
-    var logConfiguration: LogConfiguration = LogConfiguration.DEFAULT
+    var logConfiguration: ControlLogConfiguration = ControlLogConfiguration.default
 ) {
 
     private val actionChannel = BroadcastChannel<Action>(1)

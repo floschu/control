@@ -3,7 +3,7 @@ package at.florianschuster.control
 /**
  * Configuration to define how a [Controller] logs its state errors and operations.
  */
-sealed class LogConfiguration {
+sealed class ControlLogConfiguration {
 
     internal fun createMessage(
         tag: String,
@@ -17,7 +17,7 @@ sealed class LogConfiguration {
     /**
      * No logging.
      */
-    object None : LogConfiguration() {
+    object None : ControlLogConfiguration() {
         override fun log(function: String, message: String?) = Unit
         override fun log(function: String, error: Throwable) = Unit
     }
@@ -25,7 +25,7 @@ sealed class LogConfiguration {
     /**
      * Simple logging, uses [println]. Only logs errors and operation names.
      */
-    data class Simple(val tag: String) : LogConfiguration() {
+    data class Simple(val tag: String) : ControlLogConfiguration() {
         override fun log(function: String, message: String?) {
             println(createMessage(tag, function))
         }
@@ -38,7 +38,7 @@ sealed class LogConfiguration {
     /**
      * Elaborate logging, uses [println]. Logs errors and operation names and contents.
      */
-    data class Elaborate(val tag: String) : LogConfiguration() {
+    data class Elaborate(val tag: String) : ControlLogConfiguration() {
         override fun log(function: String, message: String?) {
             println(createMessage(tag, function, message))
         }
@@ -57,7 +57,7 @@ sealed class LogConfiguration {
         val elaborate: Boolean = true,
         val operations: ((String) -> Unit)? = null,
         val errors: ((Throwable) -> Unit)? = null
-    ) : LogConfiguration() {
+    ) : ControlLogConfiguration() {
         override fun log(function: String, message: String?) {
             operations?.invoke(createMessage(tag, function, if (elaborate) message else null))
         }
@@ -70,9 +70,9 @@ sealed class LogConfiguration {
     companion object {
 
         /**
-         * The default [LogConfiguration] that is used by a [Controller].
-         * Set this to change it for all [Controller]'s.
+         * The default [ControlLogConfiguration] that is used by a [Controller].
+         * Set this to change it for all [Controller]'s that do not specify a specific configuration.
          */
-        var DEFAULT: LogConfiguration = None
+        var default: ControlLogConfiguration = None
     }
 }
