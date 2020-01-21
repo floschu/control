@@ -10,8 +10,8 @@ internal class ControlLogConfigurationTest {
 
     @Test
     fun `setting default log configuration`() {
-        ControlLogConfiguration.default = ControlLogConfiguration.Simple("tag")
-        assertEquals(ControlLogConfiguration.Simple("tag"), ControlLogConfiguration.default)
+        ControlLogConfiguration.default = ControlLogConfiguration.Simple(tag)
+        assertEquals(ControlLogConfiguration.Simple(tag), ControlLogConfiguration.default)
 
         ControlLogConfiguration.default = ControlLogConfiguration.None
         assertEquals(ControlLogConfiguration.None, ControlLogConfiguration.default)
@@ -27,7 +27,7 @@ internal class ControlLogConfigurationTest {
 
     @Test
     fun `simple log, methods are called`() {
-        val simpleLogConfiguration = spyk(ControlLogConfiguration.Simple("test"))
+        val simpleLogConfiguration = spyk(ControlLogConfiguration.Simple(tag))
         simpleLogConfiguration.log(function, message)
         simpleLogConfiguration.log(function, exception)
         verify(exactly = 2) { simpleLogConfiguration.createMessage(any(), any(), any()) }
@@ -35,56 +35,95 @@ internal class ControlLogConfigurationTest {
 
     @Test
     fun `elaborate log, methods are called`() {
-        val elaborateLogConfiguration = spyk(ControlLogConfiguration.Elaborate("test"))
+        val elaborateLogConfiguration = spyk(ControlLogConfiguration.Elaborate(tag))
         elaborateLogConfiguration.log(function, message)
         elaborateLogConfiguration.log(function, exception)
         verify(exactly = 2) { elaborateLogConfiguration.createMessage(any(), any(), any()) }
     }
 
     @Test
-    fun `custom log, only logger provided`() {
-        val customLogs = mutableListOf<String>()
-        val customLogConfiguration = ControlLogConfiguration.Custom(
-            "test",
+    fun `custom log, all variations, methods are called`() {
+        ControlLogConfiguration.Custom(
+            tag,
+            elaborate = true
+        ).test()
+
+        ControlLogConfiguration.Custom(
+            tag,
+            elaborate = false
+        ).test()
+
+        ControlLogConfiguration.Custom(
+            tag,
             elaborate = true,
-            operations = { customLogs.add(it) }
-        )
-        customLogConfiguration.log(function, message)
-        customLogConfiguration.log(function, exception)
-        assertEquals(2, customLogs.count())
-    }
+            operations = { }
+        ).test()
 
-    @Test
-    fun `custom log, only error provided`() {
-        val customErrorLogs = mutableListOf<Throwable>()
-        val customLogConfiguration = ControlLogConfiguration.Custom(
-            "test",
-            errors = { customErrorLogs.add(it) }
-        )
-        customLogConfiguration.log(function, message)
-        customLogConfiguration.log(function, exception)
-        assertEquals(1, customErrorLogs.count())
-    }
-
-    @Test
-    fun `custom log, all provided`() {
-        val customLogs = mutableListOf<String>()
-        val customErrorLogs = mutableListOf<Throwable>()
-        val customLogConfiguration = ControlLogConfiguration.Custom(
-            "test",
+        ControlLogConfiguration.Custom(
+            tag,
             elaborate = false,
-            operations = { customLogs.add(it) },
-            errors = { customErrorLogs.add(it) }
+            operations = { }
+        ).test()
+
+        ControlLogConfiguration.Custom(
+            tag,
+            elaborate = true,
+            errors = { }
+        ).test()
+
+        ControlLogConfiguration.Custom(
+            tag,
+            elaborate = false,
+            errors = { }
+        ).test()
+
+        ControlLogConfiguration.Custom(
+            tag,
+            elaborate = true,
+            operations = { },
+            errors = { }
+        ).test()
+
+        ControlLogConfiguration.Custom(
+            tag,
+            elaborate = false,
+            operations = { },
+            errors = { }
+        ).test()
+    }
+
+    private fun ControlLogConfiguration.Custom.test() {
+        val spiedOperations = if (operations == null) null else spyk<(String) -> Unit>()
+        val spiedErrors = if (errors == null) null else spyk<(Throwable) -> Unit>()
+        val spiedLogConfiguration = spyk(
+            ControlLogConfiguration.Custom(
+                tag,
+                elaborate,
+                spiedOperations,
+                spiedErrors
+            ),
+            recordPrivateCalls = true
         )
-        customLogConfiguration.log(function, message)
-        customLogConfiguration.log(function, exception)
-        assertEquals(1, customLogs.count())
-        assertEquals(1, customErrorLogs.count())
+
+        spiedLogConfiguration.log(function, message)
+        if (spiedOperations != null) {
+            verify(exactly = 1) { spiedOperations(any()) }
+            verify(exactly = 1) { spiedLogConfiguration.createMessage(tag, function, any()) }
+        }
+
+        spiedLogConfiguration.log(function, exception)
+        if (spiedErrors != null) {
+            verify(exactly = 1) { spiedErrors(exception) }
+        } else if (spiedOperations != null) {
+            verify(exactly = 2) { spiedOperations(any()) }
+            verify(exactly = 2) { spiedLogConfiguration.createMessage(tag, function, any()) }
+        }
     }
 
     companion object {
-        private val function = "function"
-        private val exception = IOException("test")
-        private val message = "$exception"
+        private const val tag = "TestTag"
+        private const val function = "TestFunction"
+        private val exception = IOException("Test")
+        private val message = exception.toString()
     }
 }
