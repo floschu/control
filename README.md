@@ -30,6 +30,7 @@ visit the wiki for more detailed information:
 4. [transformations](https://github.com/floschu/control/wiki/4.-transformations)
 5. [controller testing](https://github.com/floschu/control/wiki/5.-controller-testing)
 6. [view/consumer testing](https://github.com/floschu/control/wiki/6.-consumer-or-view-testing)
+6. [helpers](https://github.com/floschu/control/wiki/7.-helpers)
 
 ## examples
 
