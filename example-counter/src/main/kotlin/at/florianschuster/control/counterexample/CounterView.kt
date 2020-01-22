@@ -43,8 +43,8 @@ class CounterView : Fragment(R.layout.view_counter) {
             .launchIn(scope = lifecycleScope)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         controller.cancel()
     }
 
