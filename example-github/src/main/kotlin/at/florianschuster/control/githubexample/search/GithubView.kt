@@ -45,7 +45,6 @@ class GithubView : Fragment(R.layout.view_github) {
                 .sample(500)
                 .filter { it.view.shouldLoadMore() }
                 .map { GithubAction.LoadNextPage }
-                .bind(to = viewModel)
                 .bind(to = viewModel::dispatch)
                 .launchIn(scope = lifecycleScope)
 
