@@ -32,7 +32,7 @@ object Versions {
 
     const val com_jfrog_bintray_gradle_plugin: String = "1.8.4"
 
-    const val lifecycle_runtime_ktx: String = "2.2.0-alpha04"
+    const val lifecycle_runtime_ktx: String = "2.2.0"
 
     const val constraintlayout: String = "2.0.0-beta1"
 
@@ -40,7 +40,7 @@ object Versions {
 
     const val espresso_core: String = "3.2.0"
 
-    const val fragment_ktx: String = "1.1.0"
+    const val fragment_ktx: String = "1.2.0"
 
     const val lint_gradle: String = "26.5.3"
 
@@ -50,7 +50,7 @@ object Versions {
 
     const val retrofit: String = "2.7.1"
 
-    const val ktlint: String = "0.35.0" // available: "0.36.0"
+    const val ktlint: String = "0.36.0"
 
     const val aapt2: String = "3.5.3-5435860"
 
@@ -61,7 +61,7 @@ object Versions {
      * See issue 19: How to update Gradle itself?
      * https://github.com/jmfayard/buildSrcVersions/issues/19
      */
-    const val gradleLatestVersion: String = "6.1"
+    const val gradleLatestVersion: String = "6.1.1"
 }
 
 /**
@@ -70,4 +70,4 @@ object Versions {
  */
 val PluginDependenciesSpec.buildSrcVersions: PluginDependencySpec
     inline get() =
-            id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
+        id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)

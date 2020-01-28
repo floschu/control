@@ -23,13 +23,6 @@ object Libs {
     /**
      * https://github.com/reactivecircus/FlowBinding
      */
-    const val flowbinding_android: String =
-            "io.github.reactivecircus.flowbinding:flowbinding-android:" +
-            Versions.io_github_reactivecircus_flowbinding
-
-    /**
-     * https://github.com/reactivecircus/FlowBinding
-     */
     const val flowbinding_core: String = "io.github.reactivecircus.flowbinding:flowbinding-core:" +
             Versions.io_github_reactivecircus_flowbinding
 
@@ -38,6 +31,13 @@ object Libs {
      */
     const val flowbinding_recyclerview: String =
             "io.github.reactivecircus.flowbinding:flowbinding-recyclerview:" +
+            Versions.io_github_reactivecircus_flowbinding
+
+    /**
+     * https://github.com/reactivecircus/FlowBinding
+     */
+    const val flowbinding_android: String =
+            "io.github.reactivecircus.flowbinding:flowbinding-android:" +
             Versions.io_github_reactivecircus_flowbinding
 
     /**
@@ -124,6 +124,9 @@ object Libs {
             "com.jfrog.bintray:com.jfrog.bintray.gradle.plugin:" +
             Versions.com_jfrog_bintray_gradle_plugin
 
+    /**
+     * https://developer.android.com/jetpack/androidx
+     */
     const val lifecycle_runtime_ktx: String = "androidx.lifecycle:lifecycle-runtime-ktx:" +
             Versions.lifecycle_runtime_ktx
 
