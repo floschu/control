@@ -12,14 +12,14 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-class ProxyTest {
+class ControllerDelegateTest {
 
     @get:Rule
     val testScopeRule = TestCoroutineScopeRule()
 
     @Test
     fun `all functions and variables are available`() {
-        val proxy = object : Proxy<Unit, Int> {
+        val sut = object : ControllerDelegate<Unit, Int> {
             override val controller: Controller<Unit, Unit, Int> = Controller(
                 initialState = 0,
                 scope = testScopeRule,
@@ -28,20 +28,20 @@ class ProxyTest {
             )
         }
 
-        assertNotNull(proxy.controller)
+        assertNotNull(sut.controller)
 
-        proxy.dispatch(Unit)
+        sut.dispatch(Unit)
 
-        assertNotNull(proxy.currentState)
-        assertEquals(1, proxy.currentState)
+        assertNotNull(sut.currentState)
+        assertEquals(1, sut.currentState)
 
-        assertNotNull(proxy.state)
+        assertNotNull(sut.state)
 
-        val testFlow = proxy.state.testIn(testScopeRule)
+        val testFlow = sut.state.testIn(testScopeRule)
         testFlow expect lastEmission(1)
 
-        proxy.cancel()
-        assertTrue(proxy.controller.cancelled)
+        sut.cancel()
+        assertTrue(sut.controller.cancelled)
         testFlow expect regularCompletion()
     }
 }

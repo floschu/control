@@ -81,7 +81,7 @@ internal class ControllerTest {
 
     @Test
     fun `collector receives latest and following states`() {
-        val controller = CounterProxy(testScopeRule) // 0
+        val controller = CounterControllerDelegate(testScopeRule) // 0
 
         controller.dispatch(Unit) // 1
         controller.dispatch(Unit) // 2
@@ -95,7 +95,7 @@ internal class ControllerTest {
 
     @Test
     fun `stream ignores error from mutator`() {
-        val controller = CounterProxy(testScopeRule, mutatorErrorIndex = 2)
+        val controller = CounterControllerDelegate(testScopeRule, mutatorErrorIndex = 2)
         val testFlow = controller.state.testIn(testScopeRule)
 
         controller.dispatch(Unit)
@@ -228,10 +228,10 @@ internal class ControllerTest {
     )
 
     @Suppress("TestFunctionName")
-    private fun CounterProxy(
+    private fun CounterControllerDelegate(
         scope: CoroutineScope,
         mutatorErrorIndex: Int? = null
-    ): Proxy<Unit, Int> = object : Proxy<Unit, Int> {
+    ): ControllerDelegate<Unit, Int> = object : ControllerDelegate<Unit, Int> {
 
         override val controller = Controller<Unit, Unit, Int>(
             scope = scope,

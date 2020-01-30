@@ -36,16 +36,16 @@ internal class ControlExtTest {
     }
 
     @Test
-    fun `bind proxy emits values correctly`() = runBlockingTest {
+    fun `bind delegate emits values correctly`() = runBlockingTest {
         assertEquals(0, logList.count())
 
-        val proxy = spyk<Proxy<Int, Unit>>()
+        val sut = spyk<ControllerDelegate<Int, Unit>>()
         flow {
             emit(1)
             emit(2)
             throw IOException("test")
-        }.bind(to = proxy).launchIn(this)
-        verify(exactly = 2) { proxy.dispatch(any()) }
+        }.bind(to = sut).launchIn(this)
+        verify(exactly = 2) { sut.dispatch(any()) }
 
         assertEquals(1, logList.count())
     }

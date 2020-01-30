@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import at.florianschuster.control.Controller
 import at.florianschuster.control.ControllerScope
 import at.florianschuster.control.ControlLogConfiguration
-import at.florianschuster.control.Proxy
+import at.florianschuster.control.ControllerDelegate
 import at.florianschuster.control.githubexample.GithubApi
 import at.florianschuster.control.githubexample.Repo
 import kotlinx.coroutines.CoroutineScope
@@ -28,7 +28,7 @@ internal class GithubViewModel(
     initialState: GithubState = GithubState(),
     private val api: GithubApi = GithubApi(),
     scope: CoroutineScope = ControllerScope()
-) : ViewModel(), Proxy<GithubAction, GithubState> {
+) : ViewModel(), ControllerDelegate<GithubAction, GithubState> {
 
     sealed class Mutation {
         data class SetQuery(val query: String) : Mutation()

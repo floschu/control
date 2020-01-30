@@ -26,10 +26,10 @@ fun <Action> Flow<Action>.bind(
 ): Flow<Action> = bind(to::dispatch)
 
 /**
- * Binds a [Flow] of [Action] to [Proxy.dispatch].
+ * Binds a [Flow] of [Action] to [ControllerDelegate.dispatch].
  */
 @ExperimentalCoroutinesApi
 @FlowPreview
 fun <Action> Flow<Action>.bind(
-    to: Proxy<Action, *>
+    to: ControllerDelegate<Action, *>
 ): Flow<Action> = bind(to::dispatch)

@@ -26,7 +26,7 @@ visit the wiki for more detailed information:
 
 1. [controller](https://github.com/floschu/control/wiki/1.-controller)
 2. [view/consumer](https://github.com/floschu/control/wiki/2.-view-or-consumer)
-3. [proxy](https://github.com/floschu/control/wiki/3.-proxy)
+3. [controller delegate](https://github.com/floschu/control/wiki/3.-controller-delegate)
 4. [transformations](https://github.com/floschu/control/wiki/4.-transformations)
 5. [controller testing](https://github.com/floschu/control/wiki/5.-controller-testing)
 6. [view/consumer testing](https://github.com/floschu/control/wiki/6.-consumer-or-view-testing)

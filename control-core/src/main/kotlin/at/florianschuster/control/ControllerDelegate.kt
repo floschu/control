@@ -5,14 +5,14 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 
 /**
- * A proxy interface that contains a [Controller] but only exposes [Action] and [State].
- * It also proxy's [Controller.dispatch], [Controller.currentState] and [Controller.state].
+ * An interface that contains a [Controller] but only exposes [Action] and [State].
+ * It also delegates [Controller.dispatch], [Controller.currentState] and [Controller.state].
  *
- * This could be implemented by a Presenter or a ViewModel.
+ * This could be implemented by a ViewModel.
  */
 @ExperimentalCoroutinesApi
 @FlowPreview
-interface Proxy<Action, State> {
+interface ControllerDelegate<Action, State> {
 
     val controller: Controller<Action, *, State>
 
@@ -31,10 +31,3 @@ interface Proxy<Action, State> {
      */
     val state: Flow<State> get() = controller.state
 }
-
-/**
- * See [Controller.cancel] for more details.
- */
-@ExperimentalCoroutinesApi
-@FlowPreview
-fun <State> Proxy<*, State>.cancel() = controller.cancel()
