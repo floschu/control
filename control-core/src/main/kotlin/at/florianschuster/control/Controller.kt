@@ -41,10 +41,10 @@ import kotlinx.coroutines.flow.scan
  *
  * Internally the [Controller]...
  * 1. ... receives an [Action] via [Controller.dispatch] and handles it inside the
- * [mutator]. Here all asynchronous side effects happen such as e.g. API calls.
+ * [Controller.mutator]. Here all asynchronous side effects happen such as e.g. API calls.
  * The function then returns a [Flow] of 0..n [Mutation].
- * 2. ... receives a [Mutation] in [reducer]. Here the previous [State] and the incoming
- * [Mutation] are reduced into a new [State] which is then published via [state].
+ * 2. ... receives a [Mutation] in [Controller.reducer]. Here the previous [State] and the
+ * incoming [Mutation] are reduced into a new [State] which is then published via [state].
  *
  * The [Controller] "lives" as long as the [state] [Flow] is active. How long it stays active
  * depends: on the one hand it is tied to the [scope], meaning when [scope] is cancelled, the
