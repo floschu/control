@@ -3,7 +3,6 @@ package at.florianschuster.control
 import io.mockk.spyk
 import io.mockk.verify
 import org.junit.Test
-import java.io.IOException
 import kotlin.test.assertEquals
 
 internal class ControlLogConfigurationTest {
@@ -123,7 +122,7 @@ internal class ControlLogConfigurationTest {
     companion object {
         private const val tag = "TestTag"
         private const val function = "TestFunction"
-        private val exception = IOException("Test")
+        private val exception = IllegalStateException("Test")
         private val message = exception.toString()
     }
 }

@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import org.junit.Rule
 import org.junit.Test
-import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -240,7 +239,7 @@ internal class ControllerTest {
                 when (currentState) {
                     mutatorErrorIndex -> flow {
                         emit(action)
-                        throw IOException()
+                        error("test")
                     }
                     else -> flowOf(action)
                 }

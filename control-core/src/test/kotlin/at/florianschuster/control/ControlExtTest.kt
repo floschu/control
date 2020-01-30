@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Test
-import java.io.IOException
 import kotlin.test.assertEquals
 
 internal class ControlExtTest {
@@ -17,7 +16,10 @@ internal class ControlExtTest {
     @Before
     fun setup() {
         logList.clear()
-        ControlLogConfiguration.default = ControlLogConfiguration.Custom("tag", operations = { logList.add(it) })
+        ControlLogConfiguration.default = ControlLogConfiguration.Custom(
+            tag = "ControlExtTest",
+            operations = { logList.add(it) }
+        )
     }
 
     @Test
@@ -28,7 +30,7 @@ internal class ControlExtTest {
         flow {
             emit(1)
             emit(2)
-            throw IOException("test")
+            error("test")
         }.bind(to = lambda).launchIn(this)
         verify(exactly = 2) { lambda.invoke(any()) }
 
@@ -43,7 +45,7 @@ internal class ControlExtTest {
         flow {
             emit(1)
             emit(2)
-            throw IOException("test")
+            error("test")
         }.bind(to = sut).launchIn(this)
         verify(exactly = 2) { sut.dispatch(any()) }
 
@@ -58,10 +60,10 @@ internal class ControlExtTest {
         flow {
             emit(1)
             emit(2)
-            throw IOException("test")
+            error("test")
         }.bind(to = controller).launchIn(this)
         verify(exactly = 2) { controller.dispatch(any()) }
 
-        assertEquals(1, logList.filter { it.contains("IOException") }.count())
+        assertEquals(1, logList.filter { it.contains("IllegalStateException") }.count())
     }
 }
