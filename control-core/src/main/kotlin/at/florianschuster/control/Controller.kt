@@ -46,10 +46,18 @@ import kotlinx.coroutines.flow.scan
  * 2. ... receives a [Mutation] in [Controller.reducer]. Here the previous [State] and the
  * incoming [Mutation] are reduced into a new [State] which is then published via [state].
  *
- * The [Controller] "lives" as long as the [state] [Flow] is active. How long it stays active
- * depends: on the one hand it is tied to the [scope], meaning when [scope] is cancelled, the
- * [Controller] dies. On the other hand when [Controller.cancel] is called, the [Controller]
- * dies too.
+ *
+ *
+ * The Controller lives as long as the state stream is active. The stream is created once
+ * [Controller.state], [Controller.currentState] or [Controller.dispatch] are accessed.
+ *
+ * For how long it lives, depends:
+ * --- on the one hand it is tied to the [Controller.scope] that can be provided to the
+ * [Controller] via the constructor. This means that when the [Controller.scope] is cancelled,
+ * the [Controller] dies.
+ * --- on the other hand when [Controller.cancel] is called, the [Controller] dies too (in this
+ * case, the provided [Controller.scope] is not canceled, but only the job of the internal
+ * state stream)
  */
 @ExperimentalCoroutinesApi
 @FlowPreview
@@ -129,8 +137,7 @@ class Controller<Action, Mutation, State>(
 
     /**
      * The [State] [Flow]. Use this to observe the state changes.
-     *
-     * Accessing this, starts the Controller via [Controller.start]
+     * Accessing this, starts the Controller.
      */
     val state: Flow<State>
         get() {
@@ -140,8 +147,7 @@ class Controller<Action, Mutation, State>(
 
     /**
      * The current [State].
-     *
-     * Accessing this, starts the Controller via [Controller.start]
+     * Accessing this, starts the Controller.
      */
     val currentState: State
         get() {
@@ -151,8 +157,7 @@ class Controller<Action, Mutation, State>(
 
     /**
      * Dispatches an [Action] to be processed by this [Controller].
-     *
-     * Calling this, starts the Controller via [Controller.start]
+     * Calling this, starts the Controller.
      */
     fun dispatch(action: Action) {
         if (stateFlowJob == null) createStream()
@@ -179,14 +184,10 @@ class Controller<Action, Mutation, State>(
      */
     val stub: Stub<Action, Mutation, State> by lazy { Stub(this) }
 
-    /**
-     * Whether the [Controller] is cancelled.
-     */
     val cancelled: Boolean get() = stateFlowJob?.isCancelled == true
 
     /**
      * Cancels the [Controller]. Once a [Controller] is cancelled, the state [Flow] is unusable.
-     * Check whether a Controller is cancelled with [Controller.cancelled]
      *
      * @return State the last [currentState] of the [Controller]
      */
