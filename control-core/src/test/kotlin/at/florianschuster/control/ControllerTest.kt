@@ -39,6 +39,32 @@ internal class ControllerTest {
     }
 
     @Test
+    fun `state is created when accessing current state`() {
+        val controller = OperationController(testScopeRule)
+
+        assertEquals(listOf("initialState", "transformedState"), controller.currentState)
+    }
+
+    @Test
+    fun `state is created when accessing action`() {
+        val controller = OperationController(testScopeRule)
+
+        controller.dispatch(listOf("action"))
+
+        assertEquals(
+            listOf(
+                "initialState",
+                "action",
+                "transformedAction",
+                "mutation",
+                "transformedMutation",
+                "transformedState"
+            ),
+            controller.currentState
+        )
+    }
+
+    @Test
     fun `each method is invoked`() {
         val controller = OperationController(testScopeRule)
         val testFlow = controller.state.testIn(testScopeRule)
@@ -56,25 +82,6 @@ internal class ControllerTest {
                 "transformedMutation",
                 "transformedState"
             )
-        )
-    }
-
-    @Test
-    fun `current state`() {
-        val controller = OperationController(testScopeRule)
-
-        controller.dispatch(listOf("action"))
-
-        assertEquals(
-            listOf(
-                "initialState",
-                "action",
-                "transformedAction",
-                "mutation",
-                "transformedMutation",
-                "transformedState"
-            ),
-            controller.currentState
         )
     }
 

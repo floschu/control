@@ -20,7 +20,7 @@ import kotlin.test.assertEquals
 @FlowPreview
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-class CounterViewTest {
+internal class CounterViewTest {
 
     @get:Rule
     val activityRule = activityScenarioRule<TestActivity>()

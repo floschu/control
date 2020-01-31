@@ -72,14 +72,14 @@ class Controller<Action, Mutation, State>(
      * Converts an [Action] to 0..n [Mutation]'s. This is the place to perform side-effects
      * such as async or suspending tasks.
      */
-    mutator: (action: Action) -> Flow<Mutation> = { emptyFlow() },
+    private val mutator: (action: Action) -> Flow<Mutation> = { emptyFlow() },
 
     /**
      * Generates a new state with the previous [State] and the incoming [Mutation]. It is purely
      * functional, it does not perform any side-effects. This method is called every time
      * a [Mutation] is committed via the [mutator].
      */
-    reducer: (previousState: State, mutation: Mutation) -> State = { state, _ -> state },
+    private val reducer: (previousState: State, mutation: Mutation) -> State = { state, _ -> state },
 
     /**
      * Transforms the [Action] stream. Use this to combine with other [Flow]'s. This method
@@ -92,7 +92,7 @@ class Controller<Action, Mutation, State>(
      * }
      * ```
      */
-    actionsTransformer: (actions: Flow<Action>) -> Flow<Action> = { it },
+    private val actionsTransformer: (actions: Flow<Action>) -> Flow<Action> = { it },
 
     /**
      * Transforms the [Mutation] stream. Implement this to transform or combine with other
@@ -107,13 +107,13 @@ class Controller<Action, Mutation, State>(
      * }
      * ```
      */
-    mutationsTransformer: (mutations: Flow<Mutation>) -> Flow<Mutation> = { it },
+    private val mutationsTransformer: (mutations: Flow<Mutation>) -> Flow<Mutation> = { it },
 
     /**
      * Transforms the [State] stream. This method is called once after the [state] [Flow] is
      * created.
      */
-    statesTransformer: (states: Flow<State>) -> Flow<State> = { it },
+    private val statesTransformer: (states: Flow<State>) -> Flow<State> = { it },
 
     /**
      * Configuration to define how a [Controller] logs its state errors and operations.
@@ -125,24 +125,37 @@ class Controller<Action, Mutation, State>(
 
     private val actionChannel = BroadcastChannel<Action>(1)
     private val stateChannel = ConflatedBroadcastChannel(initialState)
-    private val stateFlowJob: Job
+    private var stateFlowJob: Job? = null
 
     /**
      * The [State] [Flow]. Use this to observe the state changes.
+     *
+     * Accessing this, starts the Controller via [Controller.start]
      */
     val state: Flow<State>
-        get() = if (stubEnabled) stub.stateChannel.asFlow() else stateChannel.asFlow()
+        get() {
+            if (stateFlowJob == null) createStream()
+            return if (stubEnabled) stub.stateChannel.asFlow() else stateChannel.asFlow()
+        }
 
     /**
      * The current [State].
+     *
+     * Accessing this, starts the Controller via [Controller.start]
      */
     val currentState: State
-        get() = if (stubEnabled) stub.stateChannel.value else stateChannel.value
+        get() {
+            if (stateFlowJob == null) createStream()
+            return if (stubEnabled) stub.stateChannel.value else stateChannel.value
+        }
 
     /**
      * Dispatches an [Action] to be processed by this [Controller].
+     *
+     * Calling this, starts the Controller via [Controller.start]
      */
     fun dispatch(action: Action) {
+        if (stateFlowJob == null) createStream()
         if (stubEnabled) {
             stub.actionChannel.offer(action)
         } else {
@@ -169,9 +182,22 @@ class Controller<Action, Mutation, State>(
     /**
      * Whether the [Controller] is cancelled.
      */
-    val cancelled: Boolean get() = stateFlowJob.isCancelled
+    val cancelled: Boolean get() = stateFlowJob?.isCancelled == true
 
-    init {
+    /**
+     * Cancels the [Controller]. Once a [Controller] is cancelled, the state [Flow] is unusable.
+     * Check whether a Controller is cancelled with [Controller.cancelled]
+     *
+     * @return State the last [currentState] of the [Controller]
+     */
+    fun cancel(): State {
+        val currentState = this.currentState
+        cleanUp()
+        logConfiguration.log("finished", "via [Controller.cancel]")
+        return currentState
+    }
+
+    private fun createStream() {
         val mutationFlow: Flow<Mutation> = actionsTransformer(actionChannel.asFlow())
             .flatMapMerge { action ->
                 logConfiguration.log("action", "$action")
@@ -206,21 +232,8 @@ class Controller<Action, Mutation, State>(
             .launchIn(scope)
     }
 
-    /**
-     * Cancels the [Controller]. Once a [Controller] is cancelled, the state [Flow] is unusable.
-     * Check whether a Controller is cancelled with [Controller.cancelled]
-     *
-     * @return State the last [currentState] of the [Controller]
-     */
-    fun cancel(): State {
-        val currentState = this.currentState
-        cleanUp()
-        logConfiguration.log("finished", "via [Controller.cancel]")
-        return currentState
-    }
-
     private fun cleanUp() {
-        if (!stateFlowJob.isCancelled) stateFlowJob.cancel()
+        if (stateFlowJob?.isCancelled == false) stateFlowJob?.cancel()
         if (!stateChannel.isClosedForSend) stateChannel.cancel()
         if (!actionChannel.isClosedForSend) actionChannel.cancel()
     }

@@ -20,7 +20,7 @@ import org.junit.Test
 internal class GithubViewModelTest {
 
     @get:Rule
-    val testScopeRule = TestCoroutineScopeRule(overrideMainDispatcher = true)
+    val testScopeRule = TestCoroutineScopeRule()
 
     private val githubApi: GithubApi = mockk {
         coEvery { repos(any(), 1) } returns mockResultPage1
