@@ -56,13 +56,13 @@ internal class ControlExtTest {
     fun `bind controller emits values correctly`() = runBlockingTest {
         assertEquals(0, logList.count())
 
-        val controller = spyk(Controller<Int, Unit, Int>(0))
+        val sut = spyk(Controller<Int, Unit, Int>(0))
         flow {
             emit(1)
             emit(2)
             error("test")
-        }.bind(to = controller).launchIn(this)
-        verify(exactly = 2) { controller.dispatch(any()) }
+        }.bind(to = sut).launchIn(this)
+        verify(exactly = 2) { sut.dispatch(any()) }
 
         assertEquals(1, logList.filter { it.contains("IllegalStateException") }.count())
     }

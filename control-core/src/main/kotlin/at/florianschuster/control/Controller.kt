@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.scan
  * so it can easily be unit tested.
  *
  * <pre>
- *                  [Action] via [action]
+ *                  [Action] via [dispatch]
  *          +-----------------------------------+
  *          |                                   |
  *     +----+-----+                    +--------v-------+
@@ -34,8 +34,8 @@ import kotlinx.coroutines.flow.scan
  *     |   View   |                    |  [Controller]  |
  *     |          |                    |                |
  *     +----^-----+                    +--------+-------+
- *          |                                  |
- *          +----------------------------------+
+ *          |                                   |
+ *          +-----------------------------------+
  *                  [State] via [state]
  * </pre>
  *
@@ -48,7 +48,7 @@ import kotlinx.coroutines.flow.scan
  *
  *
  *
- * The Controller lives as long as the state stream is active. The stream is created once
+ * The [Controller] lives as long as the state stream is active. The stream is created once
  * [Controller.state], [Controller.currentState] or [Controller.dispatch] are accessed.
  *
  * For how long it lives, depends:
@@ -137,7 +137,7 @@ class Controller<Action, Mutation, State>(
 
     /**
      * The [State] [Flow]. Use this to observe the state changes.
-     * Accessing this, starts the Controller.
+     * Accessing this, starts the [Controller].
      */
     val state: Flow<State>
         get() {
@@ -147,7 +147,7 @@ class Controller<Action, Mutation, State>(
 
     /**
      * The current [State].
-     * Accessing this, starts the Controller.
+     * Accessing this, starts the [Controller].
      */
     val currentState: State
         get() {
@@ -157,7 +157,7 @@ class Controller<Action, Mutation, State>(
 
     /**
      * Dispatches an [Action] to be processed by this [Controller].
-     * Calling this, starts the Controller.
+     * Calling this, starts the [Controller].
      */
     fun dispatch(action: Action) {
         if (stateFlowJob == null) createStream()

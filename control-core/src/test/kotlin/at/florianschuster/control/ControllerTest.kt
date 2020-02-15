@@ -31,8 +31,8 @@ internal class ControllerTest {
 
     @Test
     fun `initial state only emitted once`() {
-        val controller = OperationController(testScopeRule)
-        val testFlow = controller.state.testIn(testScopeRule)
+        val sut = OperationController(testScopeRule)
+        val testFlow = sut.state.testIn(testScopeRule)
 
         testFlow expect emissionCount(1)
         testFlow expect emission(0, listOf("initialState", "transformedState"))
@@ -40,16 +40,16 @@ internal class ControllerTest {
 
     @Test
     fun `state is created when accessing current state`() {
-        val controller = OperationController(testScopeRule)
+        val sut = OperationController(testScopeRule)
 
-        assertEquals(listOf("initialState", "transformedState"), controller.currentState)
+        assertEquals(listOf("initialState", "transformedState"), sut.currentState)
     }
 
     @Test
     fun `state is created when accessing action`() {
-        val controller = OperationController(testScopeRule)
+        val sut = OperationController(testScopeRule)
 
-        controller.dispatch(listOf("action"))
+        sut.dispatch(listOf("action"))
 
         assertEquals(
             listOf(
@@ -60,16 +60,16 @@ internal class ControllerTest {
                 "transformedMutation",
                 "transformedState"
             ),
-            controller.currentState
+            sut.currentState
         )
     }
 
     @Test
     fun `each method is invoked`() {
-        val controller = OperationController(testScopeRule)
-        val testFlow = controller.state.testIn(testScopeRule)
+        val sut = OperationController(testScopeRule)
+        val testFlow = sut.state.testIn(testScopeRule)
 
-        controller.dispatch(listOf("action"))
+        sut.dispatch(listOf("action"))
 
         testFlow expect emissionCount(2)
         testFlow expect emissions(
@@ -87,56 +87,56 @@ internal class ControllerTest {
 
     @Test
     fun `collector receives latest and following states`() {
-        val controller = CounterControllerDelegate(testScopeRule) // 0
+        val sut = CounterControllerDelegate(testScopeRule) // 0
 
-        controller.dispatch(Unit) // 1
-        controller.dispatch(Unit) // 2
-        controller.dispatch(Unit) // 3
-        controller.dispatch(Unit) // 4
-        val testFlow = controller.state.testIn(testScopeRule)
-        controller.dispatch(Unit) // 5
+        sut.dispatch(Unit) // 1
+        sut.dispatch(Unit) // 2
+        sut.dispatch(Unit) // 3
+        sut.dispatch(Unit) // 4
+        val testFlow = sut.state.testIn(testScopeRule)
+        sut.dispatch(Unit) // 5
 
         testFlow expect emissions(4, 5)
     }
 
     @Test
     fun `stream ignores error from mutator`() {
-        val controller = CounterControllerDelegate(testScopeRule, mutatorErrorIndex = 2)
-        val testFlow = controller.state.testIn(testScopeRule)
+        val sut = CounterControllerDelegate(testScopeRule, mutatorErrorIndex = 2)
+        val testFlow = sut.state.testIn(testScopeRule)
 
-        controller.dispatch(Unit)
-        controller.dispatch(Unit)
-        controller.dispatch(Unit)
-        controller.dispatch(Unit)
-        controller.dispatch(Unit)
+        sut.dispatch(Unit)
+        sut.dispatch(Unit)
+        sut.dispatch(Unit)
+        sut.dispatch(Unit)
+        sut.dispatch(Unit)
 
         testFlow expect emissions(0, 1, 2, 3, 4, 5)
     }
 
     @Test
     fun `anonymous controller is created correctly`() {
-        val controller = Controller<Unit, Unit, Int>(
+        val sut = Controller<Unit, Unit, Int>(
             scope = testScopeRule,
             initialState = 0,
             mutator = { flowOf(it) },
             reducer = { previousState, _ -> previousState + 1 }
         )
-        val testFlow = controller.state.testIn(testScopeRule)
+        val testFlow = sut.state.testIn(testScopeRule)
 
-        controller.dispatch(Unit)
-        controller.dispatch(Unit)
+        sut.dispatch(Unit)
+        sut.dispatch(Unit)
 
         testFlow expect emissions(0, 1, 2)
     }
 
     @Test
     fun `cancel controller cancels controller flow and channels`() {
-        val controller = Controller<Unit, Unit, Int>(initialState = 3)
-        val testFlow = controller.state.testIn(testScopeRule)
+        val sut = Controller<Unit, Unit, Int>(initialState = 3)
+        val testFlow = sut.state.testIn(testScopeRule)
 
-        assertFalse(controller.cancelled)
-        controller.cancel()
-        assertTrue(controller.cancelled)
+        assertFalse(sut.cancelled)
+        sut.cancel()
+        assertTrue(sut.cancelled)
 
         testFlow expect regularCompletion()
     }
@@ -144,15 +144,15 @@ internal class ControllerTest {
     @Test
     fun `cancel scope cancels controller flow and channels`() {
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
-        val controller = Controller<Unit, Unit, Int>(
+        val sut = Controller<Unit, Unit, Int>(
             initialState = 3,
             scope = scope
         )
-        val testFlow = controller.state.testIn(testScopeRule)
+        val testFlow = sut.state.testIn(testScopeRule)
 
-        assertFalse(controller.cancelled)
+        assertFalse(sut.cancelled)
         scope.cancel()
-        assertTrue(controller.cancelled)
+        assertTrue(sut.cancelled)
 
         testFlow expect regularCompletion()
     }
@@ -164,28 +164,28 @@ internal class ControllerTest {
             listOf("two"),
             listOf("three")
         )
-        val controller = OperationController(testScopeRule)
-        controller.stubEnabled = true
+        val sut = OperationController(testScopeRule)
+        sut.stubEnabled = true
 
-        controller.dispatch(expectedActions[0])
-        controller.dispatch(expectedActions[1])
-        controller.dispatch(expectedActions[2])
+        sut.dispatch(expectedActions[0])
+        sut.dispatch(expectedActions[1])
+        sut.dispatch(expectedActions[2])
 
-        assertEquals(expectedActions, controller.stub.actions)
+        assertEquals(expectedActions, sut.stub.actions)
     }
 
     @Test
     fun `stub set state`() {
-        val controller = OperationController(testScopeRule)
-        controller.stubEnabled = true
+        val sut = OperationController(testScopeRule)
+        sut.stubEnabled = true
 
-        val testFlow = controller.state.testIn(testScopeRule)
+        val testFlow = sut.state.testIn(testScopeRule)
 
-        controller.stub.setState(listOf("state0"))
-        controller.stub.setState(listOf("state1"))
-        controller.stub.setState(listOf("state2"))
+        sut.stub.setState(listOf("state0"))
+        sut.stub.setState(listOf("state1"))
+        sut.stub.setState(listOf("state2"))
 
-        assertEquals(listOf("state2"), controller.currentState)
+        assertEquals(listOf("state2"), sut.currentState)
         testFlow expect emissions(
             listOf("initialState"),
             listOf("state0"),
@@ -196,12 +196,12 @@ internal class ControllerTest {
 
     @Test
     fun `stub action does not trigger state machine`() {
-        val controller = OperationController(testScopeRule)
-        controller.stubEnabled = true
+        val sut = OperationController(testScopeRule)
+        sut.stubEnabled = true
 
-        controller.dispatch(listOf("test"))
+        sut.dispatch(listOf("test"))
 
-        assertEquals(listOf("initialState"), controller.currentState)
+        assertEquals(listOf("initialState"), sut.currentState)
     }
 
     @Suppress("TestFunctionName")
