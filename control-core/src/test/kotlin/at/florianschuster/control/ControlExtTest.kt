@@ -34,6 +34,7 @@ internal class ControlExtTest {
             emit(2)
         }.bind(to = sut).launchIn(this)
 
-        verify(exactly = 2) { sut.dispatch(any()) }
+        verify(exactly = 1) { sut.dispatch(1) }
+        verify(exactly = 1) { sut.dispatch(2) }
     }
 }

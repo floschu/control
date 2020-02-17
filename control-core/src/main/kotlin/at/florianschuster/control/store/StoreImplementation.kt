@@ -73,47 +73,47 @@ internal class StoreImplementation<Action, Mutation, State>(
 
     override var stubEnabled: Boolean = false
         set(value) {
-            storeLogger.log(tag) { StoreLogger.Event.Stub(value) }
+            storeLogger.log(tag, StoreLogger.Event.Stub(value))
             field = value
         }
 
     override val stub: StoreStub<Action, State> get() = stubImplementation
 
     init {
-        storeLogger.log(tag) { StoreLogger.Event.Created }
+        storeLogger.log(tag, StoreLogger.Event.Created)
     }
 
     private fun createStateFlow() {
         val mutationFlow: Flow<Mutation> = actionsTransformer(actionChannel.asFlow())
             .flatMapMerge { action ->
-                storeLogger.log(tag) { StoreLogger.Event.Action(action.toString()) }
+                storeLogger.log(tag, StoreLogger.Event.Action(action.toString()))
                 mutator(action).catch { cause ->
                     val error = StoreError.Mutator(tag, "$action", cause)
-                    storeLogger.log(tag) { StoreLogger.Event.Error(error) }
+                    storeLogger.log(tag, StoreLogger.Event.Error(error))
                     throw error
                 }
             }
 
         val stateFlow: Flow<State> = mutationsTransformer(mutationFlow)
             .scan(initialState) { previousState, mutation ->
-                storeLogger.log(tag) { StoreLogger.Event.Mutation(mutation.toString()) }
+                storeLogger.log(tag, StoreLogger.Event.Mutation(mutation.toString()))
                 val reducedState = try {
                     reducer(previousState, mutation)
                 } catch (cause: Throwable) {
                     val error = StoreError.Reducer(tag, "$previousState", "$mutation", cause)
-                    storeLogger.log(tag) { StoreLogger.Event.Error(error) }
+                    storeLogger.log(tag, StoreLogger.Event.Error(error))
                     throw error
                 }
-                storeLogger.log(tag) { StoreLogger.Event.State(reducedState.toString()) }
+                storeLogger.log(tag, StoreLogger.Event.State(reducedState.toString()))
                 reducedState
             }
 
         scope.launch(dispatcher + CoroutineName(tag)) {
             statesTransformer(stateFlow)
                 .distinctUntilChanged()
-                .onStart { storeLogger.log(tag) { StoreLogger.Event.Started } }
+                .onStart { storeLogger.log(tag, StoreLogger.Event.Started) }
                 .onEach(stateChannel::send)
-                .onCompletion { storeLogger.log(tag) { StoreLogger.Event.Destroyed } }
+                .onCompletion { storeLogger.log(tag, StoreLogger.Event.Destroyed) }
                 .collect()
         }
 

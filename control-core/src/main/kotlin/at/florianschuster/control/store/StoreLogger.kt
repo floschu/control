@@ -5,10 +5,10 @@ package at.florianschuster.control.store
  */
 sealed class StoreLogger {
 
-    internal open val loggingProvider: ((tag: String, message: String) -> Unit)? = null
+    internal open val logger: ((message: String) -> Unit)? = null
 
-    internal inline fun log(tag: String, event: () -> Event) {
-        loggingProvider?.invoke(tag, event().run { "||| <control> ||| $tag -> $message |||" })
+    internal fun log(tag: String, event: Event) {
+        logger?.invoke(defaultMessageCreator(tag, event))
     }
 
     /**
@@ -20,17 +20,13 @@ sealed class StoreLogger {
      * Uses [println] to log.
      */
     object Println : StoreLogger() {
-        override val loggingProvider: ((tag: String, message: String) -> Unit)? = { _, message ->
-            println(message)
-        }
+        override val logger: (message: String) -> Unit = ::println
     }
 
     /**
-     * Uses a log provider [logger] to log.
+     * Uses a custom [logger] to log.
      */
-    data class Custom(val logger: (tag: String, message: String) -> Unit) : StoreLogger() {
-        override val loggingProvider: ((String, String) -> Unit)? = logger
-    }
+    data class Custom(override val logger: (message: String) -> Unit) : StoreLogger()
 
     /**
      * All events that can be logged in a [StoreImplementation].
@@ -53,5 +49,13 @@ sealed class StoreLogger {
          * Set this to change the logger for all [StoreImplementation]'s that do not specify one.
          */
         var default: StoreLogger = None
+
+        /**
+         * The default message creator for all [StoreLogger] types.
+         * Override this to customize your logs.
+         */
+        var defaultMessageCreator: (tag: String, event: Event) -> String = { tag, event ->
+            "||| <control> ||| $tag -> ${event.message} |||"
+        }
     }
 }

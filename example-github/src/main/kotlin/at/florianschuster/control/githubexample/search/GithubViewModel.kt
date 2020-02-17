@@ -50,7 +50,7 @@ internal class GithubViewModel(
         reducer = ::reduce,
 
         tag = "github_vm",
-        storeLogger = StoreLogger.Custom { tag, message -> Log.d(tag, message) }
+        storeLogger = StoreLogger.Custom { Log.d(this::class.java.simpleName, it) }
     )
 
     private fun mutate(action: Action): Flow<Mutation> = when (action) {

@@ -1,120 +1,72 @@
 package at.florianschuster.control
 
-import io.mockk.spyk
+import at.florianschuster.control.store.StoreLogger
+import io.mockk.mockkObject
 import io.mockk.verify
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
-internal class StoreLoggerTest { // todo
+internal class StoreLoggerTest {
 
-    // @Test
-    // fun `setting default log configuration`() {
-    //     ControlLogConfiguration.default = ControlLogConfiguration.Println(tag)
-    //     assertEquals(ControlLogConfiguration.Println(tag), ControlLogConfiguration.default)
-    //
-    //     ControlLogConfiguration.default = ControlLogConfiguration.None
-    //     assertEquals(ControlLogConfiguration.None, ControlLogConfiguration.default)
-    // }
-    //
-    // @Test
-    // fun `none log, methods are not called`() {
-    //     val noneLogConfiguration = spyk(ControlLogConfiguration.None)
-    //     noneLogConfiguration.log(function, message)
-    //     noneLogConfiguration.log(function, exception)
-    //     verify(exactly = 0) { noneLogConfiguration.createMessage(any(), any(), any()) }
-    // }
-    //
-    // @Test
-    // fun `elaborate log, methods are called`() {
-    //     val elaborateLogConfiguration = spyk(ControlLogConfiguration.Println(tag))
-    //     elaborateLogConfiguration.log(function, message)
-    //     elaborateLogConfiguration.log(function, exception)
-    //     verify(exactly = 2) { elaborateLogConfiguration.createMessage(any(), any(), any()) }
-    // }
-    //
-    // @Test
-    // fun `custom log, all variations, methods are called`() {
-    //     ControlLogConfiguration.Custom(
-    //         tag,
-    //         elaborate = true
-    //     ).test()
-    //
-    //     ControlLogConfiguration.Custom(
-    //         tag,
-    //         elaborate = false
-    //     ).test()
-    //
-    //     ControlLogConfiguration.Custom(
-    //         tag,
-    //         elaborate = true,
-    //         operations = { }
-    //     ).test()
-    //
-    //     ControlLogConfiguration.Custom(
-    //         tag,
-    //         elaborate = false,
-    //         operations = { }
-    //     ).test()
-    //
-    //     ControlLogConfiguration.Custom(
-    //         tag,
-    //         elaborate = true,
-    //         errors = { }
-    //     ).test()
-    //
-    //     ControlLogConfiguration.Custom(
-    //         tag,
-    //         elaborate = false,
-    //         errors = { }
-    //     ).test()
-    //
-    //     ControlLogConfiguration.Custom(
-    //         tag,
-    //         elaborate = true,
-    //         operations = { },
-    //         errors = { }
-    //     ).test()
-    //
-    //     ControlLogConfiguration.Custom(
-    //         tag,
-    //         elaborate = false,
-    //         operations = { },
-    //         errors = { }
-    //     ).test()
-    // }
-    //
-    // private fun ControlLogConfiguration.Custom.test() {
-    //     val spiedOperations = if (operations == null) null else spyk<(String) -> Unit>()
-    //     val spiedErrors = if (errors == null) null else spyk<(Throwable) -> Unit>()
-    //     val spiedLogConfiguration = spyk(
-    //         ControlLogConfiguration.Custom(
-    //             tag,
-    //             elaborate,
-    //             spiedOperations,
-    //             spiedErrors
-    //         ),
-    //         recordPrivateCalls = true
-    //     )
-    //
-    //     spiedLogConfiguration.log(function, message)
-    //     if (spiedOperations != null) {
-    //         verify(exactly = 1) { spiedOperations(any()) }
-    //         verify(exactly = 1) { spiedLogConfiguration.createMessage(tag, function, any()) }
-    //     }
-    //
-    //     spiedLogConfiguration.log(function, exception)
-    //     if (spiedErrors != null) {
-    //         verify(exactly = 1) { spiedErrors(exception) }
-    //     } else if (spiedOperations != null) {
-    //         verify(exactly = 2) { spiedOperations(any()) }
-    //         verify(exactly = 2) { spiedLogConfiguration.createMessage(tag, function, any()) }
-    //     }
-    // }
+    @Test
+    fun `none logger, methods are not called`() {
+        mockkObject(StoreLogger)
+
+        StoreLogger.None.log(tag, StoreLogger.Event.Created)
+        StoreLogger.None.log(tag, StoreLogger.Event.Destroyed)
+
+        verify(exactly = 0) { StoreLogger.defaultMessageCreator(tag, any()) }
+    }
+
+    @Test
+    fun `println logger, methods are called`() {
+        mockkObject(StoreLogger)
+
+        StoreLogger.Println.log(tag, StoreLogger.Event.Created)
+        StoreLogger.Println.log(tag, StoreLogger.Event.Destroyed)
+
+        verify(exactly = 2) { StoreLogger.defaultMessageCreator(tag, any()) }
+    }
+
+    @Test
+    fun `custom logger, methods are called`() {
+        mockkObject(StoreLogger)
+        val spiedLogs = mutableListOf<String>()
+
+        StoreLogger.Custom { spiedLogs.add(it) }.log(tag, StoreLogger.Event.Created)
+        StoreLogger.Custom { spiedLogs.add(it) }.log(tag, StoreLogger.Event.Destroyed)
+
+        assertEquals(2, spiedLogs.count())
+        assertTrue(spiedLogs.all { it.contains(tag) })
+
+        verify(exactly = 2) { StoreLogger.defaultMessageCreator(tag, any()) }
+    }
+
+    @Test
+    fun `setting default logger`() {
+        StoreLogger.default = StoreLogger.Println
+        assertEquals(StoreLogger.Println, StoreLogger.default)
+
+        StoreLogger.default = StoreLogger.None
+        assertEquals(StoreLogger.None, StoreLogger.default)
+    }
+
+    @Test
+    fun `setting default message creator`() {
+        val expectedMessage = "a test message"
+        StoreLogger.defaultMessageCreator = { _, _ -> expectedMessage }
+        val spiedLogs = mutableListOf<String>()
+        val sut = StoreLogger.Custom { spiedLogs.add(it) }
+
+        sut.log(tag, StoreLogger.Event.Created)
+        sut.log(tag, StoreLogger.Event.Destroyed)
+
+        assertEquals(2, spiedLogs.count())
+        assertTrue(spiedLogs.all { it == expectedMessage })
+    }
 
     companion object {
         private const val tag = "TestTag"
-        private const val function = "TestFunction"
-        private val exception = IllegalStateException("Test")
-        private val message = exception.toString()
     }
 }
