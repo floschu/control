@@ -1,14 +1,13 @@
 package at.florianschuster.control.counterexample
 
 import at.florianschuster.control.Controller
-import at.florianschuster.control.ControlLogConfiguration
+import at.florianschuster.control.store.Store
+import at.florianschuster.control.store.StoreLogger
+import at.florianschuster.control.store.createStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
-
-internal typealias CounterController = Controller<CounterAction, CounterMutation, CounterState>
 
 // action triggered by view
 internal enum class CounterAction {
@@ -28,13 +27,18 @@ internal data class CounterState(
     val loading: Boolean = false
 )
 
-@Suppress("FunctionName")
-internal fun CounterController(
-    scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-): CounterController = Controller(
+internal class CounterController(
+    scope: CoroutineScope,
+    override val store: Store<CounterAction, CounterMutation, CounterState> = CounterStore(scope)
+) : Controller<CounterAction, CounterState>
 
-    // scope that the state flow is launched in
-    scope = scope,
+@Suppress("FunctionName")
+private fun CounterStore(
+    scope: CoroutineScope
+) = scope.createStore<CounterAction, CounterMutation, CounterState>(
+
+    // used for logging
+    tag = "CounterController",
 
     // we start with the initial state
     initialState = CounterState(value = 0, loading = false),
@@ -67,6 +71,6 @@ internal fun CounterController(
         }
     },
 
-    // used for logging
-    logConfiguration = ControlLogConfiguration.Elaborate("CounterController")
+    // logs to println
+    storeLogger = StoreLogger.Println
 )

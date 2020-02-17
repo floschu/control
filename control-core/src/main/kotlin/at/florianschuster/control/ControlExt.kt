@@ -12,9 +12,7 @@ import kotlinx.coroutines.flow.onEach
 @ExperimentalCoroutinesApi
 fun <T> Flow<T>.bind(
     to: (T) -> Unit
-): Flow<T> = onEach { to(it) }.catch { error ->
-    ControlLogConfiguration.default.log("bind", error)
-}
+): Flow<T> = onEach { to(it) }
 
 /**
  * Binds a [Flow] of [Action] to [Controller.dispatch].
@@ -22,14 +20,5 @@ fun <T> Flow<T>.bind(
 @ExperimentalCoroutinesApi
 @FlowPreview
 fun <Action> Flow<Action>.bind(
-    to: Controller<Action, *, *>
-): Flow<Action> = bind(to::dispatch)
-
-/**
- * Binds a [Flow] of [Action] to [ControllerDelegate.dispatch].
- */
-@ExperimentalCoroutinesApi
-@FlowPreview
-fun <Action> Flow<Action>.bind(
-    to: ControllerDelegate<Action, *>
+    to: Controller<Action, *>
 ): Flow<Action> = bind(to::dispatch)

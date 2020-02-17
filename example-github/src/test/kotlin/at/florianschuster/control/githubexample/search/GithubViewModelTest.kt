@@ -27,12 +27,12 @@ internal class GithubViewModelTest {
         coEvery { repos(any(), 2) } returns mockResultPage2
     }
     private lateinit var sut: GithubViewModel
-    private lateinit var states: TestFlow<GithubState>
+    private lateinit var states: TestFlow<GithubViewModel.State>
 
     private fun `given github search controller`(
-        initialState: GithubState = GithubState()
+        initialState: GithubViewModel.State = GithubViewModel.State()
     ) {
-        sut = GithubViewModel(initialState, githubApi, testScopeRule)
+        sut = GithubViewModel(initialState, githubApi, testScopeRule.dispatcher)
         states = sut.state.testIn(testScopeRule)
     }
 
@@ -43,16 +43,16 @@ internal class GithubViewModelTest {
         `given github search controller`()
 
         // when
-        sut.dispatch(GithubAction.UpdateQuery(query))
+        sut.dispatch(GithubViewModel.Action.UpdateQuery(query))
 
         // then
         coVerify(exactly = 1) { githubApi.repos(query, 1) }
         states expect emissions(
-            GithubState(),
-            GithubState(query = query),
-            GithubState(query = query, loadingNextPage = true),
-            GithubState(query, mockReposPage1, 1, true),
-            GithubState(query, mockReposPage1, 1, false)
+            GithubViewModel.State(),
+            GithubViewModel.State(query = query),
+            GithubViewModel.State(query = query, loadingNextPage = true),
+            GithubViewModel.State(query, mockReposPage1, 1, true),
+            GithubViewModel.State(query, mockReposPage1, 1, false)
         )
     }
 
@@ -63,11 +63,11 @@ internal class GithubViewModelTest {
         `given github search controller`()
 
         // when
-        sut.dispatch(GithubAction.UpdateQuery(query))
+        sut.dispatch(GithubViewModel.Action.UpdateQuery(query))
 
         // then
         coVerify { githubApi.repos(any(), any()) wasNot Called }
-        states expect lastEmission(GithubState(query = query))
+        states expect lastEmission(GithubViewModel.State(query = query))
     }
 
     @Test
@@ -75,30 +75,30 @@ internal class GithubViewModelTest {
         // given
         val query = "control"
         `given github search controller`(
-            GithubState(query = query, repos = mockReposPage1)
+            GithubViewModel.State(query = query, repos = mockReposPage1)
         )
 
         // when
-        sut.dispatch(GithubAction.LoadNextPage)
+        sut.dispatch(GithubViewModel.Action.LoadNextPage)
 
         // then
         coVerify(exactly = 1) { githubApi.repos(any(), 2) }
         states expect emissions(
-            GithubState(query = query, repos = mockReposPage1),
-            GithubState(query, mockReposPage1, 1, true),
-            GithubState(query, mockReposPage1 + mockReposPage2, 2, true),
-            GithubState(query, mockReposPage1 + mockReposPage2, 2, false)
+            GithubViewModel.State(query = query, repos = mockReposPage1),
+            GithubViewModel.State(query, mockReposPage1, 1, true),
+            GithubViewModel.State(query, mockReposPage1 + mockReposPage2, 2, true),
+            GithubViewModel.State(query, mockReposPage1 + mockReposPage2, 2, false)
         )
     }
 
     @Test
     fun `load next page only when currently not loading`() {
         // given
-        val initialState = GithubState(loadingNextPage = true)
+        val initialState = GithubViewModel.State(loadingNextPage = true)
         `given github search controller`(initialState)
 
         // when
-        sut.dispatch(GithubAction.LoadNextPage)
+        sut.dispatch(GithubViewModel.Action.LoadNextPage)
 
         // then
         coVerify { githubApi.repos(any(), any()) wasNot Called }
@@ -114,15 +114,15 @@ internal class GithubViewModelTest {
         `given github search controller`()
 
         // when
-        sut.dispatch(GithubAction.UpdateQuery(query))
+        sut.dispatch(GithubViewModel.Action.UpdateQuery(query))
 
         // then
         coVerify(exactly = 1) { githubApi.repos(query, 1) }
         states expect emissions(
-            GithubState(),
-            GithubState(query = query),
-            GithubState(query = query, loadingNextPage = true),
-            GithubState(query = query, loadingNextPage = false)
+            GithubViewModel.State(),
+            GithubViewModel.State(query = query),
+            GithubViewModel.State(query = query, loadingNextPage = true),
+            GithubViewModel.State(query = query, loadingNextPage = false)
         )
     }
 

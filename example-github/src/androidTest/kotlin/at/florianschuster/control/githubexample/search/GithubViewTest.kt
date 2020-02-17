@@ -15,8 +15,6 @@ import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import at.florianschuster.control.githubexample.R
 import at.florianschuster.control.githubexample.TestActivity
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.not
 import org.junit.Before
@@ -25,8 +23,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.test.assertEquals
 
-@FlowPreview
-@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 internal class GithubViewTest {
 
@@ -37,8 +33,9 @@ internal class GithubViewTest {
 
     @Before
     fun setup() {
-        viewModel = GithubViewModel().apply { controller.stubEnabled = true }
+        viewModel = GithubViewModel().apply { store.stubEnabled = true }
         GithubView.GithubViewModelFactory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T = viewModel as T
         }
         activityRule.scenario.onActivity { it.setFragment(GithubView()) }
@@ -55,21 +52,21 @@ internal class GithubViewTest {
 
         // then
         assertEquals(
-            GithubAction.UpdateQuery(testQuery),
-            viewModel.controller.stub.actions.last()
+            GithubViewModel.Action.UpdateQuery(testQuery),
+            viewModel.store.stub.actions.last()
         )
     }
 
     @Test
     fun whenStateOffersLoadingNextPageThenProgressBarIsShown() {
         // when
-        viewModel.controller.stub.setState(GithubState(loadingNextPage = true))
+        viewModel.store.stub.setState(GithubViewModel.State(loadingNextPage = true))
 
         // then
         onView(withId(R.id.loadingProgressBar)).check(matches(isDisplayed()))
 
         // when
-        viewModel.controller.stub.setState(GithubState(loadingNextPage = false))
+        viewModel.store.stub.setState(GithubViewModel.State(loadingNextPage = false))
 
         // then
         onView(withId(R.id.loadingProgressBar)).check(matches(not(isDisplayed())))
