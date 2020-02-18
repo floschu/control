@@ -44,7 +44,7 @@ internal class StoreImplementation<Action, Mutation, State>(
 
     private val actionChannel by lazy { BroadcastChannel<Action>(1) }
     private val stateChannel by lazy { ConflatedBroadcastChannel(initialState) }
-    private val stubImplementation by lazy { StoreStubImplementation(this) }
+    private val stubImplementation by lazy { StoreStubImplementation<Action, State>(initialState) }
 
     override val state: Flow<State>
         get() = if (!stubEnabled) {
@@ -67,7 +67,7 @@ internal class StoreImplementation<Action, Mutation, State>(
             if (!stateFlowCreated) createStateFlow()
             actionChannel.offer(action)
         } else {
-            stubImplementation.actionChannel.offer(action)
+            stubImplementation.mutableActions.add(action)
         }
     }
 

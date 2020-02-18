@@ -34,21 +34,15 @@ interface StoreStub<Action, State> {
 @ExperimentalCoroutinesApi
 @FlowPreview
 internal class StoreStubImplementation<Action, State>(
-    storeImplementation: StoreImplementation<Action, *, State>
+    initialState: State
 ) : StoreStub<Action, State> {
 
-    private val _actions = mutableListOf<Action>()
+    internal val mutableActions = mutableListOf<Action>()
+    internal val stateChannel = ConflatedBroadcastChannel(initialState)
 
-    internal val actionChannel = BroadcastChannel<Action>(1)
-    internal val stateChannel = ConflatedBroadcastChannel(storeImplementation.initialState)
-
-    override val actions: List<Action> get() = _actions
+    override val actions: List<Action> get() = mutableActions
 
     override fun setState(state: State) {
         stateChannel.offer(state)
-    }
-
-    init {
-        storeImplementation.scope.launch { actionChannel.asFlow().toList(_actions) }
     }
 }

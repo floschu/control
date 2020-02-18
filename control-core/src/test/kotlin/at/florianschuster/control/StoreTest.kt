@@ -138,9 +138,7 @@ internal class StoreTest {
         val sut = OperationStore(testScopeRule)
         sut.stubEnabled = true
 
-        sut.dispatch(expectedActions[0])
-        sut.dispatch(expectedActions[1])
-        sut.dispatch(expectedActions[2])
+        expectedActions.forEach(sut::dispatch)
 
         assertEquals(expectedActions, sut.stub.actions)
     }
