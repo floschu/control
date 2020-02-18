@@ -120,7 +120,7 @@ internal class StoreImplementation<Action, Mutation, State>(
         stateFlowCreated = true
     }
 
-    sealed class Error(
+    internal sealed class Error(
         message: String,
         cause: Throwable
     ) : RuntimeException(message, cause) {
