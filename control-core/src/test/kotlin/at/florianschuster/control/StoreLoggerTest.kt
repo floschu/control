@@ -1,47 +1,11 @@
 package at.florianschuster.control
 
 import at.florianschuster.control.store.StoreLogger
-import io.mockk.mockkObject
-import io.mockk.verify
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 internal class StoreLoggerTest {
-
-    @Test
-    fun `none logger, methods are not called`() {
-        mockkObject(StoreLogger)
-
-        StoreLogger.None.log(tag, StoreLogger.Event.Created)
-        StoreLogger.None.log(tag, StoreLogger.Event.Destroyed)
-
-        verify(exactly = 0) { StoreLogger.defaultMessageCreator(tag, any()) }
-    }
-
-    @Test
-    fun `println logger, methods are called`() {
-        mockkObject(StoreLogger)
-
-        StoreLogger.Println.log(tag, StoreLogger.Event.Created)
-        StoreLogger.Println.log(tag, StoreLogger.Event.Destroyed)
-
-        verify(exactly = 2) { StoreLogger.defaultMessageCreator(tag, any()) }
-    }
-
-    @Test
-    fun `custom logger, methods are called`() {
-        mockkObject(StoreLogger)
-        val spiedLogs = mutableListOf<String>()
-
-        StoreLogger.Custom { spiedLogs.add(it) }.log(tag, StoreLogger.Event.Created)
-        StoreLogger.Custom { spiedLogs.add(it) }.log(tag, StoreLogger.Event.Destroyed)
-
-        assertEquals(2, spiedLogs.count())
-        assertTrue(spiedLogs.all { it.contains(tag) })
-
-        verify(exactly = 2) { StoreLogger.defaultMessageCreator(tag, any()) }
-    }
 
     @Test
     fun `setting default logger`() {
@@ -64,6 +28,51 @@ internal class StoreLoggerTest {
 
         assertEquals(2, spiedLogs.count())
         assertTrue(spiedLogs.all { it == expectedMessage })
+    }
+
+    @Test
+    fun `none logger, methods are not called`() {
+        var spiedAmountOfMessagesCreated = 0
+        StoreLogger.defaultMessageCreator = { tag, _ ->
+            spiedAmountOfMessagesCreated++
+            tag
+        }
+
+        StoreLogger.None.log(tag, StoreLogger.Event.Created)
+        StoreLogger.None.log(tag, StoreLogger.Event.Destroyed)
+
+        assertEquals(0, spiedAmountOfMessagesCreated)
+    }
+
+    @Test
+    fun `println logger, methods are called`() {
+        var spiedAmountOfMessagesCreated = 0
+        StoreLogger.defaultMessageCreator = { tag, _ ->
+            spiedAmountOfMessagesCreated++
+            tag
+        }
+
+        StoreLogger.Println.log(tag, StoreLogger.Event.Created)
+        StoreLogger.Println.log(tag, StoreLogger.Event.Destroyed)
+
+        assertEquals(2, spiedAmountOfMessagesCreated)
+    }
+
+    @Test
+    fun `custom logger, methods are called`() {
+        var spiedAmountOfMessagesCreated = 0
+        StoreLogger.defaultMessageCreator = { tag, _ ->
+            spiedAmountOfMessagesCreated++
+            tag
+        }
+        val spiedLogs = mutableListOf<String>()
+
+        StoreLogger.Custom { spiedLogs.add(it) }.log(tag, StoreLogger.Event.Created)
+        StoreLogger.Custom { spiedLogs.add(it) }.log(tag, StoreLogger.Event.Destroyed)
+
+        assertEquals(2, spiedLogs.count())
+        assertTrue(spiedLogs.all { it.contains(tag) })
+        assertEquals(2, spiedAmountOfMessagesCreated)
     }
 
     companion object {
