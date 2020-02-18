@@ -52,7 +52,7 @@ interface Store<Action, Mutation, State> {
 }
 
 /**
- * A [Mutator] takes an action and transforms it into [0..n] [Flow]'s of mutations.
+ * A [Mutator] takes an action and transforms it into a [Flow] of [0..n] mutations.
  *
  *
  * Example:
