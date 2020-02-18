@@ -62,17 +62,16 @@ fun <Action, Mutation, State> CoroutineScope.createStore(
      * Log configuration for the [StoreImplementation]. See [StoreLogger].
      */
     storeLogger: StoreLogger = StoreLogger.default
-): Store<Action, Mutation, State> =
-    StoreImplementation(
-        scope = this, dispatcher = dispatcher,
+): Store<Action, Mutation, State> = StoreImplementation(
+    scope = this, dispatcher = dispatcher,
 
-        initialState = initialState, mutator = mutator, reducer = reducer,
-        actionsTransformer = actionsTransformer,
-        mutationsTransformer = mutationsTransformer,
-        statesTransformer = statesTransformer,
+    initialState = initialState, mutator = mutator, reducer = reducer,
+    actionsTransformer = actionsTransformer,
+    mutationsTransformer = mutationsTransformer,
+    statesTransformer = statesTransformer,
 
-        tag = tag, storeLogger = storeLogger
-    )
+    tag = tag, storeLogger = storeLogger
+)
 
 /**
  * Creates a [Store] with [CoroutineScope.createStore] where [Action] == [Mutation].

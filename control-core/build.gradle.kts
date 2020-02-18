@@ -2,7 +2,6 @@ plugins {
     id("kotlin")
     id("jacoco")
 }
-
 dependencies {
     api(Libs.kotlin_stdlib)
     api(Libs.kotlinx_coroutines_core)

@@ -1,14 +1,13 @@
 package at.florianschuster.control
 
 import at.florianschuster.control.store.Store
-import at.florianschuster.control.store.createStore
+import at.florianschuster.control.store.createSynchronousStore
+import at.florianschuster.test.flow.anyCompletion
 import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.lastEmission
-import at.florianschuster.test.flow.regularCompletion
 import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -21,10 +20,9 @@ internal class ControllerTest {
         val scope = TestCoroutineScope(Job())
 
         val sut = object : Controller<Unit, Int> {
-            override val store: Store<Unit, Unit, Int> = scope.createStore(
+            override val store: Store<Unit, Unit, Int> = scope.createSynchronousStore(
                 tag = "test",
                 initialState = 0,
-                mutator = { flowOf(it) },
                 reducer = { previousState, _ -> previousState + 1 }
             )
         }
@@ -42,6 +40,6 @@ internal class ControllerTest {
         testFlow expect lastEmission(1)
 
         scope.cancel()
-        testFlow expect regularCompletion()
+        testFlow expect anyCompletion()
     }
 }
