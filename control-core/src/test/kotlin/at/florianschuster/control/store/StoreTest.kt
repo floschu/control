@@ -1,9 +1,5 @@
-package at.florianschuster.control
+package at.florianschuster.control.store
 
-import at.florianschuster.control.store.Store
-import at.florianschuster.control.store.StoreError
-import at.florianschuster.control.store.createStore
-import at.florianschuster.control.store.createSynchronousStore
 import at.florianschuster.test.flow.TestCoroutineScopeRule
 import at.florianschuster.test.flow.emission
 import at.florianschuster.test.flow.emissionCount
@@ -26,7 +22,7 @@ internal class StoreTest {
 
     @Test
     fun `initial state only emitted once`() {
-        val sut = OperationStore(testScopeRule)
+        val sut = testScopeRule.createOperationStore()
         val testFlow = sut.state.testIn(testScopeRule)
 
         testFlow expect emissionCount(1)
@@ -35,14 +31,14 @@ internal class StoreTest {
 
     @Test
     fun `state is created when accessing current state`() {
-        val sut = OperationStore(testScopeRule)
+        val sut = testScopeRule.createOperationStore()
 
         assertEquals(listOf("initialState", "transformedState"), sut.currentState)
     }
 
     @Test
     fun `state is created when accessing action`() {
-        val sut = OperationStore(testScopeRule)
+        val sut = testScopeRule.createOperationStore()
 
         sut.dispatch(listOf("action"))
 
@@ -61,7 +57,7 @@ internal class StoreTest {
 
     @Test
     fun `each method is invoked`() {
-        val sut = OperationStore(testScopeRule)
+        val sut = testScopeRule.createOperationStore()
         val testFlow = sut.state.testIn(testScopeRule)
 
         sut.dispatch(listOf("action"))
@@ -80,7 +76,6 @@ internal class StoreTest {
         )
     }
 
-
     @Test
     fun `synchronous store builder`() {
         val counterSut = testScopeRule.createSynchronousStore<Int, Int>(
@@ -98,7 +93,7 @@ internal class StoreTest {
 
     @Test
     fun `collector receives latest and following states`() {
-        val sut = CounterController(testScopeRule) // 0
+        val sut = testScopeRule.createCounterController() // 0
 
         sut.dispatch(Unit) // 1
         sut.dispatch(Unit) // 2
@@ -110,18 +105,18 @@ internal class StoreTest {
         testFlow expect emissions(4, 5)
     }
 
-    @Test(expected = StoreError.Mutator::class)
+    @Test(expected = StoreImplementation.Error.Mutator::class)
     fun `store throws error from mutator`() = runBlockingTest {
-        val sut = CounterController(this, mutatorErrorIndex = 2)
+        val sut = createCounterController(mutatorErrorIndex = 2)
 
         sut.dispatch(Unit)
         sut.dispatch(Unit)
         sut.dispatch(Unit)
     }
 
-    @Test(expected = StoreError.Reducer::class)
+    @Test(expected = StoreImplementation.Error.Reducer::class)
     fun `store throws error from reducer`() = runBlockingTest {
-        val sut = CounterController(this, reducerErrorIndex = 2)
+        val sut = createCounterController(reducerErrorIndex = 2)
 
         sut.dispatch(Unit)
         sut.dispatch(Unit)
@@ -135,7 +130,7 @@ internal class StoreTest {
             listOf("two"),
             listOf("three")
         )
-        val sut = OperationStore(testScopeRule)
+        val sut = testScopeRule.createOperationStore()
         sut.stubEnabled = true
 
         expectedActions.forEach(sut::dispatch)
@@ -145,7 +140,7 @@ internal class StoreTest {
 
     @Test
     fun `stub set state`() {
-        val sut = OperationStore(testScopeRule)
+        val sut = testScopeRule.createOperationStore()
         sut.stubEnabled = true
 
         val testFlow = sut.state.testIn(testScopeRule)
@@ -165,7 +160,7 @@ internal class StoreTest {
 
     @Test
     fun `stub action does not trigger state machine`() {
-        val sut = OperationStore(testScopeRule)
+        val sut = testScopeRule.createOperationStore()
         sut.stubEnabled = true
 
         sut.dispatch(listOf("test"))
@@ -173,60 +168,53 @@ internal class StoreTest {
         assertEquals(listOf("initialState"), sut.currentState)
     }
 
-    @Suppress("TestFunctionName")
-    private fun OperationStore(
-        scope: CoroutineScope
-    ): Store<List<String>, List<String>, List<String>> = scope.createStore(
-        tag = "OperationStore",
+    private fun CoroutineScope.createOperationStore() =
+        createStore<List<String>, List<String>, List<String>>(
+            tag = "OperationStore",
 
-        // 1. ["initialState"]
-        initialState = listOf("initialState"),
+            // 1. ["initialState"]
+            initialState = listOf("initialState"),
 
-        // 2. ["action"] + ["transformedAction"]
-        actionsTransformer = { actions ->
-            actions.map { it + "transformedAction" }
-        },
+            // 2. ["action"] + ["transformedAction"]
+            actionsTransformer = { actions ->
+                actions.map { it + "transformedAction" }
+            },
 
-        // 3. ["action", "transformedAction"] + ["mutation"]
-        mutator = { action ->
-            flowOf(action + "mutation")
-        },
+            // 3. ["action", "transformedAction"] + ["mutation"]
+            mutator = { action, _ ->
+                flowOf(action + "mutation")
+            },
 
-        // 4. ["action", "transformedAction", "mutation"] + ["transformedMutation"]
-        mutationsTransformer = { mutations ->
-            mutations.map { it + "transformedMutation" }
-        },
+            // 4. ["action", "transformedAction", "mutation"] + ["transformedMutation"]
+            mutationsTransformer = { mutations ->
+                mutations.map { it + "transformedMutation" }
+            },
 
-        // 5. ["initialState"] + ["action", "transformedAction", "mutation", "transformedMutation"]
-        reducer = { previousState, mutation -> previousState + mutation },
+            // 5. ["initialState"] + ["action", "transformedAction", "mutation", "transformedMutation"]
+            reducer = { previousState, mutation -> previousState + mutation },
 
-        // 6. ["initialState", "action", "transformedAction", "mutation", "transformedMutation"] + ["transformedState"]
-        statesTransformer = { states -> states.map { it + "transformedState" } }
-    )
+            // 6. ["initialState", "action", "transformedAction", "mutation", "transformedMutation"] + ["transformedState"]
+            statesTransformer = { states -> states.map { it + "transformedState" } }
+        )
 
-    @Suppress("TestFunctionName")
-    private fun CounterController(
-        scope: CoroutineScope,
+    private fun CoroutineScope.createCounterController(
         mutatorErrorIndex: Int? = null,
         reducerErrorIndex: Int? = null
-    ): Controller<Unit, Int> = object : Controller<Unit, Int> {
-
-        override val store: Store<Unit, Unit, Int> = scope.createStore(
-            tag = "CounterController",
-            initialState = 0,
-            mutator = { action ->
-                when (currentState) {
-                    mutatorErrorIndex -> flow {
-                        emit(action)
-                        error("test")
-                    }
-                    else -> flowOf(action)
+    ) = createStore<Unit, Unit, Int>(
+        tag = "CounterController",
+        initialState = 0,
+        mutator = { action, stateAccessor ->
+            when (stateAccessor()) {
+                mutatorErrorIndex -> flow {
+                    emit(action)
+                    error("test")
                 }
-            },
-            reducer = { previousState, _ ->
-                if (previousState == reducerErrorIndex) error("test")
-                previousState + 1
+                else -> flowOf(action)
             }
-        )
-    }
+        },
+        reducer = { previousState, _ ->
+            if (previousState == reducerErrorIndex) error("test")
+            previousState + 1
+        }
+    )
 }

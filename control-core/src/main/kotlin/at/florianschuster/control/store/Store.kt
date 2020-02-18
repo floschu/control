@@ -1,5 +1,6 @@
 package at.florianschuster.control.store
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -13,6 +14,8 @@ import kotlinx.coroutines.flow.Flow
  * 2. [Reducer]: [Mutation] -> [State]
  * 3. [Transformer]
  * 4. [StoreImplementation]
+ *
+ * To create a [Store] use [CoroutineScope.createStore].
  */
 interface Store<Action, Mutation, State> {
 
@@ -64,7 +67,7 @@ interface Store<Action, Mutation, State> {
  *         object Add : Mutation()
  *     }
  *
- *     mutator = { action ->
+ *     mutator = { action, _ ->
  *         when(action) {
  *             is Action.AddZero -> emptyFlow()
  *             is Action.AddOne -> flowOf(Mutation.Add)
@@ -75,7 +78,12 @@ interface Store<Action, Mutation, State> {
  *         }
  *     }
  */
-typealias Mutator<Action, Mutation> = (action: Action) -> Flow<Mutation>
+typealias Mutator<Action, State, Mutation> = (action: Action, stateAccessor: StateAccessor<State>) -> Flow<Mutation>
+
+/**
+ * A [StateAccessor] retrieves the current state in a [Mutator].
+ */
+typealias StateAccessor<State> = () -> State
 
 /**
  * A [Reducer] takes the previous state and a mutation and returns a new state synchronously.

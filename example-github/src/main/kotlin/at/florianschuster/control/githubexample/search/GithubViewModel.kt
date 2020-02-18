@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import at.florianschuster.control.githubexample.GithubApi
 import at.florianschuster.control.githubexample.Repo
 import at.florianschuster.control.Controller
+import at.florianschuster.control.store.StateAccessor
 import at.florianschuster.control.store.Store
 import at.florianschuster.control.store.StoreLogger
 import at.florianschuster.control.store.createStore
@@ -53,26 +54,34 @@ internal class GithubViewModel(
         storeLogger = StoreLogger.Custom { Log.d(this::class.java.simpleName, it) }
     )
 
-    private fun mutate(action: Action): Flow<Mutation> = when (action) {
-        is Action.UpdateQuery -> flow {
-            emit(Mutation.SetQuery(action.text))
-            if (action.text.isNotEmpty()) {
-                emit(Mutation.SetLoadingNextPage(true))
-                val repos = api.safeSearch(currentState.query, 1)
-                if (repos != null) emit(Mutation.SetRepos(repos))
-                emit(Mutation.SetLoadingNextPage(false))
+    private fun mutate(action: Action, stateAccessor: StateAccessor<State>): Flow<Mutation> =
+        when (action) {
+            is Action.UpdateQuery -> flow {
+                emit(Mutation.SetQuery(action.text))
+
+                if (action.text.isNotEmpty()) {
+                    emit(Mutation.SetLoadingNextPage(true))
+
+                    val repos = api.safeSearch(stateAccessor().query, 1)
+                    if (repos != null) emit(Mutation.SetRepos(repos))
+
+                    emit(Mutation.SetLoadingNextPage(false))
+                }
+            }
+            is Action.LoadNextPage -> when {
+                stateAccessor().loadingNextPage -> emptyFlow()
+                else -> flow {
+                    val state = stateAccessor()
+
+                    emit(Mutation.SetLoadingNextPage(true))
+
+                    val repos = api.safeSearch(state.query, state.page + 1)
+                    if (repos != null) emit(Mutation.AppendRepos(repos))
+
+                    emit(Mutation.SetLoadingNextPage(false))
+                }
             }
         }
-        is Action.LoadNextPage -> {
-            if (currentState.loadingNextPage) emptyFlow()
-            else flow {
-                emit(Mutation.SetLoadingNextPage(true))
-                val repos = api.safeSearch(currentState.query, currentState.page + 1)
-                if (repos != null) emit(Mutation.AppendRepos(repos))
-                emit(Mutation.SetLoadingNextPage(false))
-            }
-        }
-    }
 
     private fun reduce(previousState: State, mutation: Mutation): State = when (mutation) {
         is Mutation.SetQuery -> previousState.copy(query = mutation.query)

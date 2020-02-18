@@ -1,6 +1,5 @@
-package at.florianschuster.control
+package at.florianschuster.control.store
 
-import at.florianschuster.control.store.StoreLogger
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

@@ -44,7 +44,7 @@ private fun CounterStore(
     initialState = CounterState(value = 0, loading = false),
 
     // every action is transformed into [0..n] mutations
-    mutator = { action ->
+    mutator = { action, _ ->
         when (action) {
             CounterAction.Increment -> flow {
                 emit(CounterMutation.SetLoading(true))

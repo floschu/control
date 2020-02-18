@@ -38,7 +38,7 @@ fun <Action, Mutation, State> CoroutineScope.createStore(
     /**
      * See [Mutator].
      */
-    mutator: Mutator<Action, Mutation> = { emptyFlow() },
+    mutator: Mutator<Action, State, Mutation> = { _, _ -> emptyFlow() },
 
     /**
      * See [Reducer].
@@ -94,7 +94,7 @@ fun <Action, State> CoroutineScope.createSynchronousStore(
 ): Store<Action, Action, State> = createStore(
     dispatcher = dispatcher,
 
-    initialState = initialState, mutator = ::flowOf, reducer = reducer,
+    initialState = initialState, mutator = { action, _ -> flowOf(action) }, reducer = reducer,
     actionsTransformer = actionsTransformer,
     mutationsTransformer = { it },
     statesTransformer = statesTransformer,

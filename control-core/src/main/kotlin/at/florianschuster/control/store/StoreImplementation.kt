@@ -29,7 +29,7 @@ internal class StoreImplementation<Action, Mutation, State>(
     private val dispatcher: CoroutineDispatcher,
 
     internal val initialState: State,
-    private val mutator: Mutator<Action, Mutation>,
+    private val mutator: Mutator<Action, State, Mutation>,
     private val reducer: Reducer<Mutation, State>,
 
     private val actionsTransformer: Transformer<Action>,
@@ -87,8 +87,8 @@ internal class StoreImplementation<Action, Mutation, State>(
         val mutationFlow: Flow<Mutation> = actionsTransformer(actionChannel.asFlow())
             .flatMapMerge { action ->
                 storeLogger.log(tag, StoreLogger.Event.Action(action.toString()))
-                mutator(action).catch { cause ->
-                    val error = StoreError.Mutator(tag, "$action", cause)
+                mutator(action) { currentState }.catch { cause ->
+                    val error = Error.Mutator(tag, "$action", cause)
                     storeLogger.log(tag, StoreLogger.Event.Error(error))
                     throw error
                 }
@@ -100,7 +100,7 @@ internal class StoreImplementation<Action, Mutation, State>(
                 val reducedState = try {
                     reducer(previousState, mutation)
                 } catch (cause: Throwable) {
-                    val error = StoreError.Reducer(tag, "$previousState", "$mutation", cause)
+                    val error = Error.Reducer(tag, "$previousState", "$mutation", cause)
                     storeLogger.log(tag, StoreLogger.Event.Error(error))
                     throw error
                 }
@@ -118,5 +118,27 @@ internal class StoreImplementation<Action, Mutation, State>(
         }
 
         stateFlowCreated = true
+    }
+
+    sealed class Error(
+        message: String,
+        cause: Throwable
+    ) : RuntimeException(message, cause) {
+
+        class Mutator internal constructor(
+            tag: String,
+            action: String,
+            cause: Throwable
+        ) : Error("Mutator error in $tag, action = $action", cause)
+
+        class Reducer internal constructor(
+            tag: String,
+            previousState: String,
+            mutation: String,
+            cause: Throwable
+        ) : Error(
+            message = "Reducer error in $tag, previousState = $previousState, mutation = $mutation",
+            cause = cause
+        )
     }
 }
