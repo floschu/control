@@ -3,6 +3,7 @@ package at.florianschuster.control
 import at.florianschuster.control.store.Store
 import at.florianschuster.control.store.StoreError
 import at.florianschuster.control.store.createStore
+import at.florianschuster.control.store.createSynchronousStore
 import at.florianschuster.test.flow.TestCoroutineScopeRule
 import at.florianschuster.test.flow.emission
 import at.florianschuster.test.flow.emissionCount
@@ -77,6 +78,22 @@ internal class StoreTest {
                 "transformedState"
             )
         )
+    }
+
+
+    @Test
+    fun `synchronous store builder`() {
+        val counterSut = testScopeRule.createSynchronousStore<Int, Int>(
+            tag = "sync store",
+            initialState = 0,
+            reducer = { previousState, mutation -> previousState + mutation }
+        )
+
+        counterSut.dispatch(1)
+        counterSut.dispatch(2)
+        counterSut.dispatch(3)
+
+        assertEquals(6, counterSut.currentState)
     }
 
     @Test

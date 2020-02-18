@@ -8,12 +8,18 @@ sealed class StoreError(
     cause: Throwable
 ) : RuntimeException(message, cause) {
 
+    /**
+     * See [StoreImplementation.mutator].
+     */
     class Mutator internal constructor(
         tag: String,
         action: String,
         cause: Throwable
     ) : StoreError("Mutator error in $tag, action = $action", cause)
 
+    /**
+     * See [StoreImplementation.reducer].
+     */
     class Reducer internal constructor(
         tag: String,
         previousState: String,
