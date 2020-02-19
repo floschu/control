@@ -5,7 +5,6 @@ import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.Flow
@@ -41,7 +40,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
     private val controllerLog: ControllerLog
 ) : Controller<Action, Mutation, State> {
 
-    private var stateJob: Job? = null
+    private var stateFlowCreated by AtomicBoolean(false)
 
     private val actionChannel by lazy { BroadcastChannel<Action>(1) }
     private val stateChannel by lazy { ConflatedBroadcastChannel(initialState) }
@@ -85,7 +84,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
     }
 
     private fun createStateFlowConditionally() {
-        if (stateJob != null) return
+        if (stateFlowCreated) return
 
         val mutationFlow: Flow<Mutation> = actionsTransformer(actionChannel.asFlow())
             .flatMapMerge { action ->
@@ -111,7 +110,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
                 reducedState
             }
 
-        stateJob = scope.launch(dispatcher + CoroutineName(tag)) {
+        scope.launch(dispatcher + CoroutineName(tag)) {
             statesTransformer(stateFlow)
                 .distinctUntilChanged()
                 .onStart { controllerLog.log(tag, ControllerLog.Event.Started) }
@@ -119,6 +118,8 @@ internal class ControllerImplementation<Action, Mutation, State>(
                 .onCompletion { controllerLog.log(tag, ControllerLog.Event.Destroyed) }
                 .collect()
         }
+
+        stateFlowCreated = true
     }
 
     internal sealed class Error(
