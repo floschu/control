@@ -1,10 +1,9 @@
 package at.florianschuster.control.counterexample
 
+import at.florianschuster.control.ControllerLog
 import at.florianschuster.control.Controller
-import at.florianschuster.control.ControlLogConfiguration
+import at.florianschuster.control.createController
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 
@@ -30,17 +29,17 @@ internal data class CounterState(
 
 @Suppress("FunctionName")
 internal fun CounterController(
-    scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-): CounterController = Controller(
+    scope: CoroutineScope
+): CounterController = scope.createController(
 
-    // scope that the state flow is launched in
-    scope = scope,
+    // used for logging
+    tag = "CounterController",
 
     // we start with the initial state
     initialState = CounterState(value = 0, loading = false),
 
     // every action is transformed into [0..n] mutations
-    mutator = { action ->
+    mutator = { action, _ ->
         when (action) {
             CounterAction.Increment -> flow {
                 emit(CounterMutation.SetLoading(true))
@@ -67,6 +66,6 @@ internal fun CounterController(
         }
     },
 
-    // used for logging
-    logConfiguration = ControlLogConfiguration.Elaborate("CounterController")
+    // logs to println
+    controllerLog = ControllerLog.Println
 )

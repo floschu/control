@@ -18,25 +18,23 @@ dependencies {
 
 <p align="center"><img alt="flow" width="500" src=".media/udf.png"></p>
 
-a [Controller](control-core/src/main/kotlin/at/florianschuster/control/Controller.kt) is an ui-independent class that controls the state of a view. The role of a `Controller` is to separate business logic and control flow away from the view. a `Controller` has no dependency to a view, so it can easily be unit tested.
+a [Controller](control-core/src/main/kotlin/at/florianschuster/control/Controller.kt) is an ui-independent class that controls the state of a view. The role of a `Controller` is to separate business-logic from view-logic. A `Controller` has no dependency to the view, so it can easily be unit tested.
 
-## wiki
+## info & documentation
 
-visit the wiki for more detailed information:
+visit the wiki:
 
 1. [controller](https://github.com/floschu/control/wiki/1.-controller)
-2. [view/consumer](https://github.com/floschu/control/wiki/2.-view-or-consumer)
-3. [controller delegate](https://github.com/floschu/control/wiki/3.-controller-delegate)
-4. [transformations](https://github.com/floschu/control/wiki/4.-transformations)
-5. [controller testing](https://github.com/floschu/control/wiki/5.-controller-testing)
-6. [view/consumer testing](https://github.com/floschu/control/wiki/6.-consumer-or-view-testing)
-6. [helpers](https://github.com/floschu/control/wiki/7.-helpers)
+2. [view](https://github.com/floschu/control/wiki/2.-view)
+3. [transformations](https://github.com/floschu/control/wiki/3.-transformations)
+4. [controller testing](https://github.com/floschu/control/wiki/4.-controller-testing)
+5. [view testing](https://github.com/floschu/control/wiki/5.-view-testing)
+6. [helpers](https://github.com/floschu/control/wiki/6.-helpers)
 
 ## examples
 
 *   [counter](example-counter): most basic example. uses `Controller`.
 *   [github search](example-github): github repository search. uses `Controller` combined with android jetpack AAC `ViewModel`.
-*   [Playables](https://github.com/floschu/Playables): app with a checklist of games you want to play.
 
 ## author
 

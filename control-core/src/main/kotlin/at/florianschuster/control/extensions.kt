@@ -1,35 +1,28 @@
 package at.florianschuster.control
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 
 /**
  * Binds a [Flow] to an non suspending block.
  */
-@ExperimentalCoroutinesApi
 fun <T> Flow<T>.bind(
     to: (T) -> Unit
-): Flow<T> = onEach { to(it) }.catch { error ->
-    ControlLogConfiguration.default.log("bind", error)
-}
+): Flow<T> = onEach { to(it) }
 
 /**
  * Binds a [Flow] of [Action] to [Controller.dispatch].
  */
-@ExperimentalCoroutinesApi
-@FlowPreview
 fun <Action> Flow<Action>.bind(
     to: Controller<Action, *, *>
 ): Flow<Action> = bind(to::dispatch)
 
 /**
- * Binds a [Flow] of [Action] to [ControllerDelegate.dispatch].
+ * Maps emissions of a [Flow] and only emits those that are distinct from their immediate
+ * predecessors.
  */
 @ExperimentalCoroutinesApi
-@FlowPreview
-fun <Action> Flow<Action>.bind(
-    to: ControllerDelegate<Action, *>
-): Flow<Action> = bind(to::dispatch)
+fun <T, R> Flow<T>.distinctMap(by: (T) -> R): Flow<R> = map { by(it) }.distinctUntilChanged()

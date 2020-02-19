@@ -2,49 +2,43 @@ package at.florianschuster.control
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
 
 /**
- * Use this stub for view testing.
+ * Use this [Stub] for view testing.
  */
-@ExperimentalCoroutinesApi
-@FlowPreview
-class Stub<Action, Mutation, State> internal constructor(
-    controller: Controller<Action, Mutation, State>
-) {
+interface Stub<Action, State> {
+
+    /**
+     * [Controller] actions as ordered [List].
+     * Use this to verify if view bindings trigger the correct [Action]'s.
+     */
+    val actions: List<Action>
 
     /**
      * Offers a mocked [State].
-     * Use this to verify if state is correctly bound to consumers (e.g. a Views).
+     * Use this to verify if state is correctly bound to a view.
      */
-    fun setState(mocked: State) {
-        stateChannel.offer(mocked)
-    }
+    fun setState(state: State)
 
-    /**
-     * View actions as ordered [List].
-     * Use this to verify if consumer (e.g. a View) bindings trigger the correct [Action]'s.
-     */
-    val actions: List<Action> get() = _actions
+    companion object
+}
 
-    /**
-     * Stubbed state used by [Controller] when [Controller.stubEnabled].
-     */
-    internal val stateChannel: ConflatedBroadcastChannel<State> =
-        ConflatedBroadcastChannel(controller.initialState)
+/**
+ * An implementation of [Stub].
+ */
+@ExperimentalCoroutinesApi
+@FlowPreview
+internal class StubImplementation<Action, State>(
+    initialState: State
+) : Stub<Action, State> {
 
-    /**
-     * Stubbed action used by [Controller] when [Controller.stubEnabled].
-     */
-    internal val actionChannel = BroadcastChannel<Action>(1)
+    internal val mutableActions = mutableListOf<Action>()
+    internal val stateChannel = ConflatedBroadcastChannel(initialState)
 
-    private val _actions: MutableList<Action> = mutableListOf()
+    override val actions: List<Action> get() = mutableActions
 
-    init {
-        controller.scope.launch { actionChannel.asFlow().toList(_actions) }
+    override fun setState(state: State) {
+        stateChannel.offer(state)
     }
 }

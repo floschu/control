@@ -8,29 +8,27 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import at.florianschuster.control.Controller
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.test.assertEquals
 
-@FlowPreview
-@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 internal class CounterViewTest {
 
     @get:Rule
     val activityRule = activityScenarioRule<TestActivity>()
 
-    private lateinit var controller: Controller<CounterAction, CounterMutation, CounterState>
+    private lateinit var controller: CounterController
 
     @Before
     fun setup() {
-        controller = CounterController().apply { stubEnabled = true }
-        CounterView.ControllerProvider = { controller }
+        controller = CounterController(TestCoroutineScope()).apply { stubEnabled = true }
+
+        CounterView.CounterControllerProvider = { controller }
+
         activityRule.scenario.onActivity { it.setFragment(CounterView()) }
     }
 

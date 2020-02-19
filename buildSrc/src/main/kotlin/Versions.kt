@@ -16,7 +16,7 @@ object Versions {
 
     const val org_jetbrains_kotlinx_kotlinx_coroutines: String = "1.3.3"
 
-    const val io_github_reactivecircus_flowbinding: String = "0.8.0"
+    const val io_github_reactivecircus_flowbinding: String =  "0.9.0"
 
     const val org_jetbrains_kotlin: String = "1.3.61"
 
@@ -24,7 +24,7 @@ object Versions {
 
     const val com_android_tools_build_gradle: String = "3.5.3"
 
-    const val org_jlleitschuh_gradle_ktlint_gradle_plugin: String = "9.1.1"
+    const val org_jlleitschuh_gradle_ktlint_gradle_plugin: String =  "9.2.1"
 
     const val retrofit2_kotlinx_serialization_converter: String = "0.4.0"
 
@@ -36,11 +36,11 @@ object Versions {
 
     const val constraintlayout: String = "2.0.0-beta1"
 
-    const val flow_extensions: String = "0.0.3"
+    const val flow_extensions: String = "0.0.4"
 
     const val espresso_core: String = "3.2.0"
 
-    const val fragment_ktx: String = "1.2.0"
+    const val fragment_ktx: String =  "1.2.1"
 
     const val lint_gradle: String = "26.5.3"
 
@@ -50,7 +50,7 @@ object Versions {
 
     const val retrofit: String = "2.7.1"
 
-    const val ktlint: String = "0.36.0"
+    const val ktlint: String = "0.35.0" // available: "0.36.0"
 
     const val aapt2: String = "3.5.3-5435860"
 
@@ -70,4 +70,4 @@ object Versions {
  */
 val PluginDependenciesSpec.buildSrcVersions: PluginDependencySpec
     inline get() =
-        id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
+            id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
