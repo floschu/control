@@ -125,13 +125,13 @@ internal class ControllerImplementation<Action, Mutation, State>(
         cause: Throwable
     ) : RuntimeException(message, cause) {
 
-        class Mutator internal constructor(
+        internal class Mutator(
             tag: String,
             action: String,
             cause: Throwable
         ) : Error("Mutator error in $tag, action = $action", cause)
 
-        class Reducer internal constructor(
+        internal class Reducer(
             tag: String,
             previousState: String,
             mutation: String,
