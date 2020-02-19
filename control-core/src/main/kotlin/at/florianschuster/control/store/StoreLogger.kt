@@ -31,49 +31,17 @@ sealed class StoreLogger {
     data class Custom(override val logger: (message: String) -> Unit) : StoreLogger()
 
     /**
-     * All events that can be logged in a [StoreImplementation].
+     * All events that are logged in a [StoreImplementation].
      */
     sealed class Event(val message: String) {
-
-        /**
-         * When [StoreImplementation] is created.
-         */
-        object Created : Event("created")
-
-        /**
-         * When [StoreImplementation.state] is started.
-         */
-        object Started : Event("state stream started")
-
-        /**
-         * When [StoreImplementation] receives an action in [StoreImplementation.mutator].
-         */
-        class Action(action: String) : Event("action: $action")
-
-        /**
-         * When [StoreImplementation] receives a mutation in [StoreImplementation.reducer].
-         */
-        class Mutation(mutation: String) : Event("mutation: $mutation")
-
-        /**
-         * When [StoreImplementation] produces a new state in [StoreImplementation.reducer].
-         */
-        class State(state: String) : Event("state: $state")
-
-        /**
-         * When an error is thrown in [StoreImplementation].
-         */
-        class Error(cause: Throwable) : Event("error: $cause")
-
-        /**
-         * When [StoreImplementation.stubEnabled] is toggled.
-         */
-        class Stub(enabled: Boolean) : Event("stub: enabled = $enabled")
-
-        /**
-         * When [StoreImplementation] is destroyed (= the state [Flow] is completed).
-         */
-        object Destroyed : Event("destroyed")
+        internal object Created : Event("created")
+        internal object Started : Event("state stream started")
+        internal class Action(action: String) : Event("action: $action")
+        internal class Mutation(mutation: String) : Event("mutation: $mutation")
+        internal class State(state: String) : Event("state: $state")
+        internal class Error(cause: Throwable) : Event("error: $cause")
+        internal class Stub(enabled: Boolean) : Event("stub: enabled = $enabled")
+        internal object Destroyed : Event("destroyed")
     }
 
     companion object {
