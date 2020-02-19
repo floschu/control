@@ -1,9 +1,6 @@
 name: build
 
-on:
-  push:
-    tags-ignore:
-      - '*'
+on: push
 
 jobs:
   lint:
