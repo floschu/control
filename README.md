@@ -22,8 +22,6 @@ a [Controller](control-core/src/main/kotlin/at/florianschuster/control/Controlle
 
 ## info & documentation
 
-visit the wiki:
-
 1. [controller](https://github.com/floschu/control/wiki/1.-controller)
 2. [view](https://github.com/floschu/control/wiki/2.-view)
 3. [transformations](https://github.com/floschu/control/wiki/3.-transformations)
