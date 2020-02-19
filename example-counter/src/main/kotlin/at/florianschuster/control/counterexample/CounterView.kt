@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import at.florianschuster.control.Controller
 import kotlinx.android.synthetic.main.view_counter.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -48,6 +47,6 @@ class CounterView : Fragment(R.layout.view_counter) {
     companion object {
         internal var CounterControllerProvider: (
             scope: CoroutineScope
-        ) -> Controller<CounterAction, CounterState> = { CounterController(it) }
+        ) -> CounterController = ::CounterController
     }
 }

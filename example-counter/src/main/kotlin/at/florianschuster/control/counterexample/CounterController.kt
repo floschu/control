@@ -1,13 +1,13 @@
 package at.florianschuster.control.counterexample
 
+import at.florianschuster.control.ControllerLog
 import at.florianschuster.control.Controller
-import at.florianschuster.control.store.Store
-import at.florianschuster.control.store.StoreLogger
-import at.florianschuster.control.store.createStore
+import at.florianschuster.control.createController
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+
+internal typealias CounterController = Controller<CounterAction, CounterMutation, CounterState>
 
 // action triggered by view
 internal enum class CounterAction {
@@ -27,15 +27,10 @@ internal data class CounterState(
     val loading: Boolean = false
 )
 
-internal class CounterController(
-    scope: CoroutineScope,
-    override val store: Store<CounterAction, CounterMutation, CounterState> = CounterStore(scope)
-) : Controller<CounterAction, CounterState>
-
 @Suppress("FunctionName")
-private fun CounterStore(
+internal fun CounterController(
     scope: CoroutineScope
-) = scope.createStore<CounterAction, CounterMutation, CounterState>(
+): CounterController = scope.createController(
 
     // used for logging
     tag = "CounterController",
@@ -72,5 +67,5 @@ private fun CounterStore(
     },
 
     // logs to println
-    storeLogger = StoreLogger.Println
+    controllerLog = ControllerLog.Println
 )

@@ -33,7 +33,7 @@ internal class GithubViewTest {
 
     @Before
     fun setup() {
-        viewModel = GithubViewModel().apply { store.stubEnabled = true }
+        viewModel = GithubViewModel().apply { controller.stubEnabled = true }
         GithubView.GithubViewModelFactory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T = viewModel as T
@@ -53,20 +53,20 @@ internal class GithubViewTest {
         // then
         assertEquals(
             GithubViewModel.Action.UpdateQuery(testQuery),
-            viewModel.store.stub.actions.last()
+            viewModel.controller.stub.actions.last()
         )
     }
 
     @Test
     fun whenStateOffersLoadingNextPageThenProgressBarIsShown() {
         // when
-        viewModel.store.stub.setState(GithubViewModel.State(loadingNextPage = true))
+        viewModel.controller.stub.setState(GithubViewModel.State(loadingNextPage = true))
 
         // then
         onView(withId(R.id.loadingProgressBar)).check(matches(isDisplayed()))
 
         // when
-        viewModel.store.stub.setState(GithubViewModel.State(loadingNextPage = false))
+        viewModel.controller.stub.setState(GithubViewModel.State(loadingNextPage = false))
 
         // then
         onView(withId(R.id.loadingProgressBar)).check(matches(not(isDisplayed())))

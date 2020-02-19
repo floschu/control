@@ -1,20 +1,16 @@
-package at.florianschuster.control.store
+package at.florianschuster.control
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
 
 /**
- * Use this [StoreStub] for view testing.
+ * Use this [Stub] for view testing.
  */
-interface StoreStub<Action, State> {
+interface Stub<Action, State> {
 
     /**
-     * [Store] actions as ordered [List].
+     * [Controller] actions as ordered [List].
      * Use this to verify if view bindings trigger the correct [Action]'s.
      */
     val actions: List<Action>
@@ -29,13 +25,13 @@ interface StoreStub<Action, State> {
 }
 
 /**
- * An implementation of [StoreStub].
+ * An implementation of [Stub].
  */
 @ExperimentalCoroutinesApi
 @FlowPreview
-internal class StoreStubImplementation<Action, State>(
+internal class StubImplementation<Action, State>(
     initialState: State
-) : StoreStub<Action, State> {
+) : Stub<Action, State> {
 
     internal val mutableActions = mutableListOf<Action>()
     internal val stateChannel = ConflatedBroadcastChannel(initialState)

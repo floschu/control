@@ -1,11 +1,9 @@
-package at.florianschuster.control.store
-
-import kotlinx.coroutines.flow.Flow
+package at.florianschuster.control
 
 /**
- * Configuration to define how [StoreLogger.Event]'s are logged by a [StoreImplementation].
+ * Configuration to define how [ControllerLog.Event]'s are logged by a [ControllerImplementation].
  */
-sealed class StoreLogger {
+sealed class ControllerLog {
 
     internal open val logger: ((message: String) -> Unit)? = null
 
@@ -16,22 +14,22 @@ sealed class StoreLogger {
     /**
      * No logging.
      */
-    object None : StoreLogger()
+    object None : ControllerLog()
 
     /**
      * Uses [println] to log.
      */
-    object Println : StoreLogger() {
+    object Println : ControllerLog() {
         override val logger: (message: String) -> Unit = ::println
     }
 
     /**
      * Uses a custom [logger] to log.
      */
-    data class Custom(override val logger: (message: String) -> Unit) : StoreLogger()
+    data class Custom(override val logger: (message: String) -> Unit) : ControllerLog()
 
     /**
-     * All events that are logged in a [StoreImplementation].
+     * All events that are logged in a [ControllerImplementation].
      */
     sealed class Event(val message: String) {
         internal object Created : Event("created")
@@ -47,13 +45,13 @@ sealed class StoreLogger {
     companion object {
 
         /**
-         * The default [StoreLogger] that is used by a [StoreImplementation].
-         * Set this to change the logger for all [StoreImplementation]'s that do not specify one.
+         * The default [ControllerLog] that is used by a [ControllerImplementation].
+         * Set this to change the logger for all [ControllerImplementation]'s that do not specify one.
          */
-        var default: StoreLogger = None
+        var default: ControllerLog = None
 
         /**
-         * The default message creator for all [StoreLogger] types.
+         * The default message creator for all [ControllerLog] types.
          * Override this to customize your logs.
          */
         var defaultMessageCreator: (tag: String, event: Event) -> String = { tag, event ->

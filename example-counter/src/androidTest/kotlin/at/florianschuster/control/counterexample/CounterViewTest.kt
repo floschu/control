@@ -25,7 +25,7 @@ internal class CounterViewTest {
 
     @Before
     fun setup() {
-         controller = CounterController(TestCoroutineScope()).apply { store.stubEnabled = true }
+        controller = CounterController(TestCoroutineScope()).apply { stubEnabled = true }
 
         CounterView.CounterControllerProvider = { controller }
 
@@ -38,7 +38,7 @@ internal class CounterViewTest {
         onView(withId(R.id.increaseButton)).perform(click())
 
         // then
-        assertEquals(CounterAction.Increment, controller.store.stub.actions.last())
+        assertEquals(CounterAction.Increment, controller.stub.actions.last())
     }
 
     @Test
@@ -47,7 +47,7 @@ internal class CounterViewTest {
         onView(withId(R.id.decreaseButton)).perform(click())
 
         // then
-        assertEquals(CounterAction.Decrement, controller.store.stub.actions.last())
+        assertEquals(CounterAction.Decrement, controller.stub.actions.last())
     }
 
     @Test
@@ -56,7 +56,7 @@ internal class CounterViewTest {
         val testValue = 1
 
         // when
-        controller.store.stub.setState(CounterState(value = testValue))
+        controller.stub.setState(CounterState(value = testValue))
 
         // then
         onView(withId(R.id.valueTextView)).check(matches(withText("$testValue")))
@@ -65,7 +65,7 @@ internal class CounterViewTest {
     @Test
     fun whenStateOffersLoadingProgressBarIsVisible() {
         // when
-        controller.store.stub.setState(CounterState(loading = true))
+        controller.stub.setState(CounterState(loading = true))
 
         // then
         onView(withId(R.id.loadingProgressBar)).check(matches(isDisplayed()))

@@ -33,7 +33,7 @@ internal class GithubViewModelTest {
         initialState: GithubViewModel.State = GithubViewModel.State()
     ) {
         sut = GithubViewModel(initialState, githubApi, testScopeRule.dispatcher)
-        states = sut.state.testIn(testScopeRule)
+        states = sut.controller.state.testIn(testScopeRule)
     }
 
     @Test
@@ -43,7 +43,7 @@ internal class GithubViewModelTest {
         `given github search controller`()
 
         // when
-        sut.dispatch(GithubViewModel.Action.UpdateQuery(query))
+        sut.controller.dispatch(GithubViewModel.Action.UpdateQuery(query))
 
         // then
         coVerify(exactly = 1) { githubApi.repos(query, 1) }
@@ -63,7 +63,7 @@ internal class GithubViewModelTest {
         `given github search controller`()
 
         // when
-        sut.dispatch(GithubViewModel.Action.UpdateQuery(query))
+        sut.controller.dispatch(GithubViewModel.Action.UpdateQuery(query))
 
         // then
         coVerify { githubApi.repos(any(), any()) wasNot Called }
@@ -79,7 +79,7 @@ internal class GithubViewModelTest {
         )
 
         // when
-        sut.dispatch(GithubViewModel.Action.LoadNextPage)
+        sut.controller.dispatch(GithubViewModel.Action.LoadNextPage)
 
         // then
         coVerify(exactly = 1) { githubApi.repos(any(), 2) }
@@ -98,7 +98,7 @@ internal class GithubViewModelTest {
         `given github search controller`(initialState)
 
         // when
-        sut.dispatch(GithubViewModel.Action.LoadNextPage)
+        sut.controller.dispatch(GithubViewModel.Action.LoadNextPage)
 
         // then
         coVerify { githubApi.repos(any(), any()) wasNot Called }
@@ -114,7 +114,7 @@ internal class GithubViewModelTest {
         `given github search controller`()
 
         // when
-        sut.dispatch(GithubViewModel.Action.UpdateQuery(query))
+        sut.controller.dispatch(GithubViewModel.Action.UpdateQuery(query))
 
         // then
         coVerify(exactly = 1) { githubApi.repos(query, 1) }

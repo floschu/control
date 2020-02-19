@@ -6,10 +6,9 @@ import androidx.lifecycle.viewModelScope
 import at.florianschuster.control.githubexample.GithubApi
 import at.florianschuster.control.githubexample.Repo
 import at.florianschuster.control.Controller
-import at.florianschuster.control.store.StateAccessor
-import at.florianschuster.control.store.Store
-import at.florianschuster.control.store.StoreLogger
-import at.florianschuster.control.store.createStore
+import at.florianschuster.control.StateAccessor
+import at.florianschuster.control.ControllerLog
+import at.florianschuster.control.createController
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -19,8 +18,8 @@ import kotlinx.coroutines.flow.flow
 internal class GithubViewModel(
     initialState: State = State(),
     private val api: GithubApi = GithubApi(),
-    storeDispatcher: CoroutineDispatcher = Dispatchers.Default
-) : ViewModel(), Controller<GithubViewModel.Action, GithubViewModel.State> {
+    controllerDispatcher: CoroutineDispatcher = Dispatchers.Default
+) : ViewModel() {
 
     sealed class Action {
         data class UpdateQuery(val text: String) : Action()
@@ -41,17 +40,17 @@ internal class GithubViewModel(
         val loadingNextPage: Boolean = false
     )
 
-    override val store: Store<Action, Mutation, State> = viewModelScope.createStore(
+    val controller: Controller<Action, Mutation, State> = viewModelScope.createController(
 
         // viewModelScope uses Dispatchers.Main, we do not want to run on Main
-        dispatcher = storeDispatcher,
+        dispatcher = controllerDispatcher,
 
         initialState = initialState,
         mutator = ::mutate,
         reducer = ::reduce,
 
-        tag = "github_vm",
-        storeLogger = StoreLogger.Custom { Log.d(this::class.java.simpleName, it) }
+        tag = "github_controller",
+        controllerLog = ControllerLog.Custom { Log.d(this::class.java.simpleName, it) }
     )
 
     private fun mutate(action: Action, stateAccessor: StateAccessor<State>): Flow<Mutation> =
@@ -92,11 +91,11 @@ internal class GithubViewModel(
         )
         is Mutation.SetLoadingNextPage -> previousState.copy(loadingNextPage = mutation.loading)
     }
-}
 
-private suspend fun GithubApi.safeSearch(
-    query: String,
-    page: Int
-): List<Repo>? = runCatching { repos(query, page).items }
-    .onFailure { Log.e("GithubApi.repos", "with query = $query, page = $page", it) }
-    .getOrNull()
+    private suspend fun GithubApi.safeSearch(
+        query: String,
+        page: Int
+    ): List<Repo>? = runCatching { repos(query, page).items }
+        .onFailure { Log.e("GithubApi.repos", "with query = $query, page = $page", it) }
+        .getOrNull()
+}

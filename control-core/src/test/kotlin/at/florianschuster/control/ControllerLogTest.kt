@@ -1,29 +1,29 @@
-package at.florianschuster.control.store
+package at.florianschuster.control
 
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-internal class StoreLoggerTest {
+internal class ControllerLogTest {
 
     @Test
     fun `setting default logger`() {
-        StoreLogger.default = StoreLogger.Println
-        assertEquals(StoreLogger.Println, StoreLogger.default)
+        ControllerLog.default = ControllerLog.Println
+        assertEquals(ControllerLog.Println, ControllerLog.default)
 
-        StoreLogger.default = StoreLogger.None
-        assertEquals(StoreLogger.None, StoreLogger.default)
+        ControllerLog.default = ControllerLog.None
+        assertEquals(ControllerLog.None, ControllerLog.default)
     }
 
     @Test
     fun `setting default message creator`() {
         val expectedMessage = "a test message"
-        StoreLogger.defaultMessageCreator = { _, _ -> expectedMessage }
+        ControllerLog.defaultMessageCreator = { _, _ -> expectedMessage }
         val spiedLogs = mutableListOf<String>()
-        val sut = StoreLogger.Custom { spiedLogs.add(it) }
+        val sut = ControllerLog.Custom { spiedLogs.add(it) }
 
-        sut.log(tag, StoreLogger.Event.Created)
-        sut.log(tag, StoreLogger.Event.Destroyed)
+        sut.log(tag, ControllerLog.Event.Created)
+        sut.log(tag, ControllerLog.Event.Destroyed)
 
         assertEquals(2, spiedLogs.count())
         assertTrue(spiedLogs.all { it == expectedMessage })
@@ -32,13 +32,13 @@ internal class StoreLoggerTest {
     @Test
     fun `none logger, methods are not called`() {
         var spiedAmountOfMessagesCreated = 0
-        StoreLogger.defaultMessageCreator = { tag, _ ->
+        ControllerLog.defaultMessageCreator = { tag, _ ->
             spiedAmountOfMessagesCreated++
             tag
         }
 
-        StoreLogger.None.log(tag, StoreLogger.Event.Created)
-        StoreLogger.None.log(tag, StoreLogger.Event.Destroyed)
+        ControllerLog.None.log(tag, ControllerLog.Event.Created)
+        ControllerLog.None.log(tag, ControllerLog.Event.Destroyed)
 
         assertEquals(0, spiedAmountOfMessagesCreated)
     }
@@ -46,13 +46,13 @@ internal class StoreLoggerTest {
     @Test
     fun `println logger, methods are called`() {
         var spiedAmountOfMessagesCreated = 0
-        StoreLogger.defaultMessageCreator = { tag, _ ->
+        ControllerLog.defaultMessageCreator = { tag, _ ->
             spiedAmountOfMessagesCreated++
             tag
         }
 
-        StoreLogger.Println.log(tag, StoreLogger.Event.Created)
-        StoreLogger.Println.log(tag, StoreLogger.Event.Destroyed)
+        ControllerLog.Println.log(tag, ControllerLog.Event.Created)
+        ControllerLog.Println.log(tag, ControllerLog.Event.Destroyed)
 
         assertEquals(2, spiedAmountOfMessagesCreated)
     }
@@ -60,14 +60,14 @@ internal class StoreLoggerTest {
     @Test
     fun `custom logger, methods are called`() {
         var spiedAmountOfMessagesCreated = 0
-        StoreLogger.defaultMessageCreator = { tag, _ ->
+        ControllerLog.defaultMessageCreator = { tag, _ ->
             spiedAmountOfMessagesCreated++
             tag
         }
         val spiedLogs = mutableListOf<String>()
 
-        StoreLogger.Custom { spiedLogs.add(it) }.log(tag, StoreLogger.Event.Created)
-        StoreLogger.Custom { spiedLogs.add(it) }.log(tag, StoreLogger.Event.Destroyed)
+        ControllerLog.Custom { spiedLogs.add(it) }.log(tag, ControllerLog.Event.Created)
+        ControllerLog.Custom { spiedLogs.add(it) }.log(tag, ControllerLog.Event.Destroyed)
 
         assertEquals(2, spiedLogs.count())
         assertTrue(spiedLogs.all { it.contains(tag) })

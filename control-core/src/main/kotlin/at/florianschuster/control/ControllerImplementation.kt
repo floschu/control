@@ -1,4 +1,4 @@
-package at.florianschuster.control.store
+package at.florianschuster.control
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineName
@@ -20,11 +20,11 @@ import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
 
 /**
- * An implementation of [Store].
+ * An implementation of [Controller].
  */
 @ExperimentalCoroutinesApi
 @FlowPreview
-internal class StoreImplementation<Action, Mutation, State>(
+internal class ControllerImplementation<Action, Mutation, State>(
     internal val scope: CoroutineScope,
     private val dispatcher: CoroutineDispatcher,
 
@@ -37,14 +37,14 @@ internal class StoreImplementation<Action, Mutation, State>(
     private val statesTransformer: Transformer<State>,
 
     private val tag: String,
-    private val storeLogger: StoreLogger
-) : Store<Action, Mutation, State> {
+    private val controllerLog: ControllerLog
+) : Controller<Action, Mutation, State> {
 
     private var stateFlowCreated = false
 
     private val actionChannel by lazy { BroadcastChannel<Action>(1) }
     private val stateChannel by lazy { ConflatedBroadcastChannel(initialState) }
-    private val stubImplementation by lazy { StoreStubImplementation<Action, State>(initialState) }
+    private val stubImplementation by lazy { StubImplementation<Action, State>(initialState) }
 
     override val state: Flow<State>
         get() = if (!stubEnabled) {
@@ -73,47 +73,47 @@ internal class StoreImplementation<Action, Mutation, State>(
 
     override var stubEnabled: Boolean = false
         set(value) {
-            storeLogger.log(tag, StoreLogger.Event.Stub(value))
+            controllerLog.log(tag, ControllerLog.Event.Stub(value))
             field = value
         }
 
-    override val stub: StoreStub<Action, State> get() = stubImplementation
+    override val stub: Stub<Action, State> get() = stubImplementation
 
     init {
-        storeLogger.log(tag, StoreLogger.Event.Created)
+        controllerLog.log(tag, ControllerLog.Event.Created)
     }
 
     private fun createStateFlow() {
         val mutationFlow: Flow<Mutation> = actionsTransformer(actionChannel.asFlow())
             .flatMapMerge { action ->
-                storeLogger.log(tag, StoreLogger.Event.Action(action.toString()))
+                controllerLog.log(tag, ControllerLog.Event.Action(action.toString()))
                 mutator(action) { currentState }.catch { cause ->
                     val error = Error.Mutator(tag, "$action", cause)
-                    storeLogger.log(tag, StoreLogger.Event.Error(error))
+                    controllerLog.log(tag, ControllerLog.Event.Error(error))
                     throw error
                 }
             }
 
         val stateFlow: Flow<State> = mutationsTransformer(mutationFlow)
             .scan(initialState) { previousState, mutation ->
-                storeLogger.log(tag, StoreLogger.Event.Mutation(mutation.toString()))
+                controllerLog.log(tag, ControllerLog.Event.Mutation(mutation.toString()))
                 val reducedState = try {
                     reducer(previousState, mutation)
                 } catch (cause: Throwable) {
                     val error = Error.Reducer(tag, "$previousState", "$mutation", cause)
-                    storeLogger.log(tag, StoreLogger.Event.Error(error))
+                    controllerLog.log(tag, ControllerLog.Event.Error(error))
                     throw error
                 }
-                storeLogger.log(tag, StoreLogger.Event.State(reducedState.toString()))
+                controllerLog.log(tag, ControllerLog.Event.State(reducedState.toString()))
                 reducedState
             }
 
         scope.launch(dispatcher + CoroutineName(tag)) {
             statesTransformer(stateFlow)
                 .distinctUntilChanged()
-                .onStart { storeLogger.log(tag, StoreLogger.Event.Started) }
+                .onStart { controllerLog.log(tag, ControllerLog.Event.Started) }
                 .onEach(stateChannel::send)
-                .onCompletion { storeLogger.log(tag, StoreLogger.Event.Destroyed) }
+                .onCompletion { controllerLog.log(tag, ControllerLog.Event.Destroyed) }
                 .collect()
         }
 

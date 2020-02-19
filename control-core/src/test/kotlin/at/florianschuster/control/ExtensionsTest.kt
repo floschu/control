@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 
-internal class ControlExtTest {
+internal class ExtensionsTest {
 
     @Test
     fun `bind lambda emits values correctly`() = runBlockingTest {
@@ -28,7 +28,7 @@ internal class ControlExtTest {
 
     @Test
     fun `bind controller emits values correctly`() = runBlockingTest {
-        val sut = spyk<Controller<Int, Unit>>()
+        val sut = spyk<Controller<Int, Unit, Unit>>()
         flow {
             emit(1)
             emit(2)

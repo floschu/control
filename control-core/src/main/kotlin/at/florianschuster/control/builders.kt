@@ -1,4 +1,4 @@
-package at.florianschuster.control.store
+package at.florianschuster.control
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineName
@@ -11,27 +11,27 @@ import kotlinx.coroutines.flow.flowOf
 import kotlin.coroutines.ContinuationInterceptor
 
 /**
- * Creates a [Store] bound to the [CoroutineScope] via [StoreImplementation].
+ * Creates a [Controller] bound to the [CoroutineScope] via [ControllerImplementation].
  *
- * The [StoreImplementation.state] [Flow] is launched once [StoreImplementation.state],
- * [StoreImplementation.currentState] or [StoreImplementation.dispatch] are accessed.
+ * The [ControllerImplementation.state] [Flow] is launched once [ControllerImplementation.state],
+ * [ControllerImplementation.currentState] or [ControllerImplementation.dispatch] are accessed.
  *
  * Per default, the [CoroutineDispatcher] of [CoroutineScope] is used to launch the
- * [StoreImplementation.state] [Flow]. If another [CoroutineDispatcher] should be used,
+ * [ControllerImplementation.state] [Flow]. If another [CoroutineDispatcher] should be used,
  * override [dispatcher].
  */
 @ExperimentalCoroutinesApi
 @FlowPreview
-fun <Action, Mutation, State> CoroutineScope.createStore(
+fun <Action, Mutation, State> CoroutineScope.createController(
 
     /**
-     * Set as [CoroutineName] for the [StoreImplementation.state] context.
-     * Also used for logging if enabled via [storeLogger].
+     * Set as [CoroutineName] for the [ControllerImplementation.state] context.
+     * Also used for logging if enabled via [controllerLog].
      */
     tag: String,
 
     /**
-     * The [StoreImplementation] is started with this [State].
+     * The [ControllerImplementation] is started with this [State].
      */
     initialState: State,
 
@@ -53,16 +53,16 @@ fun <Action, Mutation, State> CoroutineScope.createStore(
     statesTransformer: Transformer<State> = { it },
 
     /**
-     * Override to launch [StoreImplementation.state] [Flow] in different [CoroutineDispatcher]
+     * Override to launch [ControllerImplementation.state] [Flow] in different [CoroutineDispatcher]
      * than the one used in the [CoroutineScope.coroutineContext].
      */
     dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher,
 
     /**
-     * Log configuration for the [StoreImplementation]. See [StoreLogger].
+     * Log configuration for the [ControllerImplementation]. See [ControllerLog].
      */
-    storeLogger: StoreLogger = StoreLogger.default
-): Store<Action, Mutation, State> = StoreImplementation(
+    controllerLog: ControllerLog = ControllerLog.default
+): Controller<Action, Mutation, State> = ControllerImplementation(
     scope = this, dispatcher = dispatcher,
 
     initialState = initialState, mutator = mutator, reducer = reducer,
@@ -70,16 +70,16 @@ fun <Action, Mutation, State> CoroutineScope.createStore(
     mutationsTransformer = mutationsTransformer,
     statesTransformer = statesTransformer,
 
-    tag = tag, storeLogger = storeLogger
+    tag = tag, controllerLog = controllerLog
 )
 
 /**
- * Creates a [Store] with [CoroutineScope.createStore] where [Action] == [Mutation].
- * The [Store] can only deal with synchronous state reductions without any asynchronous side-effects.
+ * Creates a [Controller] with [CoroutineScope.createController] where [Action] == [Mutation].
+ * The [Controller] can only deal with synchronous state reductions without any asynchronous side-effects.
  */
 @ExperimentalCoroutinesApi
 @FlowPreview
-fun <Action, State> CoroutineScope.createSynchronousStore(
+fun <Action, State> CoroutineScope.createSynchronousController(
     tag: String,
 
     initialState: State,
@@ -90,8 +90,8 @@ fun <Action, State> CoroutineScope.createSynchronousStore(
 
     dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher,
 
-    storeLogger: StoreLogger = StoreLogger.default
-): Store<Action, Action, State> = createStore(
+    controllerLog: ControllerLog = ControllerLog.default
+): Controller<Action, Action, State> = createController(
     dispatcher = dispatcher,
 
     initialState = initialState, mutator = { action, _ -> flowOf(action) }, reducer = reducer,
@@ -99,6 +99,6 @@ fun <Action, State> CoroutineScope.createSynchronousStore(
     mutationsTransformer = { it },
     statesTransformer = statesTransformer,
 
-    tag = tag, storeLogger = storeLogger
+    tag = tag, controllerLog = controllerLog
 )
 
