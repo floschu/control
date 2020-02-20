@@ -6,7 +6,34 @@ on:
       - '*'
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v1
+      - name: "Set up Java"
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: "ktlint"
+        run: ./gradlew ktlintCheck
+      - name: "lint"
+        run: ./gradlew lint
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v1
+      - name: "Set up Java"
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: "Test"
+        run: ./gradlew test
+
   publish:
+    needs: [lint, test]
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
