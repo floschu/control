@@ -25,12 +25,6 @@ import kotlin.coroutines.ContinuationInterceptor
 fun <Action, Mutation, State> CoroutineScope.createController(
 
     /**
-     * Set as [CoroutineName] for the [ControllerImplementation.state] context.
-     * Also used for logging if enabled via [controllerLog].
-     */
-    tag: String,
-
-    /**
      * The [ControllerImplementation] is started with this [State].
      */
     initialState: State,
@@ -56,7 +50,13 @@ fun <Action, Mutation, State> CoroutineScope.createController(
      * Override to launch [ControllerImplementation.state] [Flow] in different [CoroutineDispatcher]
      * than the one used in the [CoroutineScope.coroutineContext].
      */
-    dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher,
+    dispatcher: CoroutineDispatcher = getDispatcher(),
+
+    /**
+     * Set as [CoroutineName] for the [ControllerImplementation.state] context.
+     * Also used for logging if enabled via [controllerLog].
+     */
+    tag: String = defaultTag(),
 
     /**
      * Log configuration for the [ControllerImplementation]. See [ControllerLog].
@@ -80,16 +80,15 @@ fun <Action, Mutation, State> CoroutineScope.createController(
 @ExperimentalCoroutinesApi
 @FlowPreview
 fun <Action, State> CoroutineScope.createSynchronousController(
-    tag: String,
-
     initialState: State,
     reducer: Reducer<Action, State> = { previousState, _ -> previousState },
 
     actionsTransformer: Transformer<Action> = { it },
     statesTransformer: Transformer<State> = { it },
 
-    dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher,
+    dispatcher: CoroutineDispatcher = getDispatcher(),
 
+    tag: String = defaultTag(),
     controllerLog: ControllerLog = ControllerLog.default
 ): Controller<Action, Action, State> = createController(
     dispatcher = dispatcher,
@@ -102,3 +101,13 @@ fun <Action, State> CoroutineScope.createSynchronousController(
     tag = tag, controllerLog = controllerLog
 )
 
+private fun CoroutineScope.getDispatcher(): CoroutineDispatcher =
+    coroutineContext[ContinuationInterceptor] as CoroutineDispatcher
+
+@Suppress("NOTHING_TO_INLINE")
+private inline fun defaultTag(): String {
+    val stackTrace = Throwable().stackTrace
+    check(stackTrace.size >= 2) { "Stacktrace didn't have enough elements." }
+    val className = stackTrace[1].className.split("$").first().split(".").last()
+    return "${className}_controller"
+}

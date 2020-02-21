@@ -32,9 +32,6 @@ internal fun CounterController(
     scope: CoroutineScope
 ): CounterController = scope.createController(
 
-    // used for logging
-    tag = "CounterController",
-
     // we start with the initial state
     initialState = CounterState(value = 0, loading = false),
 

@@ -41,15 +41,11 @@ internal class GithubViewModel(
     )
 
     val controller: Controller<Action, Mutation, State> = viewModelScope.createController(
+        initialState = initialState, mutator = ::mutate, reducer = ::reduce,
 
         // viewModelScope uses Dispatchers.Main, we do not want to run on Main
         dispatcher = controllerDispatcher,
 
-        initialState = initialState,
-        mutator = ::mutate,
-        reducer = ::reduce,
-
-        tag = "github_controller",
         controllerLog = ControllerLog.Custom { Log.d(this::class.java.simpleName, it) }
     )
 

@@ -125,7 +125,6 @@ internal class ControllerImplementationTest {
 
     private fun CoroutineScope.createOperationController() =
         createController<List<String>, List<String>, List<String>>(
-            tag = "Operation Controller",
 
             // 1. ["initialState"]
             initialState = listOf("initialState"),
@@ -156,7 +155,6 @@ internal class ControllerImplementationTest {
         mutatorErrorIndex: Int? = null,
         reducerErrorIndex: Int? = null
     ) = createController<Unit, Unit, Int>(
-        tag = "CounterController",
         initialState = 0,
         mutator = { action, stateAccessor ->
             when (stateAccessor()) {
