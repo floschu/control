@@ -42,7 +42,7 @@ object Versions {
 
     const val espresso_core: String = "3.2.0"
 
-    const val fragment_ktx: String = "1.2.1" // available: "1.2.2"
+    const val fragment_ktx: String = "1.2.2"
 
     const val lint_gradle: String = "26.5.3"
 
@@ -72,4 +72,4 @@ object Versions {
  */
 val PluginDependenciesSpec.buildSrcVersions: PluginDependencySpec
     inline get() =
-            id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
+        id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
