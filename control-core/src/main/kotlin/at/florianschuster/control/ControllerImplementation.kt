@@ -1,5 +1,6 @@
 package at.florianschuster.control
 
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
@@ -40,7 +41,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
     private val controllerLog: ControllerLog
 ) : Controller<Action, Mutation, State> {
 
-    private var stateFlowCreated by AtomicBoolean(false)
+    private val stateFlowCreated = atomic(false)
 
     private val actionChannel by lazy { BroadcastChannel<Action>(1) }
     private val stateChannel by lazy { ConflatedBroadcastChannel(initialState) }
@@ -83,8 +84,12 @@ internal class ControllerImplementation<Action, Mutation, State>(
         controllerLog.log(tag, ControllerLog.Event.Created)
     }
 
+    /**
+     * Creates the [state] [Flow] if [stateFlowCreated] is false.
+     */
     private fun createStateFlowConditionally() {
-        if (stateFlowCreated) return
+        if (stateFlowCreated.value) return
+        stateFlowCreated.value = true
 
         val mutationFlow: Flow<Mutation> = actionsTransformer(actionChannel.asFlow())
             .flatMapMerge { action ->
@@ -118,8 +123,6 @@ internal class ControllerImplementation<Action, Mutation, State>(
                 .onCompletion { controllerLog.log(tag, ControllerLog.Event.Destroyed) }
                 .collect()
         }
-
-        stateFlowCreated = true
     }
 
     internal sealed class Error(
