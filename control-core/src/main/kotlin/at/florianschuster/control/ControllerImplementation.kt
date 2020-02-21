@@ -49,7 +49,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     override val state: Flow<State>
         get() = if (!stubEnabled) {
-            createStateFlowConditionally()
+            if (!stateFlowCreated.value) createStateFlow()
             stateChannel.asFlow()
         } else {
             stubImplementation.stateChannel.asFlow()
@@ -57,7 +57,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     override val currentState: State
         get() = if (!stubEnabled) {
-            createStateFlowConditionally()
+            if (!stateFlowCreated.value) createStateFlow()
             stateChannel.value
         } else {
             stubImplementation.stateChannel.value
@@ -65,7 +65,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     override fun dispatch(action: Action) {
         if (!stubEnabled) {
-            createStateFlowConditionally()
+            if (!stateFlowCreated.value) createStateFlow()
             actionChannel.offer(action)
         } else {
             stubImplementation.mutableActions.add(action)
@@ -84,11 +84,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
         controllerLog.log(tag, ControllerLog.Event.Created)
     }
 
-    /**
-     * Creates the [state] [Flow] if [stateFlowCreated] is false.
-     */
-    private fun createStateFlowConditionally() {
-        if (stateFlowCreated.value) return
+    private fun createStateFlow() {
         stateFlowCreated.value = true
 
         val mutationFlow: Flow<Mutation> = actionsTransformer(actionChannel.asFlow())
