@@ -1,11 +1,11 @@
 package at.florianschuster.control
 
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.Flow
@@ -41,7 +41,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
     private val controllerLog: ControllerLog
 ) : Controller<Action, Mutation, State> {
 
-    private var stateJob: Job? = null
+    private val stateFlowCreated = atomic(false)
 
     private val actionChannel by lazy { BroadcastChannel<Action>(1) }
     private val stateChannel by lazy { ConflatedBroadcastChannel(initialState) }
@@ -49,7 +49,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     override val state: Flow<State>
         get() = if (!stubEnabled) {
-            createStateFlowConditionally()
+            if (!stateFlowCreated.value) createStateFlow()
             stateChannel.asFlow()
         } else {
             stubImplementation.stateChannel.asFlow()
@@ -57,7 +57,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     override val currentState: State
         get() = if (!stubEnabled) {
-            createStateFlowConditionally()
+            if (!stateFlowCreated.value) createStateFlow()
             stateChannel.value
         } else {
             stubImplementation.stateChannel.value
@@ -65,7 +65,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     override fun dispatch(action: Action) {
         if (!stubEnabled) {
-            createStateFlowConditionally()
+            if (!stateFlowCreated.value) createStateFlow()
             actionChannel.offer(action)
         } else {
             stubImplementation.mutableActions.add(action)
@@ -84,8 +84,8 @@ internal class ControllerImplementation<Action, Mutation, State>(
         controllerLog.log(tag, ControllerLog.Event.Created)
     }
 
-    private fun createStateFlowConditionally() {
-        if (stateJob != null) return
+    private fun createStateFlow() {
+        stateFlowCreated.value = true
 
         val mutationFlow: Flow<Mutation> = actionsTransformer(actionChannel.asFlow())
             .flatMapMerge { action ->
@@ -111,7 +111,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
                 reducedState
             }
 
-        stateJob = scope.launch(dispatcher + CoroutineName(tag)) {
+        scope.launch(dispatcher + CoroutineName(tag)) {
             statesTransformer(stateFlow)
                 .distinctUntilChanged()
                 .onStart { controllerLog.log(tag, ControllerLog.Event.Started) }
