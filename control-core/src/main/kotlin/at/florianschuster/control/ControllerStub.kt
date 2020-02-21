@@ -5,9 +5,9 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 
 /**
- * Use this [Stub] for view testing.
+ * Use this [ControllerStub] for view testing.
  */
-interface Stub<Action, State> {
+interface ControllerStub<Action, State> {
 
     /**
      * [Controller] actions as ordered [List].
@@ -20,18 +20,16 @@ interface Stub<Action, State> {
      * Use this to verify if state is correctly bound to a view.
      */
     fun setState(state: State)
-
-    companion object
 }
 
 /**
- * An implementation of [Stub].
+ * An implementation of [ControllerStub].
  */
 @ExperimentalCoroutinesApi
 @FlowPreview
-internal class StubImplementation<Action, State>(
+internal class ControllerStubImplementation<Action, State>(
     initialState: State
-) : Stub<Action, State> {
+) : ControllerStub<Action, State> {
 
     internal val mutableActions = mutableListOf<Action>()
     internal val stateChannel = ConflatedBroadcastChannel(initialState)

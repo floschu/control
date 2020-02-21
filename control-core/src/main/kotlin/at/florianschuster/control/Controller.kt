@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.Flow
  *          |                                   |
  *     +----+-----+                    +--------|-------+
  *     |          |                    |        v       |
- *     |   View   |                    |  [Controller]  |
+ *     |   View   |                    |   Controller   |
  *     |    ^     |                    |                |
  *     +----|-----+                    +--------+-------+
  *          |                                   |
@@ -64,11 +64,9 @@ interface Controller<Action, Mutation, State> {
     var stubEnabled: Boolean
 
     /**
-     * Use this [Stub] for view testing.
+     * Use this [ControllerStub] for view testing.
      */
-    val stub: Stub<Action, State>
-
-    companion object
+    val stub: ControllerStub<Action, State>
 }
 
 /**

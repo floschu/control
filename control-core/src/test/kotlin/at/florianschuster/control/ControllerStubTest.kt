@@ -9,7 +9,7 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
-internal class StubTest {
+internal class ControllerStubTest {
 
     @get:Rule
     val testScopeRule = TestCoroutineScopeRule()

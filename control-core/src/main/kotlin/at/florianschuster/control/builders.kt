@@ -50,7 +50,7 @@ fun <Action, Mutation, State> CoroutineScope.createController(
      * Override to launch [ControllerImplementation.state] [Flow] in different [CoroutineDispatcher]
      * than the one used in the [CoroutineScope.coroutineContext].
      */
-    dispatcher: CoroutineDispatcher = getDispatcher(),
+    dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher,
 
     /**
      * Set as [CoroutineName] for the [ControllerImplementation.state] context.
@@ -86,7 +86,7 @@ fun <Action, State> CoroutineScope.createSynchronousController(
     actionsTransformer: Transformer<Action> = { it },
     statesTransformer: Transformer<State> = { it },
 
-    dispatcher: CoroutineDispatcher = getDispatcher(),
+    dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher,
 
     tag: String = defaultTag(),
     controllerLog: ControllerLog = ControllerLog.default
@@ -100,15 +100,3 @@ fun <Action, State> CoroutineScope.createSynchronousController(
 
     tag = tag, controllerLog = controllerLog
 )
-
-private fun CoroutineScope.getDispatcher(): CoroutineDispatcher {
-    return coroutineContext[ContinuationInterceptor] as CoroutineDispatcher
-}
-
-@Suppress("NOTHING_TO_INLINE")
-private inline fun defaultTag(): String {
-    val stackTrace = Throwable().stackTrace
-    check(stackTrace.size >= 2) { "Stacktrace didn't have enough elements." }
-    val className = stackTrace[1].className.split("$").first().split(".").last()
-    return "${className}_controller"
-}

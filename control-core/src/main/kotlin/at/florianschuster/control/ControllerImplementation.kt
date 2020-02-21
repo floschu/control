@@ -45,7 +45,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     private val actionChannel by lazy { BroadcastChannel<Action>(1) }
     private val stateChannel by lazy { ConflatedBroadcastChannel(initialState) }
-    private val stubImplementation by lazy { StubImplementation<Action, State>(initialState) }
+    private val stubImplementation by lazy { ControllerStubImplementation<Action, State>(initialState) }
 
     override val state: Flow<State>
         get() = if (!stubEnabled) {
@@ -78,7 +78,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
             field = value
         }
 
-    override val stub: Stub<Action, State> get() = stubImplementation
+    override val stub: ControllerStub<Action, State> get() = stubImplementation
 
     init {
         controllerLog.log(tag, ControllerLog.Event.Created)
