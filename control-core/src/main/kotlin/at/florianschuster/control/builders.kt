@@ -101,8 +101,9 @@ fun <Action, State> CoroutineScope.createSynchronousController(
     tag = tag, controllerLog = controllerLog
 )
 
-private fun CoroutineScope.getDispatcher(): CoroutineDispatcher =
-    coroutineContext[ContinuationInterceptor] as CoroutineDispatcher
+private fun CoroutineScope.getDispatcher(): CoroutineDispatcher {
+    return coroutineContext[ContinuationInterceptor] as CoroutineDispatcher
+}
 
 @Suppress("NOTHING_TO_INLINE")
 private inline fun defaultTag(): String {
