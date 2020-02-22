@@ -122,52 +122,52 @@ internal class ControllerImplementationTest {
         sut.dispatch(Unit)
         sut.dispatch(Unit)
     }
-
-    private fun CoroutineScope.createOperationController() =
-        createController<List<String>, List<String>, List<String>>(
-
-            // 1. ["initialState"]
-            initialState = listOf("initialState"),
-
-            // 2. ["action"] + ["transformedAction"]
-            actionsTransformer = { actions ->
-                actions.map { it + "transformedAction" }
-            },
-
-            // 3. ["action", "transformedAction"] + ["mutation"]
-            mutator = { action, _ ->
-                flowOf(action + "mutation")
-            },
-
-            // 4. ["action", "transformedAction", "mutation"] + ["transformedMutation"]
-            mutationsTransformer = { mutations ->
-                mutations.map { it + "transformedMutation" }
-            },
-
-            // 5. ["initialState"] + ["action", "transformedAction", "mutation", "transformedMutation"]
-            reducer = { previousState, mutation -> previousState + mutation },
-
-            // 6. ["initialState", "action", "transformedAction", "mutation", "transformedMutation"] + ["transformedState"]
-            statesTransformer = { states -> states.map { it + "transformedState" } }
-        )
-
-    private fun CoroutineScope.createCounterController(
-        mutatorErrorIndex: Int? = null,
-        reducerErrorIndex: Int? = null
-    ) = createController<Unit, Unit, Int>(
-        initialState = 0,
-        mutator = { action, stateAccessor ->
-            when (stateAccessor()) {
-                mutatorErrorIndex -> flow {
-                    emit(action)
-                    error("test")
-                }
-                else -> flowOf(action)
-            }
-        },
-        reducer = { previousState, _ ->
-            if (previousState == reducerErrorIndex) error("test")
-            previousState + 1
-        }
-    )
 }
+
+private fun CoroutineScope.createOperationController() =
+    createController<List<String>, List<String>, List<String>>(
+
+        // 1. ["initialState"]
+        initialState = listOf("initialState"),
+
+        // 2. ["action"] + ["transformedAction"]
+        actionsTransformer = { actions ->
+            actions.map { it + "transformedAction" }
+        },
+
+        // 3. ["action", "transformedAction"] + ["mutation"]
+        mutator = { action, _ ->
+            flowOf(action + "mutation")
+        },
+
+        // 4. ["action", "transformedAction", "mutation"] + ["transformedMutation"]
+        mutationsTransformer = { mutations ->
+            mutations.map { it + "transformedMutation" }
+        },
+
+        // 5. ["initialState"] + ["action", "transformedAction", "mutation", "transformedMutation"]
+        reducer = { previousState, mutation -> previousState + mutation },
+
+        // 6. ["initialState", "action", "transformedAction", "mutation", "transformedMutation"] + ["transformedState"]
+        statesTransformer = { states -> states.map { it + "transformedState" } }
+    )
+
+private fun CoroutineScope.createCounterController(
+    mutatorErrorIndex: Int? = null,
+    reducerErrorIndex: Int? = null
+) = createController<Unit, Unit, Int>(
+    initialState = 0,
+    mutator = { action, stateAccessor ->
+        when (stateAccessor()) {
+            mutatorErrorIndex -> flow {
+                emit(action)
+                error("test")
+            }
+            else -> flowOf(action)
+        }
+    },
+    reducer = { previousState, _ ->
+        if (previousState == reducerErrorIndex) error("test")
+        previousState + 1
+    }
+)
