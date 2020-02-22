@@ -25,4 +25,6 @@ fun <Action> Flow<Action>.bind(
  * predecessors.
  */
 @ExperimentalCoroutinesApi
-fun <T, R> Flow<T>.distinctMap(by: (T) -> R): Flow<R> = map { by(it) }.distinctUntilChanged()
+fun <State, SubState> Flow<State>.distinctMap(
+    by: (State) -> SubState
+): Flow<SubState> = map { by(it) }.distinctUntilChanged()
