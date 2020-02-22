@@ -17,10 +17,11 @@ internal class DefaultTagTest {
 
     @Test
     fun `tag in anonymous class`() {
+        val expectedSuffix = "test"
         val obj = object {
-            val tag: String get() = defaultTag("")
+            val tag: String get() = defaultTag(expectedSuffix)
         }
-        assertEquals(expectedTag, obj.tag)
+        assertEquals(expectedTag + expectedSuffix, obj.tag)
     }
 
     companion object {
