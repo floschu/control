@@ -6,22 +6,38 @@ import kotlin.test.assertEquals
 internal class DefaultTagTest {
 
     @Test
-    fun `tag in object`() {
+    fun `defaultTag in object`() {
         assertEquals(expectedTag, TestObject.tag)
     }
 
     @Test
-    fun `tag in class`() {
+    fun `defaultTag in class`() {
         assertEquals(expectedTag, TestClass().tag)
     }
 
     @Test
-    fun `tag in anonymous class`() {
-        val expectedSuffix = "test"
-        val obj = object {
-            val tag: String get() = defaultTag(expectedSuffix)
+    fun `defaultTag in anonymous class`() {
+        val sut = object {
+            val tag = defaultTag("")
         }
-        assertEquals(expectedTag + expectedSuffix, obj.tag)
+        assertEquals(expectedTag, sut.tag)
+    }
+
+    @Test
+    fun `suffix in defaultTag`() {
+        val expectedSuffix = "suffix"
+        val sut = object {
+            val tag = defaultTag(expectedSuffix)
+        }
+        assertEquals(expectedTag + expectedSuffix, sut.tag)
+    }
+
+    @Test
+    fun `default suffix in defaultTag`() {
+        val sut = object {
+            val tag = defaultTag()
+        }
+        assertEquals(expectedTag + defaultTagSuffix, sut.tag)
     }
 
     companion object {
@@ -30,9 +46,9 @@ internal class DefaultTagTest {
 }
 
 private object TestObject {
-    val tag: String get() = defaultTag("")
+    val tag = defaultTag("")
 }
 
 private class TestClass {
-    val tag: String get() = defaultTag("")
+    val tag = defaultTag("")
 }
