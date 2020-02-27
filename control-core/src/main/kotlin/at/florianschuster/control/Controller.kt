@@ -67,6 +67,37 @@ interface Controller<Action, Mutation, State> {
      * Use this [ControllerStub] for view testing.
      */
     val stub: ControllerStub<Action, State>
+
+    /**
+     * Errors that can happen in a [Controller].
+     */
+    sealed class Error(
+        message: String,
+        cause: Throwable
+    ) : RuntimeException(message, cause) {
+
+        /**
+         * Error during [Mutator].
+         */
+        class Mutator internal constructor(
+            tag: String,
+            action: String,
+            cause: Throwable
+        ) : Error("Mutator error in $tag, action = $action", cause)
+
+        /**
+         * Error during [Reducer].
+         */
+        class Reducer internal constructor(
+            tag: String,
+            previousState: String,
+            mutation: String,
+            cause: Throwable
+        ) : Error(
+            message = "Reducer error in $tag, previousState = $previousState, mutation = $mutation",
+            cause = cause
+        )
+    }
 }
 
 /**

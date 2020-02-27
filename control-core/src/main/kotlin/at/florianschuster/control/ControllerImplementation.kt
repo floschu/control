@@ -26,10 +26,10 @@ import kotlinx.coroutines.launch
 @ExperimentalCoroutinesApi
 @FlowPreview
 internal class ControllerImplementation<Action, Mutation, State>(
-    internal val scope: CoroutineScope,
+    private val scope: CoroutineScope,
     private val dispatcher: CoroutineDispatcher,
 
-    internal val initialState: State,
+    private val initialState: State,
     private val mutator: Mutator<Action, State, Mutation>,
     private val reducer: Reducer<Mutation, State>,
 
@@ -45,7 +45,11 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     private val actionChannel by lazy { BroadcastChannel<Action>(1) }
     private val stateChannel by lazy { ConflatedBroadcastChannel(initialState) }
-    private val stubImplementation by lazy { ControllerStubImplementation<Action, State>(initialState) }
+    private val stubImplementation by lazy {
+        ControllerStubImplementation<Action, State>(
+            initialState
+        )
+    }
 
     override val state: Flow<State>
         get() = if (!stubEnabled) {
@@ -91,7 +95,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
             .flatMapMerge { action ->
                 controllerLog.log(tag, ControllerLog.Event.Action(action.toString()))
                 mutator(action) { currentState }.catch { cause ->
-                    val error = Error.Mutator(tag, "$action", cause)
+                    val error = Controller.Error.Mutator(tag, "$action", cause)
                     controllerLog.log(tag, ControllerLog.Event.Error(error))
                     throw error
                 }
@@ -103,7 +107,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
                 val reducedState = try {
                     reducer(previousState, mutation)
                 } catch (cause: Throwable) {
-                    val error = Error.Reducer(tag, "$previousState", "$mutation", cause)
+                    val error = Controller.Error.Reducer(tag, "$previousState", "$mutation", cause)
                     controllerLog.log(tag, ControllerLog.Event.Error(error))
                     throw error
                 }
@@ -119,27 +123,5 @@ internal class ControllerImplementation<Action, Mutation, State>(
                 .onCompletion { controllerLog.log(tag, ControllerLog.Event.Destroyed) }
                 .collect()
         }
-    }
-
-    internal sealed class Error(
-        message: String,
-        cause: Throwable
-    ) : RuntimeException(message, cause) {
-
-        internal class Mutator(
-            tag: String,
-            action: String,
-            cause: Throwable
-        ) : Error("Mutator error in $tag, action = $action", cause)
-
-        internal class Reducer(
-            tag: String,
-            previousState: String,
-            mutation: String,
-            cause: Throwable
-        ) : Error(
-            message = "Reducer error in $tag, previousState = $previousState, mutation = $mutation",
-            cause = cause
-        )
     }
 }

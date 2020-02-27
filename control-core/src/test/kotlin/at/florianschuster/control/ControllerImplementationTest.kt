@@ -105,7 +105,7 @@ internal class ControllerImplementationTest {
         testFlow expect emissions(4, 5)
     }
 
-    @Test(expected = ControllerImplementation.Error.Mutator::class)
+    @Test(expected = Controller.Error.Mutator::class)
     fun `state flow throws error from mutator`() = runBlockingTest {
         val sut = createCounterController(mutatorErrorIndex = 2)
 
@@ -114,7 +114,7 @@ internal class ControllerImplementationTest {
         sut.dispatch(Unit)
     }
 
-    @Test(expected = ControllerImplementation.Error.Reducer::class)
+    @Test(expected = Controller.Error.Reducer::class)
     fun `state flow throws error from reducer`() = runBlockingTest {
         val sut = createCounterController(reducerErrorIndex = 2)
 
