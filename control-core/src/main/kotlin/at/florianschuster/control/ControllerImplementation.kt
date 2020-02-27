@@ -1,6 +1,5 @@
 package at.florianschuster.control
 
-import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
@@ -41,56 +40,13 @@ internal class ControllerImplementation<Action, Mutation, State>(
     private val controllerLog: ControllerLog
 ) : Controller<Action, Mutation, State> {
 
-    private val stateFlowCreated = atomic(false)
-
-    private val actionChannel by lazy { BroadcastChannel<Action>(1) }
-    private val stateChannel by lazy { ConflatedBroadcastChannel(initialState) }
-    private val stubImplementation by lazy {
-        ControllerStubImplementation<Action, State>(
-            initialState
-        )
-    }
-
-    override val state: Flow<State>
-        get() = if (!stubEnabled) {
-            if (!stateFlowCreated.value) createStateFlow()
-            stateChannel.asFlow()
-        } else {
-            stubImplementation.stateChannel.asFlow()
-        }
-
-    override val currentState: State
-        get() = if (!stubEnabled) {
-            if (!stateFlowCreated.value) createStateFlow()
-            stateChannel.value
-        } else {
-            stubImplementation.stateChannel.value
-        }
-
-    override fun dispatch(action: Action) {
-        if (!stubEnabled) {
-            if (!stateFlowCreated.value) createStateFlow()
-            actionChannel.offer(action)
-        } else {
-            stubImplementation.mutableActions.add(action)
-        }
-    }
-
-    override var stubEnabled: Boolean = false
-        set(value) {
-            controllerLog.log(tag, ControllerLog.Event.Stub(value))
-            field = value
-        }
-
-    override val stub: ControllerStub<Action, State> get() = stubImplementation
-
     init {
         controllerLog.log(tag, ControllerLog.Event.Created)
     }
 
-    private fun createStateFlow() {
-        stateFlowCreated.value = true
-
+    private val controllerStub by lazy { ControllerStubImplementation<Action, State>(initialState) }
+    private val actionChannel by lazy { BroadcastChannel<Action>(1) }
+    private val stateChannel by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
         val mutationFlow: Flow<Mutation> = actionsTransformer(actionChannel.asFlow())
             .flatMapMerge { action ->
                 controllerLog.log(tag, ControllerLog.Event.Action(action.toString()))
@@ -115,13 +71,46 @@ internal class ControllerImplementation<Action, Mutation, State>(
                 reducedState
             }
 
+        val channel = ConflatedBroadcastChannel(initialState)
         scope.launch(dispatcher + CoroutineName(tag)) {
             statesTransformer(stateFlow)
                 .distinctUntilChanged()
                 .onStart { controllerLog.log(tag, ControllerLog.Event.Started) }
-                .onEach(stateChannel::send)
+                .onEach(channel::send)
                 .onCompletion { controllerLog.log(tag, ControllerLog.Event.Destroyed) }
                 .collect()
         }
+        channel
     }
+
+    override val state: Flow<State>
+        get() = if (!stubEnabled) {
+            stateChannel.asFlow()
+        } else {
+            controllerStub.stateChannel.asFlow()
+        }
+
+    override val currentState: State
+        get() = if (!stubEnabled) {
+            stateChannel.value
+        } else {
+            controllerStub.stateChannel.value
+        }
+
+    override fun dispatch(action: Action) {
+        if (!stubEnabled) {
+            stateChannel // create state flow
+            actionChannel.offer(action)
+        } else {
+            controllerStub.mutableActions.add(action)
+        }
+    }
+
+    override var stubEnabled: Boolean = false
+        set(value) {
+            controllerLog.log(tag, ControllerLog.Event.Stub(value))
+            field = value
+        }
+
+    override val stub: ControllerStub<Action, State> get() = controllerStub
 }

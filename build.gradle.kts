@@ -10,7 +10,6 @@ buildscript {
         classpath(Libs.com_jfrog_bintray_gradle_plugin)
         classpath(Libs.com_android_tools_build_gradle)
         classpath(Libs.kotlin_serialization)
-        classpath(Libs.atomicfu_gradle_plugin)
     }
 }
 

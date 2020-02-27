@@ -1,7 +1,6 @@
 plugins {
     id("kotlin")
     id("jacoco")
-    id("kotlinx-atomicfu")
 }
 dependencies {
     api(Libs.kotlin_stdlib)

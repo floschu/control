@@ -41,17 +41,6 @@ object Libs {
             Versions.io_github_reactivecircus_flowbinding
 
     /**
-     * https://github.com/Kotlin/atomicfu
-     */
-    const val atomicfu: String = "org.jetbrains.kotlinx:atomicfu:" + Versions.org_jetbrains_kotlinx
-
-    /**
-     * https://github.com/Kotlin/atomicfu
-     */
-    const val atomicfu_gradle_plugin: String = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:" +
-            Versions.org_jetbrains_kotlinx
-
-    /**
      * https://kotlinlang.org/
      */
     const val kotlin_android_extensions: String =
