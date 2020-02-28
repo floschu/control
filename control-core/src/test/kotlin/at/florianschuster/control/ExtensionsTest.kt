@@ -2,10 +2,15 @@ package at.florianschuster.control
 
 import io.mockk.spyk
 import io.mockk.verify
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
+import kotlin.test.assertEquals
 
 internal class ExtensionsTest {
 
@@ -36,5 +41,22 @@ internal class ExtensionsTest {
 
         verify(exactly = 1) { sut.dispatch(1) }
         verify(exactly = 1) { sut.dispatch(2) }
+    }
+
+    @Test
+    fun `distinctMap works`() = runBlockingTest {
+        val result = listOf(0, 1, 1, 2, 2, 3, 4, 4, 5, 5).asFlow().distinctMap { it * 2 }.toList()
+        assertEquals(listOf(0, 2, 4, 6, 8, 10), result)
+    }
+
+    @Test
+    fun `takeUntil works`() = runBlockingTest {
+        val numberFlow = (0..10).asFlow().map { delay(100); it }
+
+        val shortResult = numberFlow.takeUntil(flow { delay(501); emit(Unit) }).toList()
+        assertEquals(listOf(0, 1, 2, 3, 4), shortResult)
+
+        val longResult = numberFlow.takeUntil(flow { delay(1101); emit(Unit) }).toList()
+        assertEquals(listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), longResult)
     }
 }

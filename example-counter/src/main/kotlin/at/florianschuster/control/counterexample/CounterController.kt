@@ -36,7 +36,7 @@ internal fun CounterController(
     initialState = CounterState(value = 0, loading = false),
 
     // every action is transformed into [0..n] mutations
-    mutator = { action, _ ->
+    mutator = { action, _, _ ->
         when (action) {
             CounterAction.Increment -> flow {
                 emit(CounterMutation.SetLoading(true))

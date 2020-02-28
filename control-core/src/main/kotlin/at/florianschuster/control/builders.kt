@@ -32,7 +32,7 @@ fun <Action, Mutation, State> CoroutineScope.createController(
     /**
      * See [Mutator].
      */
-    mutator: Mutator<Action, State, Mutation> = { _, _ -> emptyFlow() },
+    mutator: Mutator<Action, State, Mutation> = { _, _, _ -> emptyFlow() },
 
     /**
      * See [Reducer].
@@ -93,7 +93,7 @@ fun <Action, State> CoroutineScope.createSynchronousController(
 ): Controller<Action, Action, State> = createController(
     dispatcher = dispatcher,
 
-    initialState = initialState, mutator = { action, _ -> flowOf(action) }, reducer = reducer,
+    initialState = initialState, mutator = { action, _, _ -> flowOf(action) }, reducer = reducer,
     actionsTransformer = actionsTransformer,
     mutationsTransformer = { it },
     statesTransformer = statesTransformer,

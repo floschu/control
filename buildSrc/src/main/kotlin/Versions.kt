@@ -18,6 +18,8 @@ object Versions {
 
     const val io_github_reactivecircus_flowbinding: String = "0.9.0"
 
+    const val org_jetbrains_kotlinx: String = "0.14.1"
+
     const val org_jetbrains_kotlin: String = "1.3.61"
 
     const val androidx_test: String = "1.2.0"

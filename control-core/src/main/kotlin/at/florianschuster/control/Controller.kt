@@ -116,7 +116,7 @@ interface Controller<Action, Mutation, State> {
  *         object Add : Mutation()
  *     }
  *
- *     mutator = { action, _ ->
+ *     mutator = { action, _, _ ->
  *         when(action) {
  *             is Action.AddZero -> emptyFlow()
  *             is Action.AddOne -> flowOf(Mutation.Add)
@@ -126,13 +126,18 @@ interface Controller<Action, Mutation, State> {
  *             }
  *         }
  *     }
+ *
+ * Use the stateAccessor to access the [Controller.currentState] during a suspending mutation.
+ *
+ * Use the actionFlow if a [Flow] inside the [Mutator] needs to be cancelled or transformed
+ * due to the incoming action (e.g. takeUntil(actionsFlow.filterIsInstance<Action.Cancel>()) )
+ * The actionFlow is accessed before [ControllerImplementation.actionsTransformer] is applied.
  */
-typealias Mutator<Action, State, Mutation> = (action: Action, stateAccessor: StateAccessor<State>) -> Flow<Mutation>
-
-/**
- * A [StateAccessor] retrieves the current state in a [Mutator].
- */
-typealias StateAccessor<State> = () -> State
+typealias Mutator<Action, State, Mutation> = (
+    action: Action,
+    stateAccessor: () -> State,
+    actionFlow: Flow<Action>
+) -> Flow<Mutation>
 
 /**
  * A [Reducer] takes the previous state and a mutation and returns a new state synchronously.
