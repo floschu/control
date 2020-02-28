@@ -2,6 +2,7 @@ package at.florianschuster.control.counterexample
 
 import at.florianschuster.control.ControllerLog
 import at.florianschuster.control.Controller
+import at.florianschuster.control.Mutator
 import at.florianschuster.control.createController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -36,7 +37,7 @@ internal fun CounterController(
     initialState = CounterState(value = 0, loading = false),
 
     // every action is transformed into [0..n] mutations
-    mutator = { action, _, _ ->
+    mutator = Mutator { action ->
         when (action) {
             CounterAction.Increment -> flow {
                 emit(CounterMutation.SetLoading(true))

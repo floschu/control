@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.test.runBlockingTest
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -23,6 +24,11 @@ internal class ControllerImplementationTest {
 
     @get:Rule
     val testScopeRule = TestCoroutineScopeRule()
+
+    @Before
+    fun setup() {
+        ControllerLog.default = ControllerLog.Println
+    }
 
     @Test
     fun `initial state only emitted once`() {
@@ -158,7 +164,7 @@ internal class ControllerImplementationTest {
     }
 }
 
-internal fun CoroutineScope.operationController() =
+private fun CoroutineScope.operationController() =
     createController<List<String>, List<String>, List<String>>(
 
         // 1. ["initialState"]
@@ -170,7 +176,7 @@ internal fun CoroutineScope.operationController() =
         },
 
         // 3. ["action", "transformedAction"] + ["mutation"]
-        mutator = { action, _, _ ->
+        mutator = Mutator { action ->
             flowOf(action + "mutation")
         },
 
@@ -186,12 +192,12 @@ internal fun CoroutineScope.operationController() =
         statesTransformer = { states -> states.map { it + "transformedState" } }
     )
 
-internal fun CoroutineScope.counterController(
+private fun CoroutineScope.counterController(
     mutatorErrorIndex: Int? = null,
     reducerErrorIndex: Int? = null
 ) = createController<Unit, Unit, Int>(
     initialState = 0,
-    mutator = { action, stateAccessor, _ ->
+    mutator = ComplexMutator { action, stateAccessor, _ ->
         when (stateAccessor()) {
             mutatorErrorIndex -> flow {
                 emit(action)
@@ -206,14 +212,14 @@ internal fun CoroutineScope.counterController(
     }
 )
 
-internal sealed class StopWatchAction {
+private sealed class StopWatchAction {
     object Start : StopWatchAction()
     object Stop : StopWatchAction()
 }
 
-internal fun CoroutineScope.stopWatchController() = createController<StopWatchAction, Int, Int>(
+private fun CoroutineScope.stopWatchController() = createController<StopWatchAction, Int, Int>(
     initialState = 0,
-    mutator = { action, _, actionFlow ->
+    mutator = ComplexMutator { action, _, actionFlow ->
         when (action) {
             is StopWatchAction.Start -> {
                 flow {

@@ -3,6 +3,7 @@ package at.florianschuster.control.githubexample.search
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import at.florianschuster.control.ComplexMutator
 import at.florianschuster.control.Controller
 import at.florianschuster.control.ControllerLog
 import at.florianschuster.control.createController
@@ -46,7 +47,8 @@ internal class GithubViewModel(
 
     val controller: Controller<Action, Mutation, State> = viewModelScope.createController(
         initialState = initialState,
-        mutator = { action, stateAccessor, actionsFlow ->
+
+        mutator = ComplexMutator { action, stateAccessor, actionFlow ->
             when (action) {
                 is Action.UpdateQuery -> flow {
                     emit(Mutation.SetQuery(action.text))
@@ -55,8 +57,8 @@ internal class GithubViewModel(
                         emit(Mutation.SetLoadingNextPage(true))
 
                         val repos = api.search(stateAccessor().query, 1)
-                            .map { Mutation.AppendRepos(it) }
-                            .takeUntil(actionsFlow.filterIsInstance<Action.UpdateQuery>())
+                            .map { Mutation.SetRepos(it) }
+                            .takeUntil(actionFlow.filterIsInstance<Action.UpdateQuery>())
                         emitAll(repos)
 
                         emit(Mutation.SetLoadingNextPage(false))
@@ -71,7 +73,7 @@ internal class GithubViewModel(
 
                         val repos = api.search(state.query, state.page + 1)
                             .map { Mutation.AppendRepos(it) }
-                            .takeUntil(actionsFlow.filterIsInstance<Action.UpdateQuery>())
+                            .takeUntil(actionFlow.filterIsInstance<Action.UpdateQuery>())
                         emitAll(repos)
 
                         emit(Mutation.SetLoadingNextPage(false))
@@ -79,6 +81,7 @@ internal class GithubViewModel(
                 }
             }
         },
+
         reducer = { previousState, mutation ->
             when (mutation) {
                 is Mutation.SetQuery -> previousState.copy(query = mutation.query)

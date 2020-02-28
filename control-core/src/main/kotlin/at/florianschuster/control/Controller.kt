@@ -2,6 +2,7 @@ package at.florianschuster.control
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 /**
  * A [Controller] is an ui-independent class that controls the state of a view. The role of a
@@ -116,7 +117,7 @@ interface Controller<Action, Mutation, State> {
  *         object Add : Mutation()
  *     }
  *
- *     mutator = { action, _, _ ->
+ *     mutator = Mutator { action ->
  *         when(action) {
  *             is Action.AddZero -> emptyFlow()
  *             is Action.AddOne -> flowOf(Mutation.Add)
@@ -126,18 +127,42 @@ interface Controller<Action, Mutation, State> {
  *             }
  *         }
  *     }
+ */
+class Mutator<Action, Mutation, State>(
+    private val mutate: (action: Action) -> Flow<Mutation> = { _ -> emptyFlow() }
+) : MutatorType<Action, Mutation, State> {
+
+    override fun invoke(
+        action: Action,
+        stateAccessor: () -> State,
+        actionFlow: Flow<Action>
+    ): Flow<Mutation> = mutate(action)
+}
+
+/**
+ * A more complex variant of a [Mutator].
+ *
  *
  * Use the stateAccessor to access the [Controller.currentState] during a suspending mutation.
  *
  * Use the actionFlow if a [Flow] inside the [Mutator] needs to be cancelled or transformed
- * due to the incoming action (e.g. takeUntil(actionsFlow.filterIsInstance<Action.Cancel>()) )
+ * due to the incoming action (e.g. takeUntil(actionFlow.filterIsInstance<Action.Cancel>()) ).
  * The actionFlow is accessed before [ControllerImplementation.actionsTransformer] is applied.
  */
-typealias Mutator<Action, State, Mutation> = (
-    action: Action,
-    stateAccessor: () -> State,
-    actionFlow: Flow<Action>
-) -> Flow<Mutation>
+class ComplexMutator<Action, Mutation, State>(
+    private val mutate: (
+        action: Action, stateAccessor: () -> State, actionFlow: Flow<Action>
+    ) -> Flow<Mutation> = { _, _, _ -> emptyFlow() }
+) : MutatorType<Action, Mutation, State> {
+
+    override fun invoke(
+        action: Action,
+        stateAccessor: () -> State,
+        actionFlow: Flow<Action>
+    ): Flow<Mutation> = mutate(action, stateAccessor, actionFlow)
+}
+
+
 
 /**
  * A [Reducer] takes the previous state and a mutation and returns a new state synchronously.

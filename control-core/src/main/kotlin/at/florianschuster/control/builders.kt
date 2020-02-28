@@ -6,7 +6,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlin.coroutines.ContinuationInterceptor
 
@@ -32,7 +31,7 @@ fun <Action, Mutation, State> CoroutineScope.createController(
     /**
      * See [Mutator].
      */
-    mutator: Mutator<Action, State, Mutation> = { _, _, _ -> emptyFlow() },
+    mutator: MutatorType<Action, Mutation, State> = Mutator(),
 
     /**
      * See [Reducer].
@@ -93,7 +92,7 @@ fun <Action, State> CoroutineScope.createSynchronousController(
 ): Controller<Action, Action, State> = createController(
     dispatcher = dispatcher,
 
-    initialState = initialState, mutator = { action, _, _ -> flowOf(action) }, reducer = reducer,
+    initialState = initialState, mutator = Mutator { action -> flowOf(action) }, reducer = reducer,
     actionsTransformer = actionsTransformer,
     mutationsTransformer = { it },
     statesTransformer = statesTransformer,

@@ -29,7 +29,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
     private val dispatcher: CoroutineDispatcher,
 
     private val initialState: State,
-    private val mutator: Mutator<Action, State, Mutation>,
+    private val mutator: MutatorType<Action, Mutation, State>,
     private val reducer: Reducer<Mutation, State>,
 
     private val actionsTransformer: Transformer<Action>,
@@ -88,7 +88,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
         val mutationFlow: Flow<Mutation> = actionsTransformer(actionFlow)
             .flatMapMerge { action ->
                 controllerLog.log(tag, ControllerLog.Event.Action(action.toString()))
-                mutator(action, { currentState }, actionFlow).catch { cause ->
+                mutator.invoke(action, { currentState }, actionFlow).catch { cause ->
                     val error = Controller.Error.Mutator(tag, "$action", cause)
                     controllerLog.log(tag, ControllerLog.Event.Error(error))
                     throw error
