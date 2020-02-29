@@ -140,7 +140,7 @@ class Mutator<Action, Mutation, State>(
 }
 
 /**
- * A more complex variant of a [Mutator].
+ * A complex variant of a [Mutator].
  *
  *
  * Use the stateAccessor to access the [Controller.currentState] during a suspending mutation.
@@ -151,7 +151,9 @@ class Mutator<Action, Mutation, State>(
  */
 class ComplexMutator<Action, Mutation, State>(
     private val mutate: (
-        action: Action, stateAccessor: () -> State, actionFlow: Flow<Action>
+        action: Action,
+        stateAccessor: () -> State,
+        actionFlow: Flow<Action>
     ) -> Flow<Mutation> = { _, _, _ -> emptyFlow() }
 ) : MutatorType<Action, Mutation, State> {
 
@@ -161,8 +163,6 @@ class ComplexMutator<Action, Mutation, State>(
         actionFlow: Flow<Action>
     ): Flow<Mutation> = mutate(action, stateAccessor, actionFlow)
 }
-
-
 
 /**
  * A [Reducer] takes the previous state and a mutation and returns a new state synchronously.

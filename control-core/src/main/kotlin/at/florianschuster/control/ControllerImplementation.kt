@@ -88,7 +88,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
         val mutationFlow: Flow<Mutation> = actionsTransformer(actionFlow)
             .flatMapMerge { action ->
                 controllerLog.log(tag, ControllerLog.Event.Action(action.toString()))
-                mutator.invoke(action, { currentState }, actionFlow).catch { cause ->
+                mutator(action, { currentState }, actionFlow).catch { cause ->
                     val error = Controller.Error.Mutator(tag, "$action", cause)
                     controllerLog.log(tag, ControllerLog.Event.Error(error))
                     throw error
