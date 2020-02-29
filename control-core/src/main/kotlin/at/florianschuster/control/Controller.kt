@@ -68,37 +68,6 @@ interface Controller<Action, Mutation, State> {
      * Use this [ControllerStub] for view testing.
      */
     val stub: ControllerStub<Action, State>
-
-    /**
-     * Errors that can happen in a [Controller].
-     */
-    sealed class Error(
-        message: String,
-        cause: Throwable
-    ) : RuntimeException(message, cause) {
-
-        /**
-         * Error during [Mutator].
-         */
-        class Mutator internal constructor(
-            tag: String,
-            action: String,
-            cause: Throwable
-        ) : Error("Mutator error in $tag, action = $action", cause)
-
-        /**
-         * Error during [Reducer].
-         */
-        class Reducer internal constructor(
-            tag: String,
-            previousState: String,
-            mutation: String,
-            cause: Throwable
-        ) : Error(
-            message = "Reducer error in $tag, previousState = $previousState, mutation = $mutation",
-            cause = cause
-        )
-    }
 }
 
 /**
@@ -177,14 +146,25 @@ class ComplexMutator<Action, Mutation, State>(
  *
  *     data class State(val value: Int)
  *
- *     reducer = { previousState, mutation ->
+ *     reducer = Reducer { previousState, mutation ->
  *         when(mutation) {
  *             is Mutation.Add -> previousState.copy(value = previousState.value + 1)
  *             is Mutation.Set -> previousState.copy(value = mutation.valueToSet)
  *         }
  *     }
  */
-typealias Reducer<Mutation, State> = (previousState: State, mutation: Mutation) -> State
+class Reducer<Mutation, State>(
+    private val reduce: (
+        previousState: State,
+        mutation: Mutation
+    ) -> State = { previousState, _ -> previousState }
+) : ReducerType<Mutation, State> {
+
+    override fun invoke(
+        previousState: State,
+        mutation: Mutation
+    ): State = reduce(previousState, mutation)
+}
 
 /**
  * A [Transformer] transforms a [Flow] of a type - such as action, mutation or state.
@@ -194,7 +174,7 @@ typealias Reducer<Mutation, State> = (previousState: State, mutation: Mutation) 
  *
  * Transformer<Action> -> Example: Initial action
  *
- *     actionsTransformer = { actions ->
+ *     actionsTransformer = Transformer { actions ->
  *         actions.onStart { emit(Action.InitialLoad) }
  *     }
  *
@@ -203,15 +183,20 @@ typealias Reducer<Mutation, State> = (previousState: State, mutation: Mutation) 
  *
  *     val userSession: Flow<Session>
  *
- *     mutationsTransformer = { mutations ->
+ *     mutationsTransformer = Transformer { mutations ->
  *         flowOf(mutations, userSession.map { Mutation.SetSession(it) }).flattenMerge()
  *     }
  *
  *
  * Transformer<State> -> Example: Logging
  *
- *     statesTransformer = { states ->
+ *     statesTransformer = Transformer { states ->
  *         states.onEach { Log.d("New State: $it) }
  *     }
  */
-typealias Transformer<Type> = (emissions: Flow<Type>) -> Flow<Type>
+class Transformer<Emission>(
+    private val transform: (emissions: Flow<Emission>) -> Flow<Emission> = { it }
+) : TransformerType<Emission> {
+
+    override fun invoke(emissions: Flow<Emission>): Flow<Emission> = transform(emissions)
+}

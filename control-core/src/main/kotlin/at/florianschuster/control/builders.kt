@@ -36,14 +36,14 @@ fun <Action, Mutation, State> CoroutineScope.createController(
     /**
      * See [Reducer].
      */
-    reducer: Reducer<Mutation, State> = { previousState, _ -> previousState },
+    reducer: ReducerType<Mutation, State> = Reducer(),
 
     /**
      * See [Transformer].
      */
-    actionsTransformer: Transformer<Action> = { it },
-    mutationsTransformer: Transformer<Mutation> = { it },
-    statesTransformer: Transformer<State> = { it },
+    actionsTransformer: TransformerType<Action> = Transformer(),
+    mutationsTransformer: TransformerType<Mutation> = Transformer(),
+    statesTransformer: TransformerType<State> = Transformer(),
 
     /**
      * Override to launch [ControllerImplementation.state] [Flow] in different [CoroutineDispatcher]
@@ -80,10 +80,10 @@ fun <Action, Mutation, State> CoroutineScope.createController(
 @FlowPreview
 fun <Action, State> CoroutineScope.createSynchronousController(
     initialState: State,
-    reducer: Reducer<Action, State> = { previousState, _ -> previousState },
+    reducer: ReducerType<Action, State> = Reducer(),
 
-    actionsTransformer: Transformer<Action> = { it },
-    statesTransformer: Transformer<State> = { it },
+    actionsTransformer: TransformerType<Action> = Transformer(),
+    statesTransformer: TransformerType<State> = Transformer(),
 
     dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher,
 

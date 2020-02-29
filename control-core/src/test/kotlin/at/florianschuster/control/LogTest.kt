@@ -4,7 +4,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-internal class ControllerLogTest {
+internal class LogTest {
 
     @Test
     fun `setting default logger`() {

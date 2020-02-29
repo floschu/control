@@ -9,7 +9,7 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
-internal class ControllerStubTest {
+internal class StubTest {
 
     @get:Rule
     val testScopeRule = TestCoroutineScopeRule()
@@ -59,7 +59,7 @@ internal class ControllerStubTest {
         createSynchronousController<List<String>, List<String>>(
             tag = "string_controller",
             initialState = initialState,
-            reducer = { previousState, mutation -> previousState + mutation }
+            reducer = Reducer { previousState, mutation -> previousState + mutation }
         )
 
     companion object {

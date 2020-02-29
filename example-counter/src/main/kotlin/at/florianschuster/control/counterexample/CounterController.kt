@@ -3,6 +3,7 @@ package at.florianschuster.control.counterexample
 import at.florianschuster.control.ControllerLog
 import at.florianschuster.control.Controller
 import at.florianschuster.control.Mutator
+import at.florianschuster.control.Reducer
 import at.florianschuster.control.createController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -56,7 +57,7 @@ internal fun CounterController(
 
     // every mutation is used to reduce the previous state to a new state
     // that is then published to the view
-    reducer = { previousState, mutation ->
+    reducer = Reducer { previousState, mutation ->
         when (mutation) {
             is CounterMutation.IncreaseValue -> previousState.copy(value = previousState.value + 1)
             is CounterMutation.DecreaseValue -> previousState.copy(value = previousState.value - 1)

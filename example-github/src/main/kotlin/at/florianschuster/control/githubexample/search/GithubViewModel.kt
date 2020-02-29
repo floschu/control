@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import at.florianschuster.control.ComplexMutator
 import at.florianschuster.control.Controller
 import at.florianschuster.control.ControllerLog
+import at.florianschuster.control.Reducer
 import at.florianschuster.control.createController
 import at.florianschuster.control.githubexample.GithubApi
 import at.florianschuster.control.githubexample.Repo
@@ -82,7 +83,7 @@ internal class GithubViewModel(
             }
         },
 
-        reducer = { previousState, mutation ->
+        reducer = Reducer { previousState, mutation ->
             when (mutation) {
                 is Mutation.SetQuery -> previousState.copy(query = mutation.query)
                 is Mutation.SetRepos -> previousState.copy(repos = mutation.repos, page = 1)

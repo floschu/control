@@ -27,7 +27,8 @@ internal class ControllerImplementationTest {
 
     @Before
     fun setup() {
-        ControllerLog.default = ControllerLog.Println
+        // uncomment for manual testing
+        // ControllerLog.default = ControllerLog.Println
     }
 
     @Test
@@ -91,7 +92,7 @@ internal class ControllerImplementationTest {
         val counterSut = testScopeRule.createSynchronousController<Int, Int>(
             tag = "counter",
             initialState = 0,
-            reducer = { previousState, mutation -> previousState + mutation }
+            reducer = Reducer { previousState, mutation -> previousState + mutation }
         )
 
         counterSut.dispatch(1)
@@ -115,7 +116,7 @@ internal class ControllerImplementationTest {
         testFlow expect emissions(4, 5)
     }
 
-    @Test(expected = Controller.Error.Mutator::class)
+    @Test(expected = ControllerError.Mutate::class)
     fun `state flow throws error from mutator`() = runBlockingTest {
         val sut = counterController(mutatorErrorIndex = 2)
 
@@ -124,7 +125,7 @@ internal class ControllerImplementationTest {
         sut.dispatch(Unit)
     }
 
-    @Test(expected = Controller.Error.Reducer::class)
+    @Test(expected = ControllerError.Reduce::class)
     fun `state flow throws error from reducer`() = runBlockingTest {
         val sut = counterController(reducerErrorIndex = 2)
 
@@ -171,7 +172,7 @@ private fun CoroutineScope.operationController() =
         initialState = listOf("initialState"),
 
         // 2. ["action"] + ["transformedAction"]
-        actionsTransformer = { actions ->
+        actionsTransformer = Transformer { actions ->
             actions.map { it + "transformedAction" }
         },
 
@@ -181,15 +182,15 @@ private fun CoroutineScope.operationController() =
         },
 
         // 4. ["action", "transformedAction", "mutation"] + ["transformedMutation"]
-        mutationsTransformer = { mutations ->
+        mutationsTransformer = Transformer { mutations ->
             mutations.map { it + "transformedMutation" }
         },
 
         // 5. ["initialState"] + ["action", "transformedAction", "mutation", "transformedMutation"]
-        reducer = { previousState, mutation -> previousState + mutation },
+        reducer = Reducer { previousState, mutation -> previousState + mutation },
 
         // 6. ["initialState", "action", "transformedAction", "mutation", "transformedMutation"] + ["transformedState"]
-        statesTransformer = { states -> states.map { it + "transformedState" } }
+        statesTransformer = Transformer { states -> states.map { it + "transformedState" } }
     )
 
 private fun CoroutineScope.counterController(
@@ -206,7 +207,7 @@ private fun CoroutineScope.counterController(
             else -> flowOf(action)
         }
     },
-    reducer = { previousState, _ ->
+    reducer = Reducer { previousState, _ ->
         if (previousState == reducerErrorIndex) error("test")
         previousState + 1
     }
@@ -232,5 +233,5 @@ private fun CoroutineScope.stopWatchController() = createController<StopWatchAct
             is StopWatchAction.Stop -> emptyFlow()
         }
     },
-    reducer = { previousState, mutation -> previousState + mutation }
+    reducer = Reducer { previousState, mutation -> previousState + mutation }
 )

@@ -30,11 +30,11 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     private val initialState: State,
     private val mutator: MutatorType<Action, Mutation, State>,
-    private val reducer: Reducer<Mutation, State>,
+    private val reducer: ReducerType<Mutation, State>,
 
-    private val actionsTransformer: Transformer<Action>,
-    private val mutationsTransformer: Transformer<Mutation>,
-    private val statesTransformer: Transformer<State>,
+    private val actionsTransformer: TransformerType<Action>,
+    private val mutationsTransformer: TransformerType<Mutation>,
+    private val statesTransformer: TransformerType<State>,
 
     private val tag: String,
     private val controllerLog: ControllerLog
@@ -89,7 +89,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
             .flatMapMerge { action ->
                 controllerLog.log(tag, ControllerLog.Event.Action(action.toString()))
                 mutator(action, { currentState }, actionFlow).catch { cause ->
-                    val error = Controller.Error.Mutator(tag, "$action", cause)
+                    val error = ControllerError.Mutate(tag, "$action", cause)
                     controllerLog.log(tag, ControllerLog.Event.Error(error))
                     throw error
                 }
@@ -101,8 +101,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
                 val reducedState = try {
                     reducer(previousState, mutation)
                 } catch (cause: Throwable) {
-                    val error =
-                        Controller.Error.Reducer(tag, "$previousState", "$mutation", cause)
+                    val error = ControllerError.Reduce(tag, "$previousState", "$mutation", cause)
                     controllerLog.log(tag, ControllerLog.Event.Error(error))
                     throw error
                 }
