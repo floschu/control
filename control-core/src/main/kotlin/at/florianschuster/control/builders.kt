@@ -6,7 +6,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlin.coroutines.ContinuationInterceptor
 
@@ -32,19 +31,19 @@ fun <Action, Mutation, State> CoroutineScope.createController(
     /**
      * See [Mutator].
      */
-    mutator: Mutator<Action, State, Mutation> = { _, _ -> emptyFlow() },
+    mutator: MutatorType<Action, Mutation, State> = Mutator(),
 
     /**
      * See [Reducer].
      */
-    reducer: Reducer<Mutation, State> = { previousState, _ -> previousState },
+    reducer: ReducerType<Mutation, State> = Reducer(),
 
     /**
      * See [Transformer].
      */
-    actionsTransformer: Transformer<Action> = { it },
-    mutationsTransformer: Transformer<Mutation> = { it },
-    statesTransformer: Transformer<State> = { it },
+    actionsTransformer: TransformerType<Action> = Transformer(),
+    mutationsTransformer: TransformerType<Mutation> = Transformer(),
+    statesTransformer: TransformerType<State> = Transformer(),
 
     /**
      * Override to launch [ControllerImplementation.state] [Flow] in different [CoroutineDispatcher]
@@ -81,10 +80,10 @@ fun <Action, Mutation, State> CoroutineScope.createController(
 @FlowPreview
 fun <Action, State> CoroutineScope.createSynchronousController(
     initialState: State,
-    reducer: Reducer<Action, State> = { previousState, _ -> previousState },
+    reducer: ReducerType<Action, State> = Reducer(),
 
-    actionsTransformer: Transformer<Action> = { it },
-    statesTransformer: Transformer<State> = { it },
+    actionsTransformer: TransformerType<Action> = Transformer(),
+    statesTransformer: TransformerType<State> = Transformer(),
 
     dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher,
 
@@ -93,7 +92,7 @@ fun <Action, State> CoroutineScope.createSynchronousController(
 ): Controller<Action, Action, State> = createController(
     dispatcher = dispatcher,
 
-    initialState = initialState, mutator = { action, _ -> flowOf(action) }, reducer = reducer,
+    initialState = initialState, mutator = Mutator { action -> flowOf(action) }, reducer = reducer,
     actionsTransformer = actionsTransformer,
     mutationsTransformer = { it },
     statesTransformer = statesTransformer,

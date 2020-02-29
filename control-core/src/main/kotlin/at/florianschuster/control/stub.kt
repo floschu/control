@@ -1,7 +1,6 @@
 package at.florianschuster.control
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 
 /**
@@ -26,7 +25,6 @@ interface ControllerStub<Action, State> {
  * An implementation of [ControllerStub].
  */
 @ExperimentalCoroutinesApi
-@FlowPreview
 internal class ControllerStubImplementation<Action, State>(
     initialState: State
 ) : ControllerStub<Action, State> {

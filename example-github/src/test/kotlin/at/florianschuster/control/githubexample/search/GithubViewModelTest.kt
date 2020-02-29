@@ -13,7 +13,9 @@ import at.florianschuster.test.flow.testIn
 import io.mockk.Called
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.coVerifyOrder
 import io.mockk.mockk
+import kotlinx.coroutines.delay
 import org.junit.Rule
 import org.junit.Test
 
@@ -123,6 +125,37 @@ internal class GithubViewModelTest {
             GithubViewModel.State(query = query),
             GithubViewModel.State(query = query, loadingNextPage = true),
             GithubViewModel.State(query = query, loadingNextPage = false)
+        )
+    }
+
+    @Test
+    fun `updating query during search resets search`() {
+        // given
+        val query = "control"
+        val secondQuery = "controlAgain"
+        coEvery { githubApi.repos(query, 1) } coAnswers {
+            delay(1000)
+            mockResultPage1
+        }
+        coEvery { githubApi.repos(secondQuery, 1) } coAnswers {
+            delay(1000)
+            mockResultPage2
+        }
+        `given github search controller`()
+
+        // when
+        sut.controller.dispatch(GithubViewModel.Action.UpdateQuery(query))
+        testScopeRule.advanceTimeBy(500) // updated before last query can finish
+        sut.controller.dispatch(GithubViewModel.Action.UpdateQuery(secondQuery))
+        testScopeRule.advanceUntilIdle()
+
+        // then
+        coVerifyOrder {
+            githubApi.repos(query, 1)
+            githubApi.repos(secondQuery, 1)
+        }
+        states expect lastEmission(
+            GithubViewModel.State(query = secondQuery, repos = mockReposPage2)
         )
     }
 

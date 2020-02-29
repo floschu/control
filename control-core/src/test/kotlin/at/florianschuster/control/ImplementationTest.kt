@@ -7,10 +7,15 @@ import at.florianschuster.test.flow.emissions
 import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.test.runBlockingTest
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -20,9 +25,15 @@ internal class ControllerImplementationTest {
     @get:Rule
     val testScopeRule = TestCoroutineScopeRule()
 
+    @Before
+    fun setup() {
+        // uncomment for manual testing
+        // ControllerLog.default = ControllerLog.Println
+    }
+
     @Test
     fun `initial state only emitted once`() {
-        val sut = testScopeRule.createOperationController()
+        val sut = testScopeRule.operationController()
         val testFlow = sut.state.testIn(testScopeRule)
 
         testFlow expect emissionCount(1)
@@ -31,14 +42,14 @@ internal class ControllerImplementationTest {
 
     @Test
     fun `state is created when accessing current state`() {
-        val sut = testScopeRule.createOperationController()
+        val sut = testScopeRule.operationController()
 
         assertEquals(listOf("initialState", "transformedState"), sut.currentState)
     }
 
     @Test
     fun `state is created when accessing action`() {
-        val sut = testScopeRule.createOperationController()
+        val sut = testScopeRule.operationController()
 
         sut.dispatch(listOf("action"))
 
@@ -57,7 +68,7 @@ internal class ControllerImplementationTest {
 
     @Test
     fun `each method is invoked`() {
-        val sut = testScopeRule.createOperationController()
+        val sut = testScopeRule.operationController()
         val testFlow = sut.state.testIn(testScopeRule)
 
         sut.dispatch(listOf("action"))
@@ -81,7 +92,7 @@ internal class ControllerImplementationTest {
         val counterSut = testScopeRule.createSynchronousController<Int, Int>(
             tag = "counter",
             initialState = 0,
-            reducer = { previousState, mutation -> previousState + mutation }
+            reducer = Reducer { previousState, mutation -> previousState + mutation }
         )
 
         counterSut.dispatch(1)
@@ -93,7 +104,7 @@ internal class ControllerImplementationTest {
 
     @Test
     fun `collector receives latest and following states`() {
-        val sut = testScopeRule.createCounterController() // 0
+        val sut = testScopeRule.counterController() // 0
 
         sut.dispatch(Unit) // 1
         sut.dispatch(Unit) // 2
@@ -105,59 +116,89 @@ internal class ControllerImplementationTest {
         testFlow expect emissions(4, 5)
     }
 
-    @Test(expected = Controller.Error.Mutator::class)
+    @Test(expected = ControllerError.Mutate::class)
     fun `state flow throws error from mutator`() = runBlockingTest {
-        val sut = createCounterController(mutatorErrorIndex = 2)
+        val sut = counterController(mutatorErrorIndex = 2)
 
         sut.dispatch(Unit)
         sut.dispatch(Unit)
         sut.dispatch(Unit)
     }
 
-    @Test(expected = Controller.Error.Reducer::class)
+    @Test(expected = ControllerError.Reduce::class)
     fun `state flow throws error from reducer`() = runBlockingTest {
-        val sut = createCounterController(reducerErrorIndex = 2)
+        val sut = counterController(reducerErrorIndex = 2)
 
         sut.dispatch(Unit)
         sut.dispatch(Unit)
         sut.dispatch(Unit)
+    }
+
+    @Test
+    fun `cancel via takeUntil`() {
+        val sut = testScopeRule.stopWatchController()
+
+        sut.dispatch(StopWatchAction.Start)
+        testScopeRule.advanceTimeBy(2000)
+        sut.dispatch(StopWatchAction.Stop)
+
+        sut.dispatch(StopWatchAction.Start)
+        testScopeRule.advanceTimeBy(3000)
+        sut.dispatch(StopWatchAction.Stop)
+
+        sut.dispatch(StopWatchAction.Start)
+        testScopeRule.advanceTimeBy(4000)
+        sut.dispatch(StopWatchAction.Stop)
+
+        // this should be ignored
+        sut.dispatch(StopWatchAction.Start)
+        testScopeRule.advanceTimeBy(500)
+        sut.dispatch(StopWatchAction.Stop)
+
+        sut.dispatch(StopWatchAction.Start)
+        testScopeRule.advanceTimeBy(1000)
+        sut.dispatch(StopWatchAction.Stop)
+
+        assert(sut.currentState == 10) // 2+3+4+1
+
+        testScopeRule.advanceUntilIdle()
     }
 }
 
-private fun CoroutineScope.createOperationController() =
+private fun CoroutineScope.operationController() =
     createController<List<String>, List<String>, List<String>>(
 
         // 1. ["initialState"]
         initialState = listOf("initialState"),
 
         // 2. ["action"] + ["transformedAction"]
-        actionsTransformer = { actions ->
+        actionsTransformer = Transformer { actions ->
             actions.map { it + "transformedAction" }
         },
 
         // 3. ["action", "transformedAction"] + ["mutation"]
-        mutator = { action, _ ->
+        mutator = Mutator { action ->
             flowOf(action + "mutation")
         },
 
         // 4. ["action", "transformedAction", "mutation"] + ["transformedMutation"]
-        mutationsTransformer = { mutations ->
+        mutationsTransformer = Transformer { mutations ->
             mutations.map { it + "transformedMutation" }
         },
 
         // 5. ["initialState"] + ["action", "transformedAction", "mutation", "transformedMutation"]
-        reducer = { previousState, mutation -> previousState + mutation },
+        reducer = Reducer { previousState, mutation -> previousState + mutation },
 
         // 6. ["initialState", "action", "transformedAction", "mutation", "transformedMutation"] + ["transformedState"]
-        statesTransformer = { states -> states.map { it + "transformedState" } }
+        statesTransformer = Transformer { states -> states.map { it + "transformedState" } }
     )
 
-private fun CoroutineScope.createCounterController(
+private fun CoroutineScope.counterController(
     mutatorErrorIndex: Int? = null,
     reducerErrorIndex: Int? = null
 ) = createController<Unit, Unit, Int>(
     initialState = 0,
-    mutator = { action, stateAccessor ->
+    mutator = ComplexMutator { action, stateAccessor, _ ->
         when (stateAccessor()) {
             mutatorErrorIndex -> flow {
                 emit(action)
@@ -166,8 +207,31 @@ private fun CoroutineScope.createCounterController(
             else -> flowOf(action)
         }
     },
-    reducer = { previousState, _ ->
+    reducer = Reducer { previousState, _ ->
         if (previousState == reducerErrorIndex) error("test")
         previousState + 1
     }
+)
+
+private sealed class StopWatchAction {
+    object Start : StopWatchAction()
+    object Stop : StopWatchAction()
+}
+
+private fun CoroutineScope.stopWatchController() = createController<StopWatchAction, Int, Int>(
+    initialState = 0,
+    mutator = ComplexMutator { action, _, actionFlow ->
+        when (action) {
+            is StopWatchAction.Start -> {
+                flow {
+                    while (isActive) {
+                        delay(1000)
+                        emit(1)
+                    }
+                }.takeUntil(actionFlow.filterIsInstance<StopWatchAction.Stop>())
+            }
+            is StopWatchAction.Stop -> emptyFlow()
+        }
+    },
+    reducer = Reducer { previousState, mutation -> previousState + mutation }
 )
