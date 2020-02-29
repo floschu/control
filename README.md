@@ -22,12 +22,12 @@ a [Controller](control-core/src/main/kotlin/at/florianschuster/control/Controlle
 
 ## info & documentation
 
-1. [controller](https://github.com/floschu/control/wiki/1.-controller)
-2. [view](https://github.com/floschu/control/wiki/2.-view)
-3. [transformations](https://github.com/floschu/control/wiki/3.-transformations)
-4. [controller testing](https://github.com/floschu/control/wiki/4.-controller-testing)
-5. [view testing](https://github.com/floschu/control/wiki/5.-view-testing)
-6. [helpers](https://github.com/floschu/control/wiki/6.-helpers)
+1. [controller](https://github.com/floschu/control/wiki/controller)
+2. [view](https://github.com/floschu/control/wiki/view)
+3. [transformations](https://github.com/floschu/control/wiki/transformations)
+4. [controller testing](https://github.com/floschu/control/wiki/controller-testing)
+5. [view testing](https://github.com/floschu/control/wiki/view-testing)
+6. [helpers](https://github.com/floschu/control/wiki/helpers)
 
 ## examples
 
