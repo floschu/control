@@ -187,7 +187,7 @@ private fun CoroutineScope.operationController() =
         },
 
         // 5. ["initialState"] + ["action", "transformedAction", "mutation", "transformedMutation"]
-        reducer = Reducer { previousState, mutation -> previousState + mutation },
+        reducer = Reducer { mutation, previousState -> previousState + mutation },
 
         // 6. ["initialState", "action", "transformedAction", "mutation", "transformedMutation"] + ["transformedState"]
         statesTransformer = Transformer { states -> states.map { it + "transformedState" } }
@@ -207,7 +207,7 @@ private fun CoroutineScope.counterController(
             else -> flowOf(action)
         }
     },
-    reducer = Reducer { previousState, _ ->
+    reducer = Reducer { _, previousState ->
         if (previousState == reducerErrorIndex) error("test")
         previousState + 1
     }
@@ -233,5 +233,5 @@ private fun CoroutineScope.stopWatchController() = createController<StopWatchAct
             is StopWatchAction.Stop -> emptyFlow()
         }
     },
-    reducer = Reducer { previousState, mutation -> previousState + mutation }
+    reducer = Reducer { mutation, previousState -> previousState + mutation }
 )

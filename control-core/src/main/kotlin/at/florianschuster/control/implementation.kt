@@ -29,12 +29,12 @@ internal class ControllerImplementation<Action, Mutation, State>(
     private val dispatcher: CoroutineDispatcher,
 
     private val initialState: State,
-    private val mutator: MutatorType<Action, Mutation, State>,
-    private val reducer: ReducerType<Mutation, State>,
+    private val mutator: Mutator<Action, Mutation, State>,
+    private val reducer: Reducer<Mutation, State>,
 
-    private val actionsTransformer: TransformerType<Action>,
-    private val mutationsTransformer: TransformerType<Mutation>,
-    private val statesTransformer: TransformerType<State>,
+    private val actionsTransformer: Transformer<Action>,
+    private val mutationsTransformer: Transformer<Mutation>,
+    private val statesTransformer: Transformer<State>,
 
     private val tag: String,
     private val controllerLog: ControllerLog
@@ -83,23 +83,24 @@ internal class ControllerImplementation<Action, Mutation, State>(
     }
 
     private fun lazyInitialize() = kotlinx.atomicfu.locks.synchronized(this) {
-        val actionFlow: Flow<Action> = actionChannel.asFlow()
+        if (initialized) return // double checked locking
 
-        val mutationFlow: Flow<Mutation> = actionsTransformer(actionFlow)
-            .flatMapMerge { action ->
-                controllerLog.log(tag, ControllerLog.Event.Action(action.toString()))
-                mutator(action, { currentState }, actionFlow).catch { cause ->
-                    val error = ControllerError.Mutate(tag, "$action", cause)
-                    controllerLog.log(tag, ControllerLog.Event.Error(error))
-                    throw error
-                }
+        val actionFlow: Flow<Action> = actionsTransformer(actionChannel.asFlow())
+
+        val mutationFlow: Flow<Mutation> = actionFlow.flatMapMerge { action ->
+            controllerLog.log(tag, ControllerLog.Event.Action(action.toString()))
+            mutator(action, { currentState }, actionFlow).catch { cause ->
+                val error = ControllerError.Mutate(tag, "$action", cause)
+                controllerLog.log(tag, ControllerLog.Event.Error(error))
+                throw error
             }
+        }
 
         val stateFlow: Flow<State> = mutationsTransformer(mutationFlow)
             .scan(initialState) { previousState, mutation ->
                 controllerLog.log(tag, ControllerLog.Event.Mutation(mutation.toString()))
                 val reducedState = try {
-                    reducer(previousState, mutation)
+                    reducer(mutation, previousState)
                 } catch (cause: Throwable) {
                     val error = ControllerError.Reduce(tag, "$previousState", "$mutation", cause)
                     controllerLog.log(tag, ControllerLog.Event.Error(error))

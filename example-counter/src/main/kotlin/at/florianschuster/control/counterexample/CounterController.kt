@@ -57,7 +57,7 @@ internal fun CounterController(
 
     // every mutation is used to reduce the previous state to a new state
     // that is then published to the view
-    reducer = Reducer { previousState, mutation ->
+    reducer = Reducer { mutation, previousState ->
         when (mutation) {
             is CounterMutation.IncreaseValue -> previousState.copy(value = previousState.value + 1)
             is CounterMutation.DecreaseValue -> previousState.copy(value = previousState.value - 1)

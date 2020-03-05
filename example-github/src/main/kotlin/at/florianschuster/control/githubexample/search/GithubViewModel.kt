@@ -83,7 +83,7 @@ internal class GithubViewModel(
             }
         },
 
-        reducer = Reducer { previousState, mutation ->
+        reducer = Reducer { mutation, previousState ->
             when (mutation) {
                 is Mutation.SetQuery -> previousState.copy(query = mutation.query)
                 is Mutation.SetRepos -> previousState.copy(repos = mutation.repos, page = 1)

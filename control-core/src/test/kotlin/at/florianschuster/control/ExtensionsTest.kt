@@ -4,6 +4,7 @@ import io.mockk.spyk
 import io.mockk.verify
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -58,5 +59,8 @@ internal class ExtensionsTest {
 
         val longResult = numberFlow.takeUntil(flow { delay(1101); emit(Unit) }).toList()
         assertEquals(listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), longResult)
+
+        val emptyResult = emptyFlow<Int>().takeUntil(flow { delay(1101); emit(Unit) }).toList()
+        assertEquals(emptyList(), emptyResult)
     }
 }

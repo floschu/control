@@ -39,11 +39,13 @@ fun <State, SubState> Flow<State>.distinctMap(
  *
  * Example:
  *
+ * ```
  * val channel: BroadCastChannel<Int>
  * someFlow
- *     .takeUntil(channel.asFlow().filter{ it == 2 }) // if channel emits 2, someFlow is cancelled
+ *     .takeUntil(channel.asFlow().filter{ it == 2 }) // if channel emits 2, someFlow is no longer consumed
  *     .onEach { result -> /* do something*/ }
  *     .launchIn(scope)
+ * ```
  */
 fun <T, U> Flow<T>.takeUntil(other: Flow<U>): Flow<T> = flow {
     coroutineScope {

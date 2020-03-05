@@ -2,7 +2,6 @@ package at.florianschuster.control
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 
 /**
  * A [Controller] is an ui-independent class that controls the state of a view. The role of a
@@ -74,64 +73,43 @@ interface Controller<Action, Mutation, State> {
  * A [Mutator] takes an action and transforms it into a [Flow] of [0..n] mutations.
  *
  *
- * Example:
- *
- *     sealed class Action {
- *         object AddZero : Action()
- *         object AddOne : Action()
- *         object AddTwo : Action()
- *     }
- *
- *     sealed class Mutation {
- *         object Add : Mutation()
- *     }
- *
- *     mutator = Mutator { action ->
- *         when(action) {
- *             is Action.AddZero -> emptyFlow()
- *             is Action.AddOne -> flowOf(Mutation.Add)
- *             is Action.AddTwo -> flow {
- *                 emit(Mutation.Add)
- *                 emit(Mutation.Add)
- *             }
- *         }
- *     }
- */
-class Mutator<Action, Mutation, State>(
-    private val mutate: (action: Action) -> Flow<Mutation> = { _ -> emptyFlow() }
-) : MutatorType<Action, Mutation, State> {
-
-    override fun invoke(
-        action: Action,
-        stateAccessor: () -> State,
-        actionFlow: Flow<Action>
-    ): Flow<Mutation> = mutate(action)
-}
-
-/**
- * A complex variant of a [Mutator].
- *
- *
  * Use the stateAccessor to access the [Controller.currentState] during a suspending mutation.
  *
- * Use the actionFlow if a [Flow] inside the [Mutator] needs to be cancelled or transformed
- * due to the incoming action (e.g. takeUntil(actionFlow.filterIsInstance<Action.Cancel>()) ).
- * The actionFlow is accessed before [ControllerImplementation.actionsTransformer] is applied.
+ * Use the transformedActionFlow if a [Flow] inside the [Mutator] needs to be cancelled or
+ * transformed due to the incoming action (e.g. takeUntil(actionFlow.filterIsInstance<Action.Cancel>()) ).
+ * The actionFlow is accessed after [ControllerImplementation.actionsTransformer] is applied.
+ *
+ *
+ * Example:
+ *
+ * ```
+ * sealed class Action {
+ *     object AddZero : Action()
+ *     object AddOne : Action()
+ *     object AddTwo : Action()
+ * }
+ *
+ * sealed class Mutation {
+ *     object Add : Mutation()
+ * }
+ *
+ * mutator = Mutator { action ->
+ *     when(action) {
+ *         is Action.AddZero -> emptyFlow()
+ *         is Action.AddOne -> flowOf(Mutation.Add)
+ *         is Action.AddTwo -> flow {
+ *             emit(Mutation.Add)
+ *             emit(Mutation.Add)
+ *         }
+ *     }
+ * }
+ * ```
  */
-class ComplexMutator<Action, Mutation, State>(
-    private val mutate: (
-        action: Action,
-        stateAccessor: () -> State,
-        actionFlow: Flow<Action>
-    ) -> Flow<Mutation> = { _, _, _ -> emptyFlow() }
-) : MutatorType<Action, Mutation, State> {
-
-    override fun invoke(
-        action: Action,
-        stateAccessor: () -> State,
-        actionFlow: Flow<Action>
-    ): Flow<Mutation> = mutate(action, stateAccessor, actionFlow)
-}
+typealias Mutator<Action, Mutation, State> = (
+    action: Action,
+    stateAccessor: () -> State,
+    transformedActionFlow: Flow<Action>
+) -> Flow<Mutation>
 
 /**
  * A [Reducer] takes the previous state and a mutation and returns a new state synchronously.
@@ -139,32 +117,23 @@ class ComplexMutator<Action, Mutation, State>(
  *
  * Example:
  *
- *     sealed class Mutation {
- *         object Add : Mutation()
- *         data class Set(val valueToSet: Int) : Mutation()
- *     }
+ * ```
+ * sealed class Mutation {
+ *     object Add : Mutation()
+ *     data class Set(val valueToSet: Int) : Mutation()
+ * }
  *
- *     data class State(val value: Int)
+ * data class State(val value: Int)
  *
- *     reducer = Reducer { previousState, mutation ->
- *         when(mutation) {
- *             is Mutation.Add -> previousState.copy(value = previousState.value + 1)
- *             is Mutation.Set -> previousState.copy(value = mutation.valueToSet)
- *         }
+ * reducer = Reducer { mutation, previousState ->
+ *     when(mutation) {
+ *         is Mutation.Add -> previousState.copy(value = previousState.value + 1)
+ *         is Mutation.Set -> previousState.copy(value = mutation.valueToSet)
  *     }
+ * }
+ * ```
  */
-class Reducer<Mutation, State>(
-    private val reduce: (
-        previousState: State,
-        mutation: Mutation
-    ) -> State = { previousState, _ -> previousState }
-) : ReducerType<Mutation, State> {
-
-    override fun invoke(
-        previousState: State,
-        mutation: Mutation
-    ): State = reduce(previousState, mutation)
-}
+typealias Reducer<Mutation, State> = (mutation: Mutation, previousState: State) -> State
 
 /**
  * A [Transformer] transforms a [Flow] of a type - such as action, mutation or state.
@@ -174,29 +143,28 @@ class Reducer<Mutation, State>(
  *
  * Transformer<Action> -> Example: Initial action
  *
- *     actionsTransformer = Transformer { actions ->
- *         actions.onStart { emit(Action.InitialLoad) }
- *     }
- *
+ * ```
+ * actionsTransformer = Transformer { actions ->
+ *     actions.onStart { emit(Action.InitialLoad) }
+ * }
+ * ```
  *
  * Transformer<Mutation> -> Example: Merge global [Flow]
  *
- *     val userSession: Flow<Session>
+ * ```
+ * val userSession: Flow<Session>
  *
- *     mutationsTransformer = Transformer { mutations ->
- *         flowOf(mutations, userSession.map { Mutation.SetSession(it) }).flattenMerge()
- *     }
- *
+ * mutationsTransformer = Transformer { mutations ->
+ *     flowOf(mutations, userSession.map { Mutation.SetSession(it) }).flattenMerge()
+ * }
+ * ```
  *
  * Transformer<State> -> Example: Logging
  *
- *     statesTransformer = Transformer { states ->
- *         states.onEach { Log.d("New State: $it) }
- *     }
+ * ```
+ * statesTransformer = Transformer { states ->
+ *     states.onEach { Log.d("New State: $it) }
+ * }
+ * ```
  */
-class Transformer<Emission>(
-    private val transform: (emissions: Flow<Emission>) -> Flow<Emission> = { it }
-) : TransformerType<Emission> {
-
-    override fun invoke(emissions: Flow<Emission>): Flow<Emission> = transform(emissions)
-}
+typealias Transformer<Emission> = (emissions: Flow<Emission>) -> Flow<Emission>
