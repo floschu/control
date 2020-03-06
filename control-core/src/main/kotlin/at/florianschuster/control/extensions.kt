@@ -35,14 +35,15 @@ fun <State, SubState> Flow<State>.distinctMap(
 ): Flow<SubState> = map { by(it) }.distinctUntilChanged()
 
 /**
- * Consumes a [Flow] of [T] until [other] [Flow] of [U] emits.
+ * Discard any emissions by a [Flow] of [T] after [other] [Flow] of [U] emits an item or completes.
  *
  * Example:
+ * If channel emits 2, someFlow is no longer consumed
  *
  * ```
  * val channel: BroadCastChannel<Int>
  * someFlow
- *     .takeUntil(channel.asFlow().filter{ it == 2 }) // if channel emits 2, someFlow is no longer consumed
+ *     .takeUntil(channel.asFlow().filter{ it == 2 })
  *     .onEach { result -> /* do something*/ }
  *     .launchIn(scope)
  * ```
@@ -74,4 +75,4 @@ fun <T, U> Flow<T>.takeUntil(other: Flow<U>): Flow<T> = flow {
     }
 }
 
-private class TakeUntilException : CancellationException()
+class TakeUntilException internal constructor() : CancellationException()
