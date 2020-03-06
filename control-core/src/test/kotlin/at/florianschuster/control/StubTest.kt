@@ -46,6 +46,26 @@ internal class StubTest {
     }
 
     @Test
+    fun `stub state contains latest and following states`() {
+        val expectedStates = listOf(
+            listOf("one"),
+            listOf("two"),
+            listOf("three")
+        )
+        val sut = testScopeRule.createStringController()
+        sut.stubEnabled = true
+
+        sut.stub.setState(listOf("something 1"))
+        sut.stub.setState(listOf("something 2"))
+
+        val testFlow = sut.state.testIn(testScopeRule)
+
+        expectedStates.forEach(sut.stub::setState)
+
+        testFlow expect emissions(listOf(listOf("something 2")) + expectedStates)
+    }
+
+    @Test
     fun `stub action does not trigger state machine`() {
         val sut = testScopeRule.createStringController()
         sut.stubEnabled = true
