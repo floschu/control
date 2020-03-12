@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
@@ -41,7 +42,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
 ) : Controller<Action, Mutation, State> {
 
     private var initialized = false
-    private val actionChannel = BroadcastChannel<Action>(1)
+    private val actionChannel = BroadcastChannel<Action>(BUFFERED)
     private val stateChannel = ConflatedBroadcastChannel(initialState)
     private val controllerStub by lazy { ControllerStubImplementation<Action, State>(initialState) }
 
