@@ -92,10 +92,13 @@ fun <Action, State> CoroutineScope.createSynchronousController(
 ): Controller<Action, Action, State> = createController(
     dispatcher = dispatcher,
 
-    initialState = initialState, mutator = Mutator { action -> flowOf(action) }, reducer = reducer,
+    initialState = initialState,
+    mutator = Mutator { action, _, _ -> flowOf(action) },
+    reducer = reducer,
     actionsTransformer = actionsTransformer,
     mutationsTransformer = { it },
     statesTransformer = statesTransformer,
 
-    tag = tag, controllerLog = controllerLog
+    tag = tag,
+    controllerLog = controllerLog
 )

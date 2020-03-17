@@ -12,19 +12,8 @@ import kotlin.test.assertEquals
 internal class TypeHelpersTest {
 
     @Test
-    fun `simple mutator`() = runBlockingTest {
-        val sut = Mutator<Int, Int, Int> { flowOf(it * 2) }
-
-        val result = flowOf(1, 2, 3)
-            .flatMapConcat { sut(it, fakeStateAccessor, fakeActionFlow) }
-            .toList()
-
-        assertEquals(listOf(2, 4, 6), result)
-    }
-
-    @Test
-    fun `complex mutator`() = runBlockingTest {
-        val sut = ComplexMutator<Int, Int, Int> { action, stateAccessor, actionFlow ->
+    fun `Mutator`() = runBlockingTest {
+        val sut = Mutator<Int, Int, Int> { action, stateAccessor, actionFlow ->
             assertEquals(fakeStateAccessor, stateAccessor)
             assertEquals(fakeActionFlow, actionFlow)
             flowOf(action * 2)
@@ -38,7 +27,7 @@ internal class TypeHelpersTest {
     }
 
     @Test
-    fun `simple reducer`() = runBlockingTest {
+    fun `Reducer`() = runBlockingTest {
         val sut = Reducer<Int, Int> { mutation, previousState -> previousState + mutation }
 
         val result = flowOf(1, 2, 3)
@@ -49,7 +38,7 @@ internal class TypeHelpersTest {
     }
 
     @Test
-    fun `simple transformer`() = runBlockingTest {
+    fun `Transformer`() = runBlockingTest {
         val sut = Transformer<Int> { emissions -> emissions.map { it * 2 } }
 
         val result = sut(flowOf(1, 2, 3)).toList()

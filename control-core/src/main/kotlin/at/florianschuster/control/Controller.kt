@@ -93,7 +93,7 @@ interface Controller<Action, Mutation, State> {
  *     object Add : Mutation()
  * }
  *
- * mutator = Mutator { action ->
+ * mutator = Mutator { action, _, _ ->
  *     when(action) {
  *         is Action.AddZero -> emptyFlow()
  *         is Action.AddOne -> flowOf(Mutation.Add)

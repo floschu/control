@@ -177,7 +177,7 @@ private fun CoroutineScope.operationController() =
         },
 
         // 3. ["action", "transformedAction"] + ["mutation"]
-        mutator = Mutator { action ->
+        mutator = Mutator { action, _, _ ->
             flowOf(action + "mutation")
         },
 
@@ -198,7 +198,7 @@ private fun CoroutineScope.counterController(
     reducerErrorIndex: Int? = null
 ) = createController<Unit, Unit, Int>(
     initialState = 0,
-    mutator = ComplexMutator { action, stateAccessor, _ ->
+    mutator = Mutator { action, stateAccessor, _ ->
         when (stateAccessor()) {
             mutatorErrorIndex -> flow {
                 emit(action)
@@ -220,7 +220,7 @@ private sealed class StopWatchAction {
 
 private fun CoroutineScope.stopWatchController() = createController<StopWatchAction, Int, Int>(
     initialState = 0,
-    mutator = ComplexMutator { action, _, actionFlow ->
+    mutator = Mutator { action, _, actionFlow ->
         when (action) {
             is StopWatchAction.Start -> {
                 flow {

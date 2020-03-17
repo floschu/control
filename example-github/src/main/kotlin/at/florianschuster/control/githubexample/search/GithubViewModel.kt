@@ -3,9 +3,9 @@ package at.florianschuster.control.githubexample.search
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import at.florianschuster.control.ComplexMutator
 import at.florianschuster.control.Controller
 import at.florianschuster.control.ControllerLog
+import at.florianschuster.control.Mutator
 import at.florianschuster.control.Reducer
 import at.florianschuster.control.createController
 import at.florianschuster.control.githubexample.GithubApi
@@ -49,7 +49,7 @@ internal class GithubViewModel(
     val controller: Controller<Action, Mutation, State> = viewModelScope.createController(
         initialState = initialState,
 
-        mutator = ComplexMutator { action, stateAccessor, actionFlow ->
+        mutator = Mutator { action, stateAccessor, actionFlow ->
             when (action) {
                 is Action.UpdateQuery -> flow {
                     emit(Mutation.SetQuery(action.text))

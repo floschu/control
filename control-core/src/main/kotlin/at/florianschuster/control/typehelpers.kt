@@ -9,13 +9,6 @@ import kotlinx.coroutines.flow.emptyFlow
  * Use to create a [Mutator].
  */
 fun <Action, Mutation, State> Mutator(
-    mutate: (action: Action) -> Flow<Mutation> = { _ -> emptyFlow() }
-): Mutator<Action, Mutation, State> = { action, _, _ -> mutate(action) }
-
-/**
- * Use to create a complex [Mutator].
- */
-fun <Action, Mutation, State> ComplexMutator(
     mutate: (
         action: Action,
         stateAccessor: () -> State,
