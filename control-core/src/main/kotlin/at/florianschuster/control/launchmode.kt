@@ -16,13 +16,13 @@ sealed class LaunchMode {
      * [ControllerImplementation.state] is created once [ControllerImplementation.state],
      * [ControllerImplementation.currentState] or [ControllerImplementation.dispatch] are accessed.
      */
-    object Lazy : LaunchMode()
+    object OnAccess : LaunchMode()
 
     companion object {
 
         /**
          * The default [LaunchMode] used by [ControllerImplementation]
          */
-        var default: LaunchMode = Lazy
+        var default: LaunchMode = OnAccess
     }
 }
