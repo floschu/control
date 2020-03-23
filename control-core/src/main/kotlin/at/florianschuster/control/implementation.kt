@@ -88,9 +88,10 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
         val actionFlow: Flow<Action> = actionsTransformer(actionChannel.asFlow())
 
+        val mutatorScope = MutatorScopeImpl({ currentState }, actionFlow)
         val mutationFlow: Flow<Mutation> = actionFlow.flatMapMerge { action ->
             controllerLog.log(tag, ControllerLog.Event.Action(action.toString()))
-            MutatorScopeImpl({ currentState }, actionFlow).mutator(action).catch { cause ->
+            mutatorScope.mutator(action).catch { cause ->
                 val error = ControllerError.Mutate(tag, "$action", cause)
                 controllerLog.log(tag, ControllerLog.Event.Error(error))
                 throw error

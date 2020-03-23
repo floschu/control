@@ -104,7 +104,7 @@ typealias Mutator<Action, Mutation, State> = MutatorScope<Action, State>.(
 
 /**
  * The [MutatorScope] provides access to the [currentState] and the [actions] [Flow] of the
- * [ControllerImplementation].
+ * [ControllerImplementation] in a [Mutator].
  *
  * Use the [actions] if a [Flow] inside the [Mutator] needs to be cancelled or transformed due
  * to the incoming action: e.g. `takeUntil(actionFlow.filterIsInstance<Action.Cancel>())`.
