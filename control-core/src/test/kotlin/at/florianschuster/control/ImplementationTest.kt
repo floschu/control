@@ -20,7 +20,7 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
-internal class ControllerImplementationTest {
+internal class ImplementationTest {
 
     @get:Rule
     val testScopeRule = TestCoroutineScopeRule()
@@ -163,75 +163,76 @@ internal class ControllerImplementationTest {
 
         testScopeRule.advanceUntilIdle()
     }
-}
 
-private fun CoroutineScope.operationController() =
-    createController<List<String>, List<String>, List<String>>(
 
-        // 1. ["initialState"]
-        initialState = listOf("initialState"),
+    private fun CoroutineScope.operationController() =
+        createController<List<String>, List<String>, List<String>>(
 
-        // 2. ["action"] + ["transformedAction"]
-        actionsTransformer = { actions ->
-            actions.map { it + "transformedAction" }
-        },
+            // 1. ["initialState"]
+            initialState = listOf("initialState"),
 
-        // 3. ["action", "transformedAction"] + ["mutation"]
+            // 2. ["action"] + ["transformedAction"]
+            actionsTransformer = { actions ->
+                actions.map { it + "transformedAction" }
+            },
+
+            // 3. ["action", "transformedAction"] + ["mutation"]
+            mutator = { action ->
+                flowOf(action + "mutation")
+            },
+
+            // 4. ["action", "transformedAction", "mutation"] + ["transformedMutation"]
+            mutationsTransformer = { mutations ->
+                mutations.map { it + "transformedMutation" }
+            },
+
+            // 5. ["initialState"] + ["action", "transformedAction", "mutation", "transformedMutation"]
+            reducer = { mutation, previousState -> previousState + mutation },
+
+            // 6. ["initialState", "action", "transformedAction", "mutation", "transformedMutation"] + ["transformedState"]
+            statesTransformer = { states -> states.map { it + "transformedState" } }
+        )
+
+    private fun CoroutineScope.counterController(
+        mutatorErrorIndex: Int? = null,
+        reducerErrorIndex: Int? = null
+    ) = createController<Unit, Unit, Int>(
+        initialState = 0,
         mutator = { action ->
-            flowOf(action + "mutation")
+            when (currentState) {
+                mutatorErrorIndex -> flow {
+                    emit(action)
+                    error("test")
+                }
+                else -> flowOf(action)
+            }
         },
-
-        // 4. ["action", "transformedAction", "mutation"] + ["transformedMutation"]
-        mutationsTransformer = { mutations ->
-            mutations.map { it + "transformedMutation" }
-        },
-
-        // 5. ["initialState"] + ["action", "transformedAction", "mutation", "transformedMutation"]
-        reducer = { mutation, previousState -> previousState + mutation },
-
-        // 6. ["initialState", "action", "transformedAction", "mutation", "transformedMutation"] + ["transformedState"]
-        statesTransformer = { states -> states.map { it + "transformedState" } }
+        reducer = { _, previousState ->
+            if (previousState == reducerErrorIndex) error("test")
+            previousState + 1
+        }
     )
 
-private fun CoroutineScope.counterController(
-    mutatorErrorIndex: Int? = null,
-    reducerErrorIndex: Int? = null
-) = createController<Unit, Unit, Int>(
-    initialState = 0,
-    mutator = { action ->
-        when (currentState) {
-            mutatorErrorIndex -> flow {
-                emit(action)
-                error("test")
-            }
-            else -> flowOf(action)
-        }
-    },
-    reducer = { _, previousState ->
-        if (previousState == reducerErrorIndex) error("test")
-        previousState + 1
+    private sealed class StopWatchAction {
+        object Start : StopWatchAction()
+        object Stop : StopWatchAction()
     }
-)
 
-private sealed class StopWatchAction {
-    object Start : StopWatchAction()
-    object Stop : StopWatchAction()
-}
-
-private fun CoroutineScope.stopWatchController() = createController<StopWatchAction, Int, Int>(
-    initialState = 0,
-    mutator = { action ->
-        when (action) {
-            is StopWatchAction.Start -> {
-                flow {
-                    while (isActive) {
-                        delay(1000)
-                        emit(1)
-                    }
-                }.takeUntil(actions.filterIsInstance<StopWatchAction.Stop>())
+    private fun CoroutineScope.stopWatchController() = createController<StopWatchAction, Int, Int>(
+        initialState = 0,
+        mutator = { action ->
+            when (action) {
+                is StopWatchAction.Start -> {
+                    flow {
+                        while (isActive) {
+                            delay(1000)
+                            emit(1)
+                        }
+                    }.takeUntil(actions.filterIsInstance<StopWatchAction.Stop>())
+                }
+                is StopWatchAction.Stop -> emptyFlow()
             }
-            is StopWatchAction.Stop -> emptyFlow()
-        }
-    },
-    reducer = { mutation, previousState -> previousState + mutation }
-)
+        },
+        reducer = { mutation, previousState -> previousState + mutation }
+    )
+}

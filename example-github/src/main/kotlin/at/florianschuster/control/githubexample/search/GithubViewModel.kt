@@ -11,11 +11,10 @@ import at.florianschuster.control.githubexample.Repo
 import at.florianschuster.control.takeUntil
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
@@ -51,15 +50,14 @@ internal class GithubViewModel(
             when (action) {
                 is Action.UpdateQuery -> flow {
                     emit(Mutation.SetQuery(action.text))
-
                     if (action.text.isNotEmpty()) {
                         emit(Mutation.SetLoadingNextPage(true))
-
-                        val repos = api.search(currentState.query, 1)
-                            .map { Mutation.SetRepos(it) }
-                            .takeUntil(actions.filterIsInstance<Action.UpdateQuery>())
-                        emitAll(repos)
-
+                        emitAll(
+                            flow { emit(api.search(currentState.query, 1)) }
+                                .filterNotNull()
+                                .map { Mutation.SetRepos(it) }
+                                .takeUntil(actions.filterIsInstance<Action.UpdateQuery>())
+                        )
                         emit(Mutation.SetLoadingNextPage(false))
                     }
                 }
@@ -67,14 +65,13 @@ internal class GithubViewModel(
                     currentState.loadingNextPage -> emptyFlow()
                     else -> flow {
                         val state = currentState
-
                         emit(Mutation.SetLoadingNextPage(true))
-
-                        val repos = api.search(state.query, state.page + 1)
-                            .map { Mutation.AppendRepos(it) }
-                            .takeUntil(actions.filterIsInstance<Action.UpdateQuery>())
-                        emitAll(repos)
-
+                        emitAll(
+                            flow { emit(api.search(state.query, state.page + 1)) }
+                                .filterNotNull()
+                                .map { Mutation.AppendRepos(it) }
+                                .takeUntil(actions.filterIsInstance<Action.UpdateQuery>())
+                        )
                         emit(Mutation.SetLoadingNextPage(false))
                     }
                 }
@@ -99,8 +96,9 @@ internal class GithubViewModel(
         controllerLog = ControllerLog.Custom { Log.d(this::class.java.simpleName, it) }
     )
 
-    private suspend fun GithubApi.search(query: String, page: Int): Flow<List<Repo>> = flow {
-        val repos = repos(query, page)
-        emit(repos.items)
-    }.catch { e -> Log.e("GithubApi.repos", "with query = $query, page = $page", e) }
+    private suspend fun GithubApi.search(
+        query: String, page: Int
+    ): List<Repo>? = runCatching { repos(query, page).items }
+        .onFailure { Log.e("GithubApi.repos", "with query = $query, page = $page", it) }
+        .getOrNull()
 }
