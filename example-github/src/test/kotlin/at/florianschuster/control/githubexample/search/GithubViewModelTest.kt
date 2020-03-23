@@ -18,6 +18,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.delay
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertFalse
 
 internal class GithubViewModelTest {
 
@@ -154,6 +155,7 @@ internal class GithubViewModelTest {
             githubApi.repos(query, 1)
             githubApi.repos(secondQuery, 1)
         }
+        assertFalse(states.emissions.any { it.repos == mockReposPage1 })
         states expect lastEmission(
             GithubViewModel.State(query = secondQuery, repos = mockReposPage2)
         )
