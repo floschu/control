@@ -105,13 +105,31 @@ typealias Mutator<Action, Mutation, State> = MutatorScope<Action, State>.(
 /**
  * The [MutatorScope] provides access to the [currentState] and the [actions] [Flow] of the
  * [ControllerImplementation] in a [Mutator].
- *
- * Use the [actions] if a [Flow] inside the [Mutator] needs to be cancelled or transformed due
- * to the incoming action: e.g. `takeUntil(actionFlow.filterIsInstance<Action.Cancel>())`.
- * The actionFlow is accessed after [ControllerImplementation.actionsTransformer] is applied.
  */
 interface MutatorScope<Action, State> {
+
+    /**
+     * A generated property in [ControllerImplementation.MutatorScopeImpl], thus always
+     * providing the current [State] when accessed.
+     */
     val currentState: State
+
+    /**
+     * Accessed after [ControllerImplementation.actionsTransformer] is applied.
+     *
+     * Use if a [Flow] inside the [Mutator] needs to be cancelled or transformed due to an
+     * incoming [Action]:
+     *
+     * ```
+     * mutator = { action ->
+     *     when(action) {
+     *         is Action.Start -> flow {
+     *             emit(someLongRunningSuspendingFunctionThatGeneratesAValue())
+     *         }.takeUntil(actions.filterIsInstance<Action.Cancel>())
+     *     }
+     * }
+     * ```
+     */
     val actions: Flow<Action>
 }
 
