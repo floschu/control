@@ -79,7 +79,7 @@ internal class StubTest {
         createSynchronousController<List<String>, List<String>>(
             tag = "string_controller",
             initialState = initialState,
-            reducer = Reducer { previousState, mutation -> previousState + mutation }
+            reducer = { previousState, mutation -> previousState + mutation }
         )
 
     companion object {

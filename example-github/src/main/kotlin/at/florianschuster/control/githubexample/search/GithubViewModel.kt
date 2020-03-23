@@ -5,8 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.florianschuster.control.Controller
 import at.florianschuster.control.ControllerLog
-import at.florianschuster.control.Mutator
-import at.florianschuster.control.Reducer
 import at.florianschuster.control.createController
 import at.florianschuster.control.githubexample.GithubApi
 import at.florianschuster.control.githubexample.Repo
@@ -49,7 +47,7 @@ internal class GithubViewModel(
     val controller: Controller<Action, Mutation, State> = viewModelScope.createController(
         initialState = initialState,
 
-        mutator = Mutator { action, stateAccessor, actionFlow ->
+        mutator = { action ->
             when (action) {
                 is Action.UpdateQuery -> flow {
                     emit(Mutation.SetQuery(action.text))
@@ -57,24 +55,24 @@ internal class GithubViewModel(
                     if (action.text.isNotEmpty()) {
                         emit(Mutation.SetLoadingNextPage(true))
 
-                        val repos = api.search(stateAccessor().query, 1)
+                        val repos = api.search(currentState.query, 1)
                             .map { Mutation.SetRepos(it) }
-                            .takeUntil(actionFlow.filterIsInstance<Action.UpdateQuery>())
+                            .takeUntil(actions.filterIsInstance<Action.UpdateQuery>())
                         emitAll(repos)
 
                         emit(Mutation.SetLoadingNextPage(false))
                     }
                 }
                 is Action.LoadNextPage -> when {
-                    stateAccessor().loadingNextPage -> emptyFlow()
+                    currentState.loadingNextPage -> emptyFlow()
                     else -> flow {
-                        val state = stateAccessor()
+                        val state = currentState
 
                         emit(Mutation.SetLoadingNextPage(true))
 
                         val repos = api.search(state.query, state.page + 1)
                             .map { Mutation.AppendRepos(it) }
-                            .takeUntil(actionFlow.filterIsInstance<Action.UpdateQuery>())
+                            .takeUntil(actions.filterIsInstance<Action.UpdateQuery>())
                         emitAll(repos)
 
                         emit(Mutation.SetLoadingNextPage(false))
@@ -83,7 +81,7 @@ internal class GithubViewModel(
             }
         },
 
-        reducer = Reducer { mutation, previousState ->
+        reducer = { mutation, previousState ->
             when (mutation) {
                 is Mutation.SetQuery -> previousState.copy(query = mutation.query)
                 is Mutation.SetRepos -> previousState.copy(repos = mutation.repos, page = 1)

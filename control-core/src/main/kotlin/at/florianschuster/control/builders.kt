@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlin.coroutines.ContinuationInterceptor
 
@@ -31,19 +32,19 @@ fun <Action, Mutation, State> CoroutineScope.createController(
     /**
      * See [Mutator].
      */
-    mutator: Mutator<Action, Mutation, State> = Mutator(),
+    mutator: Mutator<Action, Mutation, State> = { _ -> emptyFlow() },
 
     /**
      * See [Reducer].
      */
-    reducer: Reducer<Mutation, State> = Reducer(),
+    reducer: Reducer<Mutation, State> = { _, previousState -> previousState },
 
     /**
      * See [Transformer].
      */
-    actionsTransformer: Transformer<Action> = Transformer(),
-    mutationsTransformer: Transformer<Mutation> = Transformer(),
-    statesTransformer: Transformer<State> = Transformer(),
+    actionsTransformer: Transformer<Action> = { it },
+    mutationsTransformer: Transformer<Mutation> = { it },
+    statesTransformer: Transformer<State> = { it },
 
     /**
      * Override to launch [ControllerImplementation.state] [Flow] in different [CoroutineDispatcher]
@@ -80,10 +81,10 @@ fun <Action, Mutation, State> CoroutineScope.createController(
 @FlowPreview
 fun <Action, State> CoroutineScope.createSynchronousController(
     initialState: State,
-    reducer: Reducer<Action, State> = Reducer(),
+    reducer: Reducer<Action, State> = { _, previousState -> previousState },
 
-    actionsTransformer: Transformer<Action> = Transformer(),
-    statesTransformer: Transformer<State> = Transformer(),
+    actionsTransformer: Transformer<Action> = { it },
+    statesTransformer: Transformer<State> = { it },
 
     dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher,
 
@@ -93,7 +94,7 @@ fun <Action, State> CoroutineScope.createSynchronousController(
     dispatcher = dispatcher,
 
     initialState = initialState,
-    mutator = Mutator { action, _, _ -> flowOf(action) },
+    mutator = { action -> flowOf(action) },
     reducer = reducer,
     actionsTransformer = actionsTransformer,
     mutationsTransformer = { it },

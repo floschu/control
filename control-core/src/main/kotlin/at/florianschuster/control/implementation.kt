@@ -90,7 +90,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
         val mutationFlow: Flow<Mutation> = actionFlow.flatMapMerge { action ->
             controllerLog.log(tag, ControllerLog.Event.Action(action.toString()))
-            mutator(action, { currentState }, actionFlow).catch { cause ->
+            MutatorScopeImpl({ currentState }, actionFlow).mutator(action).catch { cause ->
                 val error = ControllerError.Mutate(tag, "$action", cause)
                 controllerLog.log(tag, ControllerLog.Event.Error(error))
                 throw error
@@ -121,5 +121,14 @@ internal class ControllerImplementation<Action, Mutation, State>(
         }
 
         initialized = true
+    }
+
+    @Suppress("FunctionName")
+    fun <Action, State> MutatorScopeImpl(
+        stateAccessor: () -> State,
+        actionFlow: Flow<Action>
+    ): MutatorScope<Action, State> = object : MutatorScope<Action, State> {
+        override val currentState: State get() = stateAccessor()
+        override val actions: Flow<Action> = actionFlow
     }
 }

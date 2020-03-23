@@ -73,13 +73,6 @@ interface Controller<Action, Mutation, State> {
  * A [Mutator] takes an action and transforms it into a [Flow] of [0..n] mutations.
  *
  *
- * Use the stateAccessor to access the [Controller.currentState] during a suspending mutation.
- *
- * Use the transformedActionFlow if a [Flow] inside the [Mutator] needs to be cancelled or
- * transformed due to the incoming action (e.g. takeUntil(actionFlow.filterIsInstance<Action.Cancel>()) ).
- * The actionFlow is accessed after [ControllerImplementation.actionsTransformer] is applied.
- *
- *
  * Example:
  *
  * ```
@@ -93,7 +86,7 @@ interface Controller<Action, Mutation, State> {
  *     object Add : Mutation()
  * }
  *
- * mutator = Mutator { action, _, _ ->
+ * mutator = { action ->
  *     when(action) {
  *         is Action.AddZero -> emptyFlow()
  *         is Action.AddOne -> flowOf(Mutation.Add)
@@ -105,11 +98,22 @@ interface Controller<Action, Mutation, State> {
  * }
  * ```
  */
-typealias Mutator<Action, Mutation, State> = (
-    action: Action,
-    stateAccessor: () -> State,
-    transformedActionFlow: Flow<Action>
+typealias Mutator<Action, Mutation, State> = MutatorScope<Action, State>.(
+    action: Action
 ) -> Flow<Mutation>
+
+/**
+ * The [MutatorScope] provides access to the [currentState] and the [actions] [Flow] of the
+ * [ControllerImplementation].
+ *
+ * Use the [actions] if a [Flow] inside the [Mutator] needs to be cancelled or transformed due
+ * to the incoming action: e.g. `takeUntil(actionFlow.filterIsInstance<Action.Cancel>())`.
+ * The actionFlow is accessed after [ControllerImplementation.actionsTransformer] is applied.
+ */
+interface MutatorScope<Action, State> {
+    val currentState: State
+    val actions: Flow<Action>
+}
 
 /**
  * A [Reducer] takes the previous state and a mutation and returns a new state synchronously.
@@ -125,7 +129,7 @@ typealias Mutator<Action, Mutation, State> = (
  *
  * data class State(val value: Int)
  *
- * reducer = Reducer { mutation, previousState ->
+ * reducer = { mutation, previousState ->
  *     when(mutation) {
  *         is Mutation.Add -> previousState.copy(value = previousState.value + 1)
  *         is Mutation.Set -> previousState.copy(value = mutation.valueToSet)
@@ -144,7 +148,7 @@ typealias Reducer<Mutation, State> = (mutation: Mutation, previousState: State) 
  * Transformer<Action> -> Example: Initial action
  *
  * ```
- * actionsTransformer = Transformer { actions ->
+ * actionsTransformer = { actions ->
  *     actions.onStart { emit(Action.InitialLoad) }
  * }
  * ```
@@ -154,7 +158,7 @@ typealias Reducer<Mutation, State> = (mutation: Mutation, previousState: State) 
  * ```
  * val userSession: Flow<Session>
  *
- * mutationsTransformer = Transformer { mutations ->
+ * mutationsTransformer = { mutations ->
  *     flowOf(mutations, userSession.map { Mutation.SetSession(it) }).flattenMerge()
  * }
  * ```
@@ -162,7 +166,7 @@ typealias Reducer<Mutation, State> = (mutation: Mutation, previousState: State) 
  * Transformer<State> -> Example: Logging
  *
  * ```
- * statesTransformer = Transformer { states ->
+ * statesTransformer = { states ->
  *     states.onEach { Log.d("New State: $it) }
  * }
  * ```
