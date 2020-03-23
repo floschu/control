@@ -41,19 +41,16 @@ interface Controller<Action, Mutation, State> {
 
     /**
      * Dispatches an [Action] to be processed by this [Controller].
-     * Calling this, starts the [Controller].
      */
     fun dispatch(action: Action)
 
     /**
      * The current [State].
-     * Accessing this, starts the [Controller].
      */
     val currentState: State
 
     /**
      * The [State] [Flow]. Use this to collect [State] changes.
-     * Accessing this, starts the [Controller].
      */
     val state: Flow<State>
 

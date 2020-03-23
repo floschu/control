@@ -13,8 +13,7 @@ import kotlin.coroutines.ContinuationInterceptor
 /**
  * Creates a [Controller] bound to the [CoroutineScope] via [ControllerImplementation].
  *
- * The [ControllerImplementation.state] [Flow] is launched once [ControllerImplementation.state],
- * [ControllerImplementation.currentState] or [ControllerImplementation.dispatch] are accessed.
+ * When the [ControllerImplementation.state] [Flow] is launched depends on [launchMode].
  *
  * Per default, the [CoroutineDispatcher] of [CoroutineScope] is used to launch the
  * [ControllerImplementation.state] [Flow]. If another [CoroutineDispatcher] should be used,
@@ -61,8 +60,14 @@ fun <Action, Mutation, State> CoroutineScope.createController(
     /**
      * Log configuration for the [ControllerImplementation]. See [ControllerLog].
      */
-    controllerLog: ControllerLog = ControllerLog.default
+    controllerLog: ControllerLog = ControllerLog.default,
+
+    /**
+     * When the [ControllerImplementation.state] [Flow] should be launched. See [LaunchMode].
+     */
+    launchMode: LaunchMode = LaunchMode.default
 ): Controller<Action, Mutation, State> = ControllerImplementation(
+    launchMode = launchMode,
     scope = this, dispatcher = dispatcher,
 
     initialState = initialState, mutator = mutator, reducer = reducer,
@@ -89,8 +94,11 @@ fun <Action, State> CoroutineScope.createSynchronousController(
     dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher,
 
     tag: String = defaultTag(),
-    controllerLog: ControllerLog = ControllerLog.default
+    controllerLog: ControllerLog = ControllerLog.default,
+
+    launchMode: LaunchMode = LaunchMode.default
 ): Controller<Action, Action, State> = createController(
+    launchMode = launchMode,
     dispatcher = dispatcher,
 
     initialState = initialState,

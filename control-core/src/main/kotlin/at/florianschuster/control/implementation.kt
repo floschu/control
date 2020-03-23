@@ -26,6 +26,8 @@ import kotlinx.coroutines.launch
 @ExperimentalCoroutinesApi
 @FlowPreview
 internal class ControllerImplementation<Action, Mutation, State>(
+    launchMode: LaunchMode,
+
     private val scope: CoroutineScope,
     private val dispatcher: CoroutineDispatcher,
 
@@ -80,6 +82,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
     override val stub: ControllerStub<Action, State> get() = controllerStub
 
     init {
+        if (launchMode is LaunchMode.Immediate) lazyInitialize()
         controllerLog.log(tag, ControllerLog.Event.Created)
     }
 

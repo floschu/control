@@ -164,7 +164,6 @@ internal class ImplementationTest {
         testScopeRule.advanceUntilIdle()
     }
 
-
     private fun CoroutineScope.operationController() =
         createController<List<String>, List<String>, List<String>>(
 
