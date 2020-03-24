@@ -39,6 +39,10 @@ interface GithubApi {
 data class Result(val items: List<Repo>)
 
 @Serializable
-data class Repo(val id: Int, @SerialName("full_name") val name: String) {
+data class Repo(
+    val id: Int,
+    @SerialName("full_name") val name: String,
+    val description: String? = null
+) {
     val webUri: Uri get() = Uri.parse("https://github.com/$name")
 }

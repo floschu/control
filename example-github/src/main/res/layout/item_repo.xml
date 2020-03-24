@@ -1,27 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:padding="4dp"
-    android:background="?selectableItemBackground"
+    style="@style/Widget.MaterialComponents.CardView"
     android:layout_width="match_parent"
-    android:layout_height="?listPreferredItemHeight">
+    android:layout_height="wrap_content"
+    android:layout_margin="6dp"
+    android:background="?selectableItemBackground"
+    android:minHeight="?listPreferredItemHeight">
 
-    <TextView
-        android:id="@+id/repoNameTextView"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
         android:layout_gravity="center"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:textColor="#000"
-        tools:text="Repo/Name"/>
+        android:orientation="vertical"
+        android:padding="12dp">
 
-    <View
-        android:layout_marginTop="8dp"
-        android:layout_width="match_parent"
-        android:layout_gravity="bottom"
-        android:layout_height="1dp"
-        android:background="#B8B8B8"/>
-</FrameLayout>
+        <TextView
+            android:id="@+id/repoNameTextView"
+            style="@style/TextAppearance.MaterialComponents.Headline5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:textColor="@android:color/primary_text_light"
+            tools:text="Repo/Name" />
+
+        <TextView
+            android:id="@+id/repoDescriptionTextView"
+            style="@style/TextAppearance.MaterialComponents.Body1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/secondary_text_light"
+            tools:text="The description..." />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
