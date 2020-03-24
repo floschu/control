@@ -2,12 +2,11 @@ package at.florianschuster.control
 
 import at.florianschuster.test.flow.TestCoroutineScopeRule
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.CoroutineStart
 import org.junit.Rule
 import org.junit.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 internal class LaunchModeTest {
 
@@ -15,35 +14,26 @@ internal class LaunchModeTest {
     val testCoroutineScope = TestCoroutineScopeRule()
 
     @Test
-    fun `setting default LaunchMode`() {
-        LaunchMode.default = LaunchMode.Immediate
-        assertEquals(LaunchMode.Immediate, LaunchMode.default)
+    fun `default launch mode`() {
+        val sut = testCoroutineScope.counterController(coroutineStart = CoroutineStart.DEFAULT)
 
-        LaunchMode.default = LaunchMode.OnAccess
-        assertEquals(LaunchMode.OnAccess, LaunchMode.default)
+        assertTrue(sut.stateJob.isActive)
     }
 
     @Test
-    fun `immediate launch mode`() {
-        val sut = testCoroutineScope.counterController(launchMode = LaunchMode.Immediate)
+    fun `lazy launch mode`() {
+        val sut = testCoroutineScope.counterController(coroutineStart = CoroutineStart.LAZY)
 
-        assertNotNull(sut.stateJob)
-    }
-
-    @Test
-    fun `on-access launch mode`() {
-        val sut = testCoroutineScope.counterController(launchMode = LaunchMode.OnAccess)
-
-        assertNull(sut.stateJob)
+        assertFalse(sut.stateJob.isActive)
         sut.currentState
-        assertNotNull(sut.stateJob)
+        assertTrue(sut.stateJob.isActive)
     }
 
     private fun CoroutineScope.counterController(
-        launchMode: LaunchMode
+        coroutineStart: CoroutineStart
     ) = createSynchronousController<Int, Int>(
         initialState = 0,
         reducer = { mutation, previousState -> previousState + mutation },
-        launchMode = launchMode
+        coroutineStart = coroutineStart
     ) as ControllerImplementation<Int, Int, Int>
 }

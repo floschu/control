@@ -3,6 +3,7 @@ package at.florianschuster.control
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
@@ -27,25 +28,23 @@ import kotlinx.coroutines.launch
 @ExperimentalCoroutinesApi
 @FlowPreview
 internal class ControllerImplementation<Action, Mutation, State>(
-    launchMode: LaunchMode,
+    scope: CoroutineScope,
+    dispatcher: CoroutineDispatcher,
+    coroutineStart: CoroutineStart,
 
-    private val scope: CoroutineScope,
-    private val dispatcher: CoroutineDispatcher,
+    initialState: State,
+    mutator: Mutator<Action, Mutation, State>,
+    reducer: Reducer<Mutation, State>,
 
-    private val initialState: State,
-    private val mutator: Mutator<Action, Mutation, State>,
-    private val reducer: Reducer<Mutation, State>,
-
-    private val actionsTransformer: Transformer<Action>,
-    private val mutationsTransformer: Transformer<Mutation>,
-    private val statesTransformer: Transformer<State>,
+    actionsTransformer: Transformer<Action>,
+    mutationsTransformer: Transformer<Mutation>,
+    statesTransformer: Transformer<State>,
 
     private val tag: String,
     private val controllerLog: ControllerLog
 ) : Controller<Action, Mutation, State> {
 
-    private var initialized = false
-    internal var stateJob: Job? = null // internal for testing
+    internal val stateJob: Job // internal for testing
 
     private val actionChannel = BroadcastChannel<Action>(BUFFERED)
     private val stateChannel = ConflatedBroadcastChannel(initialState)
@@ -53,7 +52,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     override val state: Flow<State>
         get() = if (!stubEnabled) {
-            if (!initialized) lazyInitialize()
+            if (!stateJob.isActive) lazyStart()
             stateChannel.asFlow()
         } else {
             controllerStub.stateChannel.asFlow()
@@ -61,7 +60,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     override val currentState: State
         get() = if (!stubEnabled) {
-            if (!initialized) lazyInitialize()
+            if (!stateJob.isActive) lazyStart()
             stateChannel.value
         } else {
             controllerStub.stateChannel.value
@@ -69,7 +68,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     override fun dispatch(action: Action) {
         if (!stubEnabled) {
-            if (!initialized) lazyInitialize()
+            if (!stateJob.isActive) lazyStart()
             actionChannel.offer(action)
         } else {
             controllerStub.mutableActions.add(action)
@@ -85,13 +84,6 @@ internal class ControllerImplementation<Action, Mutation, State>(
     override val stub: ControllerStub<Action, State> get() = controllerStub
 
     init {
-        if (launchMode is LaunchMode.Immediate) lazyInitialize()
-        controllerLog.log(tag, ControllerLog.Event.Created)
-    }
-
-    private fun lazyInitialize() = kotlinx.atomicfu.locks.synchronized(this) {
-        if (initialized) return // double checked locking
-
         val actionFlow: Flow<Action> = actionsTransformer(actionChannel.asFlow())
 
         val mutatorScope = MutatorScopeImpl({ currentState }, actionFlow)
@@ -118,7 +110,12 @@ internal class ControllerImplementation<Action, Mutation, State>(
                 reducedState
             }
 
-        stateJob = scope.launch(dispatcher + CoroutineName(tag)) {
+        controllerLog.log(tag, ControllerLog.Event.Created)
+
+        stateJob = scope.launch(
+            context = dispatcher + CoroutineName(tag),
+            start = coroutineStart
+        ) {
             statesTransformer(stateFlow)
                 .distinctUntilChanged()
                 .onStart { controllerLog.log(tag, ControllerLog.Event.Started) }
@@ -126,8 +123,12 @@ internal class ControllerImplementation<Action, Mutation, State>(
                 .onCompletion { controllerLog.log(tag, ControllerLog.Event.Destroyed) }
                 .collect()
         }
+    }
 
-        initialized = true
+    private fun lazyStart() = kotlinx.atomicfu.locks.synchronized(this) {
+        if (!stateJob.isActive) { // double checked locking
+            stateJob.start()
+        }
     }
 
     @Suppress("FunctionName")
