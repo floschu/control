@@ -8,24 +8,33 @@ import org.junit.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-internal class LaunchModeTest {
+internal class ControllerStartTest {
 
     @get:Rule
     val testCoroutineScope = TestCoroutineScopeRule()
 
     @Test
-    fun `default launch mode`() {
+    fun `default start mode`() {
         val sut = testCoroutineScope.counterController(coroutineStart = CoroutineStart.DEFAULT)
 
         assertTrue(sut.stateJob.isActive)
     }
 
     @Test
-    fun `lazy launch mode`() {
+    fun `lazy start mode`() {
         val sut = testCoroutineScope.counterController(coroutineStart = CoroutineStart.LAZY)
 
         assertFalse(sut.stateJob.isActive)
         sut.currentState
+        assertTrue(sut.stateJob.isActive)
+    }
+
+    @Test
+    fun `manually start job`() {
+        val sut = testCoroutineScope.counterController(coroutineStart = CoroutineStart.LAZY)
+
+        assertFalse(sut.stateJob.isActive)
+        sut.stateJob.start()
         assertTrue(sut.stateJob.isActive)
     }
 
