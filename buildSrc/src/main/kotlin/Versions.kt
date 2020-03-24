@@ -38,7 +38,7 @@ object Versions {
 
     const val lifecycle_runtime_ktx: String = "2.2.0"
 
-    const val constraintlayout: String = "2.0.0-beta1"
+    const val constraintlayout: String = "2.0.0-beta4"
 
     const val flow_extensions: String = "0.0.4"
 
