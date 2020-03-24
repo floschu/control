@@ -3,6 +3,7 @@ package at.florianschuster.control.githubexample.search
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -13,7 +14,9 @@ import kotlinx.android.synthetic.main.item_repo.view.*
 
 class RepoAdapter : ListAdapter<Repo, RepoViewHolder>(
     object : DiffUtil.ItemCallback<Repo>() {
-        override fun areItemsTheSame(oldItem: Repo, newItem: Repo): Boolean = oldItem.id == newItem.id
+        override fun areItemsTheSame(oldItem: Repo, newItem: Repo): Boolean =
+            oldItem.id == newItem.id
+
         override fun areContentsTheSame(oldItem: Repo, newItem: Repo): Boolean = oldItem == newItem
     }
 ) {
@@ -39,5 +42,9 @@ class RepoViewHolder(
     fun bind(repo: Repo, onClick: (Repo) -> Unit) {
         itemView.setOnClickListener { onClick(repo) }
         itemView.repoNameTextView.text = repo.name
+        with(itemView.repoDescriptionTextView) {
+            isVisible = repo.description != null
+            repoDescriptionTextView.text = repo.description
+        }
     }
 }

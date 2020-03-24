@@ -11,6 +11,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val containerId = 123
         setContentView(FrameLayout(this).apply { id = containerId })
-        supportFragmentManager.beginTransaction().replace(containerId, GithubView()).commit()
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction().replace(containerId, GithubView()).commit()
+        }
     }
 }

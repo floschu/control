@@ -40,12 +40,13 @@ dependencies {
 
     implementation(Libs.appcompat)
     implementation(Libs.constraintlayout)
-    implementation(Libs.lifecycle_runtime_ktx)
     implementation(Libs.flowbinding_android)
     implementation(Libs.flowbinding_core)
     implementation(Libs.flowbinding_recyclerview)
     implementation(Libs.fragment_ktx)
     implementation(Libs.kotlinx_serialization_runtime)
+    implementation(Libs.lifecycle_runtime_ktx)
+    implementation(Libs.material)
     implementation(Libs.retrofit)
     implementation(Libs.retrofit2_kotlinx_serialization_converter)
 

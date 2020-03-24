@@ -162,10 +162,10 @@ internal class GithubViewModelTest {
     }
 
     companion object {
-        private val mockReposPage1: List<Repo> = (0..2).map { Repo(it, "$it") }
+        private val mockReposPage1: List<Repo> = (0..2).map { Repo(it, "$it", "") }
         private val mockResultPage1 = Result(items = mockReposPage1)
 
-        private val mockReposPage2: List<Repo> = (3..4).map { Repo(it, "$it") }
+        private val mockReposPage2: List<Repo> = (3..4).map { Repo(it, "$it", "") }
         private val mockResultPage2 = Result(items = mockReposPage2)
     }
 }

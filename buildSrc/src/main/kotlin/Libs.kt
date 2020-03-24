@@ -180,6 +180,11 @@ object Libs {
     const val junit_ktx: String = "androidx.test.ext:junit-ktx:" + Versions.junit_ktx
 
     /**
+     * http://developer.android.com/tools/extras/support-library.html
+     */
+    const val material: String = "com.google.android.material:material:" + Versions.material
+
+    /**
      * https://github.com/square/retrofit/
      */
     const val retrofit: String = "com.squareup.retrofit2:retrofit:" + Versions.retrofit
