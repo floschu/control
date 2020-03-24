@@ -46,12 +46,6 @@ fun <Action, Mutation, State> CoroutineScope.createController(
     statesTransformer: Transformer<State> = { it },
 
     /**
-     * Override to launch [ControllerImplementation.state] [Flow] in different [CoroutineDispatcher]
-     * than the one used in the [CoroutineScope.coroutineContext].
-     */
-    dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher,
-
-    /**
      * Set as [CoroutineName] for the [ControllerImplementation.state] context.
      * Also used for logging if enabled via [controllerLog].
      */
@@ -65,7 +59,13 @@ fun <Action, Mutation, State> CoroutineScope.createController(
     /**
      * When the [ControllerImplementation.state] [Flow] should be launched. See [LaunchMode].
      */
-    launchMode: LaunchMode = LaunchMode.default
+    launchMode: LaunchMode = LaunchMode.default,
+
+    /**
+     * Override to launch [ControllerImplementation.state] [Flow] in different [CoroutineDispatcher]
+     * than the one used in the [CoroutineScope.coroutineContext].
+     */
+    dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher
 ): Controller<Action, Mutation, State> = ControllerImplementation(
     launchMode = launchMode,
     scope = this, dispatcher = dispatcher,
@@ -91,12 +91,11 @@ fun <Action, State> CoroutineScope.createSynchronousController(
     actionsTransformer: Transformer<Action> = { it },
     statesTransformer: Transformer<State> = { it },
 
-    dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher,
-
     tag: String = defaultTag(),
     controllerLog: ControllerLog = ControllerLog.default,
 
-    launchMode: LaunchMode = LaunchMode.default
+    launchMode: LaunchMode = LaunchMode.default,
+    dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher
 ): Controller<Action, Action, State> = createController(
     launchMode = launchMode,
     dispatcher = dispatcher,
