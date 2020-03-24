@@ -12,23 +12,25 @@ import org.gradle.plugin.use.PluginDependencySpec
  * YOU are responsible for updating manually the dependency version.
  */
 object Versions {
-    const val org_jetbrains_kotlinx_kotlinx_serialization: String = "0.14.0"
+    const val org_jetbrains_kotlinx_kotlinx_serialization: String = "0.20.0"
+             // available: "0.20.0-1.4-M1-release-99"
 
-    const val org_jetbrains_kotlinx_kotlinx_coroutines: String = "1.3.3"
+    const val org_jetbrains_kotlinx_kotlinx_coroutines: String = "1.3.5"
+             // available: "1.3.5-1.4-M1-release-99"
 
-    const val io_github_reactivecircus_flowbinding: String = "0.9.0"
+    const val io_github_reactivecircus_flowbinding: String = "0.10.2"
 
-    const val org_jetbrains_kotlinx: String = "0.14.1"
+    const val org_jetbrains_kotlinx: String = "0.14.3"
 
-    const val org_jetbrains_kotlin: String = "1.3.61"
+    const val org_jetbrains_kotlin: String = "1.3.71"
 
     const val androidx_test: String = "1.2.0"
 
-    const val com_android_tools_build_gradle: String = "3.5.3" // available: "3.6.0"
+    const val com_android_tools_build_gradle: String = "3.6.1"
 
     const val org_jlleitschuh_gradle_ktlint_gradle_plugin: String = "9.2.1"
 
-    const val retrofit2_kotlinx_serialization_converter: String = "0.4.0"
+    const val retrofit2_kotlinx_serialization_converter: String = "0.5.0"
 
     const val de_fayard_buildsrcversions_gradle_plugin: String = "0.7.0"
 
@@ -42,28 +44,28 @@ object Versions {
 
     const val espresso_core: String = "3.2.0"
 
-    const val fragment_ktx: String = "1.2.2"
+    const val fragment_ktx: String = "1.2.3"
 
-    const val lint_gradle: String = "26.5.3" // available: "26.6.0"
+    const val lint_gradle: String = "26.6.1"
 
     const val appcompat: String = "1.1.0"
 
     const val junit_ktx: String = "1.1.1"
 
-    const val retrofit: String = "2.7.1"
+    const val retrofit: String = "2.8.0"
 
     const val ktlint: String = "0.36.0"
 
-    const val aapt2: String = "3.5.3-5435860" // available: "3.6.0-6040484"
+    const val aapt2: String = "3.6.1-6040484"
 
     const val mockk: String = "1.9.3"
 
     /**
-     * Current version: "5.6.3"
+     * Current version: "5.6.4"
      * See issue 19: How to update Gradle itself?
      * https://github.com/jmfayard/buildSrcVersions/issues/19
      */
-    const val gradleLatestVersion: String = "6.2.1"
+    const val gradleLatestVersion: String = "6.2.2"
 }
 
 /**
