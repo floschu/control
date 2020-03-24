@@ -5,6 +5,7 @@ import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
@@ -44,6 +45,8 @@ internal class ControllerImplementation<Action, Mutation, State>(
 ) : Controller<Action, Mutation, State> {
 
     private var initialized = false
+    internal var stateJob: Job? = null // internal for testing
+
     private val actionChannel = BroadcastChannel<Action>(BUFFERED)
     private val stateChannel = ConflatedBroadcastChannel(initialState)
     private val controllerStub by lazy { ControllerStubImplementation<Action, State>(initialState) }
@@ -115,7 +118,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
                 reducedState
             }
 
-        scope.launch(dispatcher + CoroutineName(tag)) {
+        stateJob = scope.launch(dispatcher + CoroutineName(tag)) {
             statesTransformer(stateFlow)
                 .distinctUntilChanged()
                 .onStart { controllerLog.log(tag, ControllerLog.Event.Started) }

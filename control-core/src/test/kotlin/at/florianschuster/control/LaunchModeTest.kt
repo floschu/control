@@ -1,9 +1,13 @@
 package at.florianschuster.control
 
 import at.florianschuster.test.flow.TestCoroutineScopeRule
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 internal class LaunchModeTest {
 
@@ -21,16 +25,25 @@ internal class LaunchModeTest {
 
     @Test
     fun `immediate launch mode`() {
-        val sut = testCoroutineScope.createController<Int,Int,Int>(
-            initialState = 0,
-            reducer = {
+        val sut = testCoroutineScope.counterController(launchMode = LaunchMode.Immediate)
 
-            }
-        )
+        assertNotNull(sut.stateJob)
     }
 
     @Test
     fun `on-access launch mode`() {
-        TODO()
+        val sut = testCoroutineScope.counterController(launchMode = LaunchMode.OnAccess)
+
+        assertNull(sut.stateJob)
+        sut.currentState
+        assertNotNull(sut.stateJob)
     }
+
+    private fun CoroutineScope.counterController(
+        launchMode: LaunchMode
+    ) = createSynchronousController<Int, Int>(
+        initialState = 0,
+        reducer = { mutation, previousState -> previousState + mutation },
+        launchMode = launchMode
+    ) as ControllerImplementation<Int, Int, Int>
 }
