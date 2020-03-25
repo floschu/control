@@ -3,6 +3,7 @@ package at.florianschuster.control
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -12,13 +13,6 @@ import kotlin.coroutines.ContinuationInterceptor
 
 /**
  * Creates a [Controller] bound to the [CoroutineScope] via [ControllerImplementation].
- *
- * The [ControllerImplementation.state] [Flow] is launched once [ControllerImplementation.state],
- * [ControllerImplementation.currentState] or [ControllerImplementation.dispatch] are accessed.
- *
- * Per default, the [CoroutineDispatcher] of [CoroutineScope] is used to launch the
- * [ControllerImplementation.state] [Flow]. If another [CoroutineDispatcher] should be used,
- * override [dispatcher].
  */
 @ExperimentalCoroutinesApi
 @FlowPreview
@@ -47,12 +41,6 @@ fun <Action, Mutation, State> CoroutineScope.createController(
     statesTransformer: Transformer<State> = { it },
 
     /**
-     * Override to launch [ControllerImplementation.state] [Flow] in different [CoroutineDispatcher]
-     * than the one used in the [CoroutineScope.coroutineContext].
-     */
-    dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher,
-
-    /**
      * Set as [CoroutineName] for the [ControllerImplementation.state] context.
      * Also used for logging if enabled via [controllerLog].
      */
@@ -61,9 +49,23 @@ fun <Action, Mutation, State> CoroutineScope.createController(
     /**
      * Log configuration for the [ControllerImplementation]. See [ControllerLog].
      */
-    controllerLog: ControllerLog = ControllerLog.default
+    controllerLog: ControllerLog = ControllerLog.default,
+
+    /**
+     * When the [ControllerImplementation.state] [Flow] should be launched.
+     *
+     * Default is [CoroutineStart.LAZY] -> [Flow] is launched once [ControllerImplementation.state],
+     * [ControllerImplementation.currentState] or [ControllerImplementation.dispatch] are accessed.
+     */
+    coroutineStart: CoroutineStart = CoroutineStart.LAZY,
+
+    /**
+     * Override to launch [ControllerImplementation.state] [Flow] in different [CoroutineDispatcher]
+     * than the one used in the [CoroutineScope.coroutineContext].
+     */
+    dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher
 ): Controller<Action, Mutation, State> = ControllerImplementation(
-    scope = this, dispatcher = dispatcher,
+    scope = this, dispatcher = dispatcher, coroutineStart = coroutineStart,
 
     initialState = initialState, mutator = mutator, reducer = reducer,
     actionsTransformer = actionsTransformer,
@@ -75,7 +77,9 @@ fun <Action, Mutation, State> CoroutineScope.createController(
 
 /**
  * Creates a [Controller] with [CoroutineScope.createController] where [Action] == [Mutation].
- * The [Controller] can only deal with synchronous state reductions without any asynchronous side-effects.
+ *
+ * The [Controller] can only deal with synchronous state reductions without
+ * any asynchronous side-effects.
  */
 @ExperimentalCoroutinesApi
 @FlowPreview
@@ -86,13 +90,12 @@ fun <Action, State> CoroutineScope.createSynchronousController(
     actionsTransformer: Transformer<Action> = { it },
     statesTransformer: Transformer<State> = { it },
 
-    dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher,
-
     tag: String = defaultTag(),
-    controllerLog: ControllerLog = ControllerLog.default
-): Controller<Action, Action, State> = createController(
-    dispatcher = dispatcher,
+    controllerLog: ControllerLog = ControllerLog.default,
 
+    coroutineStart: CoroutineStart = CoroutineStart.LAZY,
+    dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher
+): Controller<Action, Action, State> = createController(
     initialState = initialState,
     mutator = { action -> flowOf(action) },
     reducer = reducer,
@@ -101,5 +104,8 @@ fun <Action, State> CoroutineScope.createSynchronousController(
     statesTransformer = statesTransformer,
 
     tag = tag,
-    controllerLog = controllerLog
+    controllerLog = controllerLog,
+
+    coroutineStart = coroutineStart,
+    dispatcher = dispatcher
 )

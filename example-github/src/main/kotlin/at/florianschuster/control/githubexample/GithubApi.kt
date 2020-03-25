@@ -19,7 +19,11 @@ interface GithubApi {
 
         operator fun invoke(
             baseUrl: String = "https://api.github.com/",
-            json: Json = Json.nonstrict,
+            json: Json = Json {
+                isLenient = true
+                ignoreUnknownKeys = true
+                serializeSpecialFloatingPointValues = true
+            },
             mediaType: MediaType = MediaType.get("application/json")
         ): GithubApi {
             val retrofit = Retrofit.Builder().apply {

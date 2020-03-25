@@ -12,7 +12,7 @@ import kotlin.test.assertEquals
 internal class StubTest {
 
     @get:Rule
-    val testScopeRule = TestCoroutineScopeRule()
+    val testCoroutineScope = TestCoroutineScopeRule()
 
     @Test
     fun `stub actions are recorded correctly`() {
@@ -21,7 +21,7 @@ internal class StubTest {
             listOf("two"),
             listOf("three")
         )
-        val sut = testScopeRule.createStringController()
+        val sut = testCoroutineScope.createStringController()
         sut.stubEnabled = true
 
         expectedActions.forEach(sut::dispatch)
@@ -36,9 +36,9 @@ internal class StubTest {
             listOf("two"),
             listOf("three")
         )
-        val sut = testScopeRule.createStringController()
+        val sut = testCoroutineScope.createStringController()
         sut.stubEnabled = true
-        val testFlow = sut.state.testIn(testScopeRule)
+        val testFlow = sut.state.testIn(testCoroutineScope)
 
         expectedStates.forEach(sut.stub::setState)
 
@@ -52,13 +52,13 @@ internal class StubTest {
             listOf("two"),
             listOf("three")
         )
-        val sut = testScopeRule.createStringController()
+        val sut = testCoroutineScope.createStringController()
         sut.stubEnabled = true
 
         sut.stub.setState(listOf("something 1"))
         sut.stub.setState(listOf("something 2"))
 
-        val testFlow = sut.state.testIn(testScopeRule)
+        val testFlow = sut.state.testIn(testCoroutineScope)
 
         expectedStates.forEach(sut.stub::setState)
 
@@ -67,7 +67,7 @@ internal class StubTest {
 
     @Test
     fun `stub action does not trigger state machine`() {
-        val sut = testScopeRule.createStringController()
+        val sut = testCoroutineScope.createStringController()
         sut.stubEnabled = true
 
         sut.dispatch(listOf("test"))

@@ -13,14 +13,14 @@ import kotlin.test.assertEquals
 internal class CounterControllerTest {
 
     @get:Rule
-    val testScopeRule = TestCoroutineScopeRule()
+    val testCoroutineScope = TestCoroutineScopeRule()
 
     private lateinit var controller: CounterController
     private lateinit var states: TestFlow<CounterState>
 
     private fun `given counter controller`() {
-        controller = CounterController(testScopeRule)
-        states = controller.state.testIn(testScopeRule)
+        controller = CounterController(testCoroutineScope)
+        states = controller.state.testIn(testCoroutineScope)
     }
 
     @Test
@@ -30,7 +30,7 @@ internal class CounterControllerTest {
 
         // when
         controller.dispatch(CounterAction.Increment)
-        testScopeRule.advanceTimeBy(1000)
+        testCoroutineScope.advanceTimeBy(1000)
 
         // then
         states expect emissionCount(4)
@@ -54,7 +54,7 @@ internal class CounterControllerTest {
         controller.dispatch(CounterAction.Decrement)
         controller.dispatch(CounterAction.Decrement)
 
-        testScopeRule.advanceTimeBy(5000)
+        testCoroutineScope.advanceTimeBy(5000)
 
         // then
         assertEquals(CounterState(-1, false), controller.currentState)

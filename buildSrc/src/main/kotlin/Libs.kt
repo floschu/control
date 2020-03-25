@@ -43,13 +43,13 @@ object Libs {
     /**
      * https://github.com/Kotlin/atomicfu
      */
-    const val atomicfu: String = "org.jetbrains.kotlinx:atomicfu:" + Versions.org_jetbrains_kotlinx
-
-    /**
-     * https://github.com/Kotlin/atomicfu
-     */
     const val atomicfu_gradle_plugin: String = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:" +
             Versions.org_jetbrains_kotlinx
+
+    /**
+     * 0.14.3
+     */
+    const val atomicfu: String = "org.jetbrains.kotlinx:atomicfu:" + Versions.org_jetbrains_kotlinx
 
     /**
      * https://kotlinlang.org/

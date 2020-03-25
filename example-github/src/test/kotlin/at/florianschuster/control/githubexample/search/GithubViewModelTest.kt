@@ -23,7 +23,7 @@ import kotlin.test.assertFalse
 internal class GithubViewModelTest {
 
     @get:Rule
-    val testScopeRule = TestCoroutineScopeRule()
+    val testCoroutineScope = TestCoroutineScopeRule()
 
     private val githubApi: GithubApi = mockk {
         coEvery { repos(any(), 1) } returns mockResultPage1
@@ -35,8 +35,8 @@ internal class GithubViewModelTest {
     private fun `given github search controller`(
         initialState: GithubViewModel.State = GithubViewModel.State()
     ) {
-        sut = GithubViewModel(initialState, githubApi, testScopeRule.dispatcher)
-        states = sut.controller.state.testIn(testScopeRule)
+        sut = GithubViewModel(initialState, githubApi, testCoroutineScope.dispatcher)
+        states = sut.controller.state.testIn(testCoroutineScope)
     }
 
     @Test
@@ -146,9 +146,9 @@ internal class GithubViewModelTest {
 
         // when
         sut.controller.dispatch(GithubViewModel.Action.UpdateQuery(query))
-        testScopeRule.advanceTimeBy(500) // updated before last query can finish
+        testCoroutineScope.advanceTimeBy(500) // updated before last query can finish
         sut.controller.dispatch(GithubViewModel.Action.UpdateQuery(secondQuery))
-        testScopeRule.advanceUntilIdle()
+        testCoroutineScope.advanceUntilIdle()
 
         // then
         coVerifyOrder {

@@ -23,12 +23,12 @@ import kotlin.test.assertEquals
 internal class ImplementationTest {
 
     @get:Rule
-    val testScopeRule = TestCoroutineScopeRule()
+    val testCoroutineScope = TestCoroutineScopeRule()
 
     @Test
     fun `initial state only emitted once`() {
-        val sut = testScopeRule.operationController()
-        val testFlow = sut.state.testIn(testScopeRule)
+        val sut = testCoroutineScope.operationController()
+        val testFlow = sut.state.testIn(testCoroutineScope)
 
         testFlow expect emissionCount(1)
         testFlow expect emission(0, listOf("initialState", "transformedState"))
@@ -36,14 +36,14 @@ internal class ImplementationTest {
 
     @Test
     fun `state is created when accessing current state`() {
-        val sut = testScopeRule.operationController()
+        val sut = testCoroutineScope.operationController()
 
         assertEquals(listOf("initialState", "transformedState"), sut.currentState)
     }
 
     @Test
     fun `state is created when accessing action`() {
-        val sut = testScopeRule.operationController()
+        val sut = testCoroutineScope.operationController()
 
         sut.dispatch(listOf("action"))
 
@@ -62,8 +62,8 @@ internal class ImplementationTest {
 
     @Test
     fun `each method is invoked`() {
-        val sut = testScopeRule.operationController()
-        val testFlow = sut.state.testIn(testScopeRule)
+        val sut = testCoroutineScope.operationController()
+        val testFlow = sut.state.testIn(testCoroutineScope)
 
         sut.dispatch(listOf("action"))
 
@@ -83,7 +83,7 @@ internal class ImplementationTest {
 
     @Test
     fun `synchronous controller builder`() {
-        val counterSut = testScopeRule.createSynchronousController<Int, Int>(
+        val counterSut = testCoroutineScope.createSynchronousController<Int, Int>(
             tag = "counter",
             initialState = 0,
             reducer = { action, previousState -> previousState + action }
@@ -98,13 +98,13 @@ internal class ImplementationTest {
 
     @Test
     fun `collector receives latest and following states`() {
-        val sut = testScopeRule.counterController() // 0
+        val sut = testCoroutineScope.counterController() // 0
 
         sut.dispatch(Unit) // 1
         sut.dispatch(Unit) // 2
         sut.dispatch(Unit) // 3
         sut.dispatch(Unit) // 4
-        val testFlow = sut.state.testIn(testScopeRule)
+        val testFlow = sut.state.testIn(testCoroutineScope)
         sut.dispatch(Unit) // 5
 
         testFlow expect emissions(4, 5)
@@ -130,32 +130,32 @@ internal class ImplementationTest {
 
     @Test
     fun `cancel via takeUntil`() {
-        val sut = testScopeRule.stopWatchController()
+        val sut = testCoroutineScope.stopWatchController()
 
         sut.dispatch(StopWatchAction.Start)
-        testScopeRule.advanceTimeBy(2000)
+        testCoroutineScope.advanceTimeBy(2000)
         sut.dispatch(StopWatchAction.Stop)
 
         sut.dispatch(StopWatchAction.Start)
-        testScopeRule.advanceTimeBy(3000)
+        testCoroutineScope.advanceTimeBy(3000)
         sut.dispatch(StopWatchAction.Stop)
 
         sut.dispatch(StopWatchAction.Start)
-        testScopeRule.advanceTimeBy(4000)
+        testCoroutineScope.advanceTimeBy(4000)
         sut.dispatch(StopWatchAction.Stop)
 
         // this should be ignored
         sut.dispatch(StopWatchAction.Start)
-        testScopeRule.advanceTimeBy(500)
+        testCoroutineScope.advanceTimeBy(500)
         sut.dispatch(StopWatchAction.Stop)
 
         sut.dispatch(StopWatchAction.Start)
-        testScopeRule.advanceTimeBy(1000)
+        testCoroutineScope.advanceTimeBy(1000)
         sut.dispatch(StopWatchAction.Stop)
 
         assert(sut.currentState == 10) // 2+3+4+1
 
-        testScopeRule.advanceUntilIdle()
+        testCoroutineScope.advanceUntilIdle()
     }
 
     @Test
@@ -167,17 +167,17 @@ internal class ImplementationTest {
             emit(42)
         }
 
-        val sut = testScopeRule.createSynchronousController<Int, Int>(
+        val sut = testCoroutineScope.createSynchronousController<Int, Int>(
             initialState = 0,
             actionsTransformer = { merge(it, globalState) },
             reducer = { action, previousState -> previousState + action }
         )
 
-        val states = sut.state.testIn(testScopeRule)
+        val states = sut.state.testIn(testCoroutineScope)
 
-        testScopeRule.advanceTimeBy(251)
+        testCoroutineScope.advanceTimeBy(251)
         sut.dispatch(1)
-        testScopeRule.advanceTimeBy(251)
+        testCoroutineScope.advanceTimeBy(251)
 
         states expect emissions(0, 42, 43, 85)
     }
