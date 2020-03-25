@@ -98,23 +98,24 @@ internal class ControllerImplementation<Action, Mutation, State>(
         }
 
         val stateFlow: Flow<State> = mutationsTransformer(mutationFlow)
+            .onEach { controllerLog.log(tag, ControllerLog.Event.Mutation(it.toString())) }
             .scan(initialState) { previousState, mutation ->
-                controllerLog.log(tag, ControllerLog.Event.Mutation(mutation.toString()))
-                val reducedState = try {
+                try {
                     reducer(mutation, previousState)
                 } catch (cause: Throwable) {
                     val error = ControllerError.Reduce(tag, "$previousState", "$mutation", cause)
                     controllerLog.log(tag, ControllerLog.Event.Error(error))
                     throw error
                 }
-                controllerLog.log(tag, ControllerLog.Event.State(reducedState.toString()))
-                reducedState
             }
 
         scope.launch(dispatcher + CoroutineName(tag)) {
             statesTransformer(stateFlow)
                 .onStart { controllerLog.log(tag, ControllerLog.Event.Started) }
-                .onEach(stateChannel::send)
+                .onEach { state ->
+                    controllerLog.log(tag, ControllerLog.Event.State(state.toString()))
+                    stateChannel.send(state)
+                }
                 .onCompletion { controllerLog.log(tag, ControllerLog.Event.Destroyed) }
                 .collect()
         }
