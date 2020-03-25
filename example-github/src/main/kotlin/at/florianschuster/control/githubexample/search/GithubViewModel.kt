@@ -93,7 +93,7 @@ internal class GithubViewModel(
         // viewModelScope uses Dispatchers.Main, we do not want to run on Main
         dispatcher = controllerDispatcher,
 
-        controllerLog = ControllerLog.Custom { Log.d(this::class.java.simpleName, it) }
+        controllerLog = ControllerLog.Custom { Log.d("GithubViewModel", it) }
     )
 
     private suspend fun GithubApi.search(
