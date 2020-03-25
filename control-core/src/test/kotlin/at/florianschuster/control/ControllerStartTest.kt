@@ -42,7 +42,7 @@ internal class ControllerStartTest {
         coroutineStart: CoroutineStart
     ) = createSynchronousController<Int, Int>(
         initialState = 0,
-        reducer = { mutation, previousState -> previousState + mutation },
+        reducer = { action, previousState -> previousState + action },
         coroutineStart = coroutineStart
     ) as ControllerImplementation<Int, Int, Int>
 }
