@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -114,7 +113,6 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
         scope.launch(dispatcher + CoroutineName(tag)) {
             statesTransformer(stateFlow)
-                .distinctUntilChanged()
                 .onStart { controllerLog.log(tag, ControllerLog.Event.Started) }
                 .onEach(stateChannel::send)
                 .onCompletion { controllerLog.log(tag, ControllerLog.Event.Destroyed) }
