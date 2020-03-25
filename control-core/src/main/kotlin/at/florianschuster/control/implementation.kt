@@ -42,7 +42,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     private var initialized = false
     private val actionChannel = BroadcastChannel<Action>(BUFFERED)
-    private val stateChannel = ConflatedBroadcastChannel(initialState)
+    private val stateChannel = ConflatedBroadcastChannel<State>()
     private val controllerStub by lazy { ControllerStubImplementation<Action, State>(initialState) }
 
     override val state: Flow<State>
