@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -47,7 +46,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
     internal val stateJob: Job // internal for testing
 
     private val actionChannel = BroadcastChannel<Action>(BUFFERED)
-    private val stateChannel = ConflatedBroadcastChannel(initialState)
+    private val stateChannel = ConflatedBroadcastChannel<State>()
     private val controllerStub by lazy { ControllerStubImplementation<Action, State>(initialState) }
 
     override val state: Flow<State>
@@ -97,17 +96,15 @@ internal class ControllerImplementation<Action, Mutation, State>(
         }
 
         val stateFlow: Flow<State> = mutationsTransformer(mutationFlow)
+            .onEach { controllerLog.log(tag, ControllerLog.Event.Mutation(it.toString())) }
             .scan(initialState) { previousState, mutation ->
-                controllerLog.log(tag, ControllerLog.Event.Mutation(mutation.toString()))
-                val reducedState = try {
+                try {
                     reducer(mutation, previousState)
                 } catch (cause: Throwable) {
                     val error = ControllerError.Reduce(tag, "$previousState", "$mutation", cause)
                     controllerLog.log(tag, ControllerLog.Event.Error(error))
                     throw error
                 }
-                controllerLog.log(tag, ControllerLog.Event.State(reducedState.toString()))
-                reducedState
             }
 
         controllerLog.log(tag, ControllerLog.Event.Created)
@@ -117,9 +114,11 @@ internal class ControllerImplementation<Action, Mutation, State>(
             start = coroutineStart
         ) {
             statesTransformer(stateFlow)
-                .distinctUntilChanged()
                 .onStart { controllerLog.log(tag, ControllerLog.Event.Started) }
-                .onEach(stateChannel::send)
+                .onEach { state ->
+                    controllerLog.log(tag, ControllerLog.Event.State(state.toString()))
+                    stateChannel.send(state)
+                }
                 .onCompletion { controllerLog.log(tag, ControllerLog.Event.Destroyed) }
                 .collect()
         }

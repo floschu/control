@@ -13,9 +13,9 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -24,12 +24,6 @@ internal class ImplementationTest {
 
     @get:Rule
     val testCoroutineScope = TestCoroutineScopeRule()
-
-    @Before
-    fun setup() {
-        // uncomment for manual testing
-        // ControllerLog.default = ControllerLog.Println
-    }
 
     @Test
     fun `initial state only emitted once`() {
@@ -92,7 +86,7 @@ internal class ImplementationTest {
         val counterSut = testCoroutineScope.createSynchronousController<Int, Int>(
             tag = "counter",
             initialState = 0,
-            reducer = { previousState, mutation -> previousState + mutation }
+            reducer = { action, previousState -> previousState + action }
         )
 
         counterSut.dispatch(1)
@@ -162,6 +156,30 @@ internal class ImplementationTest {
         assert(sut.currentState == 10) // 2+3+4+1
 
         testCoroutineScope.advanceUntilIdle()
+    }
+
+    @Test
+    fun `global state gets merged into controller`() {
+        val globalState = flow {
+            delay(250)
+            emit(42)
+            delay(250)
+            emit(42)
+        }
+
+        val sut = testCoroutineScope.createSynchronousController<Int, Int>(
+            initialState = 0,
+            actionsTransformer = { merge(it, globalState) },
+            reducer = { action, previousState -> previousState + action }
+        )
+
+        val states = sut.state.testIn(testCoroutineScope)
+
+        testCoroutineScope.advanceTimeBy(251)
+        sut.dispatch(1)
+        testCoroutineScope.advanceTimeBy(251)
+
+        states expect emissions(0, 42, 43, 85)
     }
 
     private fun CoroutineScope.operationController() =
