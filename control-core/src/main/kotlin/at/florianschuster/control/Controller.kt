@@ -106,7 +106,7 @@ typealias Mutator<Action, Mutation, State> = MutatorScope<Action, State>.(
 interface MutatorScope<Action, State> {
 
     /**
-     * A generated property in [ControllerImplementation.MutatorScopeImpl], thus always
+     * A generated property in [ControllerImplementation.MutatorScopeImplementation], thus always
      * providing the current [State] when accessed.
      */
     val currentState: State
