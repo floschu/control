@@ -177,7 +177,7 @@ typealias Reducer<Mutation, State> = (mutation: Mutation, previousState: State) 
  * val userSession: Flow<Session>
  *
  * mutationsTransformer = { mutations ->
- *     flowOf(mutations, userSession.map { Mutation.SetSession(it) }).flattenMerge()
+ *     merge(mutations, userSession.map { Mutation.SetSession(it) })
  * }
  * ```
  *
