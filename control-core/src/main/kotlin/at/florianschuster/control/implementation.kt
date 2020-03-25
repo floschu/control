@@ -51,7 +51,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     override val state: Flow<State>
         get() = if (!stubEnabled) {
-            if (!stateJob.isActive) lazyStart()
+            if (!stateJob.isActive) startStateJob()
             stateChannel.asFlow()
         } else {
             controllerStub.stateChannel.asFlow()
@@ -59,7 +59,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     override val currentState: State
         get() = if (!stubEnabled) {
-            if (!stateJob.isActive) lazyStart()
+            if (!stateJob.isActive) startStateJob()
             stateChannel.value
         } else {
             controllerStub.stateChannel.value
@@ -67,7 +67,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     override fun dispatch(action: Action) {
         if (!stubEnabled) {
-            if (!stateJob.isActive) lazyStart()
+            if (!stateJob.isActive) startStateJob()
             actionChannel.offer(action)
         } else {
             controllerStub.mutableActions.add(action)
@@ -124,7 +124,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
         }
     }
 
-    private fun lazyStart() = kotlinx.atomicfu.locks.synchronized(this) {
+    private fun startStateJob() = kotlinx.atomicfu.locks.synchronized(this) {
         if (!stateJob.isActive) { // double checked locking
             stateJob.start()
         }
