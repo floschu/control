@@ -56,7 +56,7 @@ interface Controller<Action, Mutation, State> {
 
     /**
      * Set to true if you want to enable stubbing with [stub].
-     * This has be set before binding [Controller.state].
+     * This has be set before binding [Controller.state] or [dispatch] an [Action].
      */
     var stubEnabled: Boolean
 
