@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
@@ -52,10 +53,14 @@ fun <Action, Mutation, State> CoroutineScope.createController(
     controllerLog: ControllerLog = ControllerLog.default,
 
     /**
-     * When the [ControllerImplementation.state] [Flow] should be launched.
+     * When the [ControllerImplementation.state] [Flow] should be started. The [Flow] is launched
+     * in [ControllerImplementation] init.
      *
-     * Default is [CoroutineStart.LAZY] -> [Flow] is launched once [ControllerImplementation.state],
-     * [ControllerImplementation.currentState] or [ControllerImplementation.dispatch] are accessed.
+     * Default is [CoroutineStart.LAZY] -> [Flow] is started once [ControllerImplementation.state],
+     * [ControllerImplementation.currentState] or [ControllerImplementation.dispatch] are accessed
+     * or if the [Job] in the [CoroutineScope] is started.
+     *
+     * Look into [CoroutineStart] to see how the options would affect the [Flow] start.
      */
     coroutineStart: CoroutineStart = CoroutineStart.LAZY,
 
