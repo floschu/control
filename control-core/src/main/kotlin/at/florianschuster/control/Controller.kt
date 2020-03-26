@@ -112,7 +112,7 @@ interface MutatorScope<Action, State> {
     val currentState: State
 
     /**
-     * Accessed after [ControllerImplementation.actionsTransformer] is applied.
+     * Accessed after [Action] [Transformer] is applied.
      *
      * Use if a [Flow] inside the [Mutator] needs to be cancelled or transformed due to an
      * incoming [Action]:
