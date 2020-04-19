@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import at.florianschuster.control.Controller
+import at.florianschuster.control.ControllerEvent
 import at.florianschuster.control.ControllerLog
 import at.florianschuster.control.createController
 import at.florianschuster.control.githubexample.GithubApi
@@ -93,7 +94,9 @@ internal class GithubViewModel(
         // viewModelScope uses Dispatchers.Main, we do not want to run on Main
         dispatcher = controllerDispatcher,
 
-        controllerLog = ControllerLog.Custom { Log.d("GithubViewModel", it) }
+        controllerLog = ControllerLog.Custom { message ->
+            if (event is ControllerEvent.State) Log.d("GithubViewModel", message)
+        }
     )
 
     private suspend fun GithubApi.search(

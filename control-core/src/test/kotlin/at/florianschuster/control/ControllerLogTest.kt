@@ -1,8 +1,14 @@
 package at.florianschuster.control
 
+import io.mockk.Runs
+import io.mockk.every
+import io.mockk.just
+import io.mockk.slot
+import io.mockk.spyk
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 internal class ControllerLogTest {
 
@@ -16,65 +22,43 @@ internal class ControllerLogTest {
     }
 
     @Test
-    fun `setting default message creator`() {
-        val expectedMessage = "a test message"
-        ControllerLog.defaultMessageCreator = { _, _ -> expectedMessage }
-        val spiedLogs = mutableListOf<String>()
-        val sut = ControllerLog.Custom { spiedLogs.add(it) }
-
-        sut.log(tag, ControllerLog.Event.Created)
-        sut.log(tag, ControllerLog.Event.Destroyed)
-
-        assertEquals(2, spiedLogs.count())
-        assertTrue(spiedLogs.all { it == expectedMessage })
-    }
-
-    @Test
     fun `none logger, methods are not called`() {
-        var spiedAmountOfMessagesCreated = 0
-        ControllerLog.defaultMessageCreator = { tag, _ ->
-            spiedAmountOfMessagesCreated++
-            tag
-        }
-
-        ControllerLog.None.log(tag, ControllerLog.Event.Created)
-        ControllerLog.None.log(tag, ControllerLog.Event.Destroyed)
-
-        assertEquals(0, spiedAmountOfMessagesCreated)
+        val sut = spyk<ControllerLog.None>()
+        assertNull(sut.logger)
     }
 
     @Test
     fun `println logger, methods are called`() {
-        var spiedAmountOfMessagesCreated = 0
-        ControllerLog.defaultMessageCreator = { tag, _ ->
-            spiedAmountOfMessagesCreated++
-            tag
-        }
+        val sut = spyk<ControllerLog.Println>()
+        assertNotNull(sut.logger)
 
-        ControllerLog.Println.log(tag, ControllerLog.Event.Created)
-        ControllerLog.Println.log(tag, ControllerLog.Event.Destroyed)
+        val capturedLogMessage = slot<String>()
+        every { sut.logger.invoke(any(), capture(capturedLogMessage)) } just Runs
 
-        assertEquals(2, spiedAmountOfMessagesCreated)
+        sut.log(CreatedEvent)
+        assertEquals(CreatedEvent.toString(), capturedLogMessage.captured)
+
+        sut.log(DestroyedEvent)
+        assertEquals(DestroyedEvent.toString(), capturedLogMessage.captured)
     }
 
     @Test
     fun `custom logger, methods are called`() {
-        var spiedAmountOfMessagesCreated = 0
-        ControllerLog.defaultMessageCreator = { tag, _ ->
-            spiedAmountOfMessagesCreated++
-            tag
-        }
-        val spiedLogs = mutableListOf<String>()
+        val sut = spyk(ControllerLog.Custom { })
+        assertNotNull(sut.logger)
 
-        ControllerLog.Custom { spiedLogs.add(it) }.log(tag, ControllerLog.Event.Created)
-        ControllerLog.Custom { spiedLogs.add(it) }.log(tag, ControllerLog.Event.Destroyed)
+        val capturedLogMessage = slot<String>()
+        every { sut.logger.invoke(any(), capture(capturedLogMessage)) } just Runs
 
-        assertEquals(2, spiedLogs.count())
-        assertTrue(spiedLogs.all { it.contains(tag) })
-        assertEquals(2, spiedAmountOfMessagesCreated)
+        sut.log(CreatedEvent)
+        assertEquals(CreatedEvent.toString(), capturedLogMessage.captured)
+        sut.log(DestroyedEvent)
+        assertEquals(DestroyedEvent.toString(), capturedLogMessage.captured)
     }
 
     companion object {
         private const val tag = "TestTag"
+        private val CreatedEvent: ControllerEvent = ControllerEvent.Created(tag)
+        private val DestroyedEvent: ControllerEvent = ControllerEvent.Created(tag)
     }
 }

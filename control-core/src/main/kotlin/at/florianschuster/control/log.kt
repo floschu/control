@@ -1,15 +1,23 @@
 package at.florianschuster.control
 
 /**
- * Configuration to define how [ControllerLog.Event]'s are logged by a [ControllerImplementation].
+ * A logger used by [ControllerLog] to log [ControllerEvent]'s.
+ */
+typealias Logger = LoggerScope.(message: String) -> Unit
+
+/**
+ * The scope of a [Logger]. Contains the [ControllerEvent] that is being logged.
+ */
+interface LoggerScope {
+    val event: ControllerEvent
+}
+
+/**
+ * Configuration to define how [ControllerEvent]'s are logged by a [ControllerImplementation].
  */
 sealed class ControllerLog {
 
-    internal open val logger: ((message: String) -> Unit)? = null
-
-    internal fun log(tag: String, event: Event) {
-        logger?.invoke(defaultMessageCreator(tag, event))
-    }
+    internal open val logger: Logger? = null
 
     /**
      * No logging.
@@ -20,27 +28,13 @@ sealed class ControllerLog {
      * Uses [println] to log.
      */
     object Println : ControllerLog() {
-        override val logger: (message: String) -> Unit = ::println
+        override val logger: Logger = { message -> println(message) }
     }
 
     /**
-     * Uses a custom [logger] to log.
+     * Uses a custom [Logger] to log.
      */
-    data class Custom(override val logger: (message: String) -> Unit) : ControllerLog()
-
-    /**
-     * All events that are logged in a [ControllerImplementation].
-     */
-    sealed class Event(val message: String) {
-        internal object Created : Event("created")
-        internal object Started : Event("state stream started")
-        internal class Action(action: String) : Event("action: $action")
-        internal class Mutation(mutation: String) : Event("mutation: $mutation")
-        internal class State(state: String) : Event("state: $state")
-        internal class Error(cause: Throwable) : Event("error: $cause")
-        internal class Stub(enabled: Boolean) : Event("stub: enabled = $enabled")
-        internal object Destroyed : Event("destroyed")
-    }
+    data class Custom(override val logger: Logger) : ControllerLog()
 
     companion object {
 
@@ -49,13 +43,14 @@ sealed class ControllerLog {
          * Set this to change the logger for all [ControllerImplementation]'s that do not specify one.
          */
         var default: ControllerLog = None
-
-        /**
-         * The default message creator for all [ControllerLog] types.
-         * Override this to customize your logs.
-         */
-        var defaultMessageCreator: (tag: String, event: Event) -> String = { tag, event ->
-            "||| <control> ||| $tag -> ${event.message} |||"
-        }
     }
+}
+
+internal fun ControllerLog.log(event: ControllerEvent) {
+    logger?.invoke(ScopeImpl(event), event.toString())
+}
+
+@Suppress("FunctionName")
+private fun ScopeImpl(event: ControllerEvent) = object : LoggerScope {
+    override val event: ControllerEvent = event
 }

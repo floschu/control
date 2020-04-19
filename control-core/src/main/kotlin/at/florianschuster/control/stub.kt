@@ -9,14 +9,14 @@ import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 interface ControllerStub<Action, State> {
 
     /**
-     * [Controller] actions as ordered [List].
+     * [Controller] [Action]'s as ordered [List].
      * Use this to verify if view bindings trigger the correct [Action]'s.
      */
     val actions: List<Action>
 
     /**
      * Offers a mocked [State].
-     * Use this to verify if state is correctly bound to a view.
+     * Use this to verify if [State] is correctly bound to a view.
      */
     fun setState(state: State)
 }
