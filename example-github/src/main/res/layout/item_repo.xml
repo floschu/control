@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:orientation="vertical"
-        android:padding="12dp">
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/repoNameTextView"
@@ -21,7 +21,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="4dp"
-            android:textColor="@android:color/primary_text_light"
             tools:text="Repo/Name" />
 
         <TextView
@@ -29,7 +28,6 @@
             style="@style/TextAppearance.MaterialComponents.Body1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/secondary_text_light"
             tools:text="The description..." />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

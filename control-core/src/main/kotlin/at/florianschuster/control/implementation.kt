@@ -76,7 +76,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     override var stubEnabled: Boolean = false
         set(value) {
-            controllerLog.log(tag, ControllerLog.Event.Stub(value))
+            controllerLog.log(ControllerEvent.Stub(tag, value))
             field = value
         }
 
@@ -85,41 +85,41 @@ internal class ControllerImplementation<Action, Mutation, State>(
     init {
         val actionFlow: Flow<Action> = actionsTransformer(actionChannel.asFlow())
 
-        val mutatorScope = MutatorScopeImplementation({ currentState }, actionFlow)
+        val mutatorScope = MutatorScopeImpl({ currentState }, actionFlow)
         val mutationFlow: Flow<Mutation> = actionFlow.flatMapMerge { action ->
-            controllerLog.log(tag, ControllerLog.Event.Action(action.toString()))
+            controllerLog.log(ControllerEvent.Action(tag, action.toString()))
             mutatorScope.mutator(action).catch { cause ->
                 val error = ControllerError.Mutate(tag, "$action", cause)
-                controllerLog.log(tag, ControllerLog.Event.Error(error))
+                controllerLog.log(ControllerEvent.Error(tag, error))
                 throw error
             }
         }
 
         val stateFlow: Flow<State> = mutationsTransformer(mutationFlow)
-            .onEach { controllerLog.log(tag, ControllerLog.Event.Mutation(it.toString())) }
+            .onEach { controllerLog.log(ControllerEvent.Mutation(tag, it.toString())) }
             .scan(initialState) { previousState, mutation ->
                 try {
                     reducer(mutation, previousState)
                 } catch (cause: Throwable) {
                     val error = ControllerError.Reduce(tag, "$previousState", "$mutation", cause)
-                    controllerLog.log(tag, ControllerLog.Event.Error(error))
+                    controllerLog.log(ControllerEvent.Error(tag, error))
                     throw error
                 }
             }
 
-        controllerLog.log(tag, ControllerLog.Event.Created)
+        controllerLog.log(ControllerEvent.Created(tag))
 
         stateJob = scope.launch(
             context = dispatcher + CoroutineName(tag),
             start = coroutineStart
         ) {
             statesTransformer(stateFlow)
-                .onStart { controllerLog.log(tag, ControllerLog.Event.Started) }
+                .onStart { controllerLog.log(ControllerEvent.Started(tag)) }
                 .onEach { state ->
-                    controllerLog.log(tag, ControllerLog.Event.State(state.toString()))
+                    controllerLog.log(ControllerEvent.State(tag, state.toString()))
                     stateChannel.send(state)
                 }
-                .onCompletion { controllerLog.log(tag, ControllerLog.Event.Destroyed) }
+                .onCompletion { controllerLog.log(ControllerEvent.Completed(tag)) }
                 .collect()
         }
     }
@@ -131,7 +131,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
     }
 
     @Suppress("FunctionName")
-    fun <Action, State> MutatorScopeImplementation(
+    private fun <Action, State> MutatorScopeImpl(
         stateAccessor: () -> State,
         actionFlow: Flow<Action>
     ): MutatorScope<Action, State> = object : MutatorScope<Action, State> {
