@@ -35,6 +35,26 @@ fun <State, SubState> Flow<State>.distinctMap(
 ): Flow<SubState> = map { by(it) }.distinctUntilChanged()
 
 /**
+ * Discard any emissions by a [Flow] of [T] if emission matches [predicate].
+ * If [inclusive] is true, the last emission matching the [predicate] will be emitted.
+ */
+fun <T> Flow<T>.takeUntil(
+    inclusive: Boolean = false,
+    predicate: suspend (T) -> Boolean
+): Flow<T> = flow {
+    try {
+        collect { value ->
+            if (predicate(value)) {
+                if (inclusive) emit(value)
+                throw TakeUntilException()
+            } else emit(value)
+        }
+    } catch (e: TakeUntilException) {
+        // this is fine
+    }
+}
+
+/**
  * Discard any emissions by a [Flow] of [T] after [other] [Flow] of [U] emits an item or completes.
  *
  * Example:

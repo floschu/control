@@ -10,15 +10,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 internal class ImplementationTest {
 
@@ -153,7 +156,7 @@ internal class ImplementationTest {
         testCoroutineScope.advanceTimeBy(1000)
         sut.dispatch(StopWatchAction.Stop)
 
-        assert(sut.currentState == 10) // 2+3+4+1
+        assertTrue(sut.currentState == 10) // 2+3+4+1
 
         testCoroutineScope.advanceUntilIdle()
     }
@@ -241,7 +244,7 @@ internal class ImplementationTest {
             when (action) {
                 is StopWatchAction.Start -> {
                     flow {
-                        while (isActive) {
+                        while (true) {
                             delay(1000)
                             emit(1)
                         }

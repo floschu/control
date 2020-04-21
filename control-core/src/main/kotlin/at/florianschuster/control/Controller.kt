@@ -106,7 +106,7 @@ typealias Mutator<Action, Mutation, State> = MutatorScope<Action, State>.(
 interface MutatorScope<Action, State> {
 
     /**
-     * A generated property in [ControllerImplementation.MutatorScopeImplementation], thus always
+     * A generated property in [ControllerImplementation.MutatorScopeImpl], thus always
      * providing the current [State] when accessed.
      */
     val currentState: State
@@ -122,7 +122,7 @@ interface MutatorScope<Action, State> {
      *     when(action) {
      *         is Action.Start -> flow {
      *             emit(someLongRunningSuspendingFunctionThatGeneratesAValue())
-     *         }.takeUntil(actions.filterIsInstance<Action.Cancel>())
+     *         }.takeUntil(actions.filterIsInstance<Action.Stop>())
      *     }
      * }
      * ```

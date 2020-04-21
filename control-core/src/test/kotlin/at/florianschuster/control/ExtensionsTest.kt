@@ -51,7 +51,17 @@ internal class ExtensionsTest {
     }
 
     @Test
-    fun `takeUntil works`() = runBlockingTest {
+    fun `takeUntil with predicate`() = runBlockingTest {
+        val numberFlow = (0..10).asFlow()
+        val list = numberFlow.takeUntil { it == 5 }.toList()
+        val inclusiveList = numberFlow.takeUntil(inclusive = true) { it == 5 }.toList()
+
+        assertEquals(listOf(0, 1, 2, 3, 4), list)
+        assertEquals(listOf(0, 1, 2, 3, 4, 5), inclusiveList)
+    }
+
+    @Test
+    fun `takeUntil with other flow`() = runBlockingTest {
         val numberFlow = (0..10).asFlow().map { delay(100); it }
 
         val shortResult = numberFlow.takeUntil(flow { delay(501); emit(Unit) }).toList()
