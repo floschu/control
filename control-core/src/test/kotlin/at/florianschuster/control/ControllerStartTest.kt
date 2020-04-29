@@ -38,11 +38,19 @@ internal class ControllerStartTest {
         assertTrue(sut.stateJob.isActive)
     }
 
+    @Test
+    fun `manually start via implementation_startStateJob`() {
+        val sut = testCoroutineScope.counterController(coroutineStart = CoroutineStart.LAZY)
+
+        assertFalse(sut.stateJob.isActive)
+        sut.startStateJob()
+        assertTrue(sut.stateJob.isActive)
+    }
+
     private fun CoroutineScope.counterController(
         coroutineStart: CoroutineStart
     ) = createSynchronousController<Int, Int>(
         initialState = 0,
-        reducer = { action, previousState -> previousState + action },
         coroutineStart = coroutineStart
     ) as ControllerImplementation<Int, Int, Int>
 }
