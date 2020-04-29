@@ -49,6 +49,7 @@ dependencies {
     implementation(Libs.material)
     implementation(Libs.retrofit)
     implementation(Libs.retrofit2_kotlinx_serialization_converter)
+    debugImplementation(Libs.fragment_testing)
 
     testImplementation(Libs.flow_extensions)
     testImplementation(Libs.mockk)

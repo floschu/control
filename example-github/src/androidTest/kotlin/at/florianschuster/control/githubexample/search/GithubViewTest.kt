@@ -1,6 +1,7 @@
 package at.florianschuster.control.githubexample.search
 
 import android.view.View
+import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.espresso.Espresso.onView
@@ -11,23 +12,17 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import at.florianschuster.control.githubexample.R
-import at.florianschuster.control.githubexample.TestActivity
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.not
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)
 internal class GithubViewTest {
-
-    @get:Rule
-    val activityRule = activityScenarioRule<TestActivity>()
 
     private lateinit var viewModel: GithubViewModel
 
@@ -38,7 +33,7 @@ internal class GithubViewTest {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T = viewModel as T
         }
-        activityRule.scenario.onActivity { it.setFragment(GithubView()) }
+        launchFragmentInContainer<GithubView>(themeResId = R.style.Theme_MaterialComponents)
     }
 
     @Test
@@ -75,7 +70,6 @@ internal class GithubViewTest {
 
 private fun idleFor(millis: Long): ViewAction = object : ViewAction {
     override fun getConstraints(): Matcher<View> = isRoot()
-
     override fun getDescription(): String = "idle for $millis ms"
 
     override fun perform(uiController: UiController, view: View?) {

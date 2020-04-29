@@ -13,10 +13,10 @@ import org.gradle.plugin.use.PluginDependencySpec
  */
 object Versions {
     const val org_jetbrains_kotlinx_kotlinx_serialization: String = "0.20.0"
-             // available: "0.20.0-1.4-M1-release-99"
+    // available: "0.20.0-1.4-M1-release-99"
 
     const val org_jetbrains_kotlinx_kotlinx_coroutines: String = "1.3.5"
-             // available: "1.3.5-1.4-M1-release-99"
+    // available: "1.3.5-1.4-M1-release-99"
 
     const val io_github_reactivecircus_flowbinding: String = "0.10.2"
 
@@ -24,9 +24,11 @@ object Versions {
 
     const val org_jetbrains_kotlin: String = "1.3.71"
 
+    const val androidx_fragment: String = "1.2.4"
+
     const val androidx_test: String = "1.2.0"
 
-    const val com_android_tools_build_gradle: String = "3.6.1"
+    const val com_android_tools_build_gradle: String = "3.6.3"
 
     const val org_jlleitschuh_gradle_ktlint_gradle_plugin: String = "9.2.1"
 
@@ -34,7 +36,7 @@ object Versions {
 
     const val de_fayard_buildsrcversions_gradle_plugin: String = "0.7.0"
 
-    const val com_jfrog_bintray_gradle_plugin: String = "1.8.4"
+    const val com_jfrog_bintray_gradle_plugin: String = "1.8.4" // available: "1.8.5"
 
     const val lifecycle_runtime_ktx: String = "2.2.0"
 
@@ -44,21 +46,19 @@ object Versions {
 
     const val espresso_core: String = "3.2.0"
 
-    const val fragment_ktx: String = "1.2.3"
-
-    const val lint_gradle: String = "26.6.1"
+    const val lint_gradle: String = "26.6.1" // available: "26.6.3"
 
     const val appcompat: String = "1.1.0"
 
     const val junit_ktx: String = "1.1.1"
 
-    const val retrofit: String = "2.8.0"
-
     const val material: String = "1.1.0"
+
+    const val retrofit: String = "2.8.1"
 
     const val ktlint: String = "0.36.0"
 
-    const val aapt2: String = "3.6.1-6040484"
+    const val aapt2: String = "3.6.1-6040484" // available: "3.6.3-6040484"
 
     const val mockk: String = "1.9.3"
 
@@ -67,7 +67,7 @@ object Versions {
      * See issue 19: How to update Gradle itself?
      * https://github.com/jmfayard/buildSrcVersions/issues/19
      */
-    const val gradleLatestVersion: String = "6.2.2"
+    const val gradleLatestVersion: String = "6.3"
 }
 
 /**
@@ -76,4 +76,4 @@ object Versions {
  */
 val PluginDependenciesSpec.buildSrcVersions: PluginDependencySpec
     inline get() =
-            id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
+        id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)

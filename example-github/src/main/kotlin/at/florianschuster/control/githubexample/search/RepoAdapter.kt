@@ -12,7 +12,9 @@ import at.florianschuster.control.githubexample.Repo
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_repo.view.*
 
-class RepoAdapter : ListAdapter<Repo, RepoViewHolder>(
+class RepoAdapter(
+    private val onItemClick: (Repo) -> Unit
+) : ListAdapter<Repo, RepoViewHolder>(
     object : DiffUtil.ItemCallback<Repo>() {
         override fun areItemsTheSame(oldItem: Repo, newItem: Repo): Boolean =
             oldItem.id == newItem.id
@@ -20,8 +22,6 @@ class RepoAdapter : ListAdapter<Repo, RepoViewHolder>(
         override fun areContentsTheSame(oldItem: Repo, newItem: Repo): Boolean = oldItem == newItem
     }
 ) {
-
-    var onClick: (Repo) -> Unit = {}
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepoViewHolder =
         RepoViewHolder(
@@ -33,14 +33,14 @@ class RepoAdapter : ListAdapter<Repo, RepoViewHolder>(
         )
 
     override fun onBindViewHolder(holder: RepoViewHolder, position: Int): Unit =
-        holder.bind(getItem(position), onClick)
+        holder.bind(getItem(position), onItemClick)
 }
 
 class RepoViewHolder(
     override val containerView: View
 ) : RecyclerView.ViewHolder(containerView), LayoutContainer {
-    fun bind(repo: Repo, onClick: (Repo) -> Unit) {
-        itemView.setOnClickListener { onClick(repo) }
+    fun bind(repo: Repo, onItemClick: (Repo) -> Unit) {
+        itemView.setOnClickListener { onItemClick(repo) }
         itemView.repoNameTextView.text = repo.name
         with(itemView.repoDescriptionTextView) {
             isVisible = repo.description != null

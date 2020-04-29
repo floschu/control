@@ -30,8 +30,8 @@ class GithubView : Fragment(R.layout.view_github) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val repoAdapter = RepoAdapter().apply {
-            onClick = { startActivity(Intent(Intent.ACTION_VIEW, it.webUri)) }
+        val repoAdapter = RepoAdapter { repo ->
+            startActivity(Intent(Intent.ACTION_VIEW, repo.webUri))
         }
 
         with(repoRecyclerView) {

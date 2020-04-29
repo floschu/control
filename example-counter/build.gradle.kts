@@ -36,16 +36,18 @@ dependencies {
 
     implementation(Libs.appcompat)
     implementation(Libs.constraintlayout)
-    implementation(Libs.lifecycle_runtime_ktx)
     implementation(Libs.flowbinding_android)
     implementation(Libs.flowbinding_core)
+    implementation(Libs.lifecycle_runtime_ktx)
+    debugImplementation(Libs.fragment_ktx)
+    debugImplementation(Libs.fragment_testing)
 
     testImplementation(Libs.flow_extensions)
 
-    androidTestImplementation(Libs.core_ktx)
-    androidTestImplementation(Libs.junit_ktx)
-    androidTestImplementation(Libs.espresso_core)
     androidTestImplementation(Libs.androidx_test_rules)
     androidTestImplementation(Libs.androidx_test_runner)
+    androidTestImplementation(Libs.core_ktx)
+    androidTestImplementation(Libs.espresso_core)
     androidTestImplementation(Libs.flow_extensions)
+    androidTestImplementation(Libs.junit_ktx)
 }
