@@ -27,4 +27,4 @@ tasks.jacocoTestReport {
     )
 }
 
-apply(from = "$rootDir/gradle/deploy.gradle")
+//apply(from = "$rootDir/gradle/deploy.gradle") TODO gradle 6.3

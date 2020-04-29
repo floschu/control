@@ -1,4 +1,5 @@
 include(":control-core")
 
-include(":example-counter")
-include(":example-github")
+include(":examples:example-counter")
+include(":examples:example-counter-compose")
+include(":examples:example-github")

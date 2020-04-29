@@ -106,6 +106,27 @@ object Libs {
     const val fragment_testing: String = "androidx.fragment:fragment-testing:" +
             Versions.androidx_fragment
 
+    const val ui_foundation: String = "androidx.ui:ui-foundation:" + Versions.androidx_ui
+
+    const val ui_framework: String = "androidx.ui:ui-framework:" + Versions.androidx_ui
+
+    const val ui_layout: String = "androidx.ui:ui-layout:" + Versions.androidx_ui
+
+    const val ui_livedata: String = "androidx.ui:ui-livedata:" + Versions.androidx_ui
+
+    const val ui_material: String = "androidx.ui:ui-material:" + Versions.androidx_ui
+
+    const val ui_material_icons_core: String = "androidx.ui:ui-material-icons-core:" +
+        Versions.androidx_ui
+
+    const val ui_material_icons_extended: String = "androidx.ui:ui-material-icons-extended:" +
+        Versions.androidx_ui
+
+    const val ui_text: String = "androidx.ui:ui-text:" + Versions.androidx_ui
+
+    const val ui_tooling: String = "androidx.ui:ui-tooling:" + Versions.androidx_ui
+
+
     /**
      * https://developer.android.com/testing
      */

@@ -26,9 +26,11 @@ object Versions {
 
     const val androidx_fragment: String = "1.2.4"
 
+    const val androidx_ui: String = "0.1.0-dev10"
+
     const val androidx_test: String = "1.2.0"
 
-    const val com_android_tools_build_gradle: String = "3.6.3"
+    const val com_android_tools_build_gradle: String = "4.1.0-alpha08"
 
     const val org_jlleitschuh_gradle_ktlint_gradle_plugin: String = "9.2.1"
 
