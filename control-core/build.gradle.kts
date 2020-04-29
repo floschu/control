@@ -17,6 +17,14 @@ tasks.jacocoTestReport {
         html.isEnabled = false
         csv.isEnabled = false
     }
+    classDirectories.setFrom(
+        files(classDirectories.files.map {
+            fileTree(it) {
+                // jacoco cannot handle inline functions
+                exclude("at/florianschuster/control/DefaultTagKt.class")
+            }
+        })
+    )
 }
 
 apply(from = "$rootDir/gradle/deploy.gradle")
