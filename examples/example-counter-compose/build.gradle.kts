@@ -9,7 +9,7 @@ plugins {
 android {
     compileSdkVersion(29)
     defaultConfig {
-        applicationId = "at.florianschuster.control.counterexample"
+        applicationId = "at.florianschuster.control.countercomposeexample"
         minSdkVersion(21)
         targetSdkVersion(29)
         versionCode = 1
@@ -50,4 +50,6 @@ dependencies {
     implementation(Libs.ui_layout)
     implementation(Libs.ui_tooling)
     implementation(Libs.ui_material)
+
+    testImplementation(Libs.flow_extensions)
 }

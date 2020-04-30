@@ -1,4 +1,4 @@
-package at.florianschuster.control.counterexample
+package at.florianschuster.control.countercomposeexample
 
 import at.florianschuster.control.ControllerLog
 import at.florianschuster.control.Controller

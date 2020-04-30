@@ -1,4 +1,4 @@
-package at.florianschuster.control.counterexample
+package at.florianschuster.control.countercomposeexample
 
 import androidx.compose.Composable
 import androidx.compose.FrameManager
