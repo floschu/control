@@ -182,7 +182,7 @@ typealias Reducer<Mutation, State> = (mutation: Mutation, previousState: State) 
  *
  * ```
  * statesTransformer = { states ->
- *     states.onEach { Log.d("New State: $it) }
+ *     states.onEach { println("New State: $it) }
  * }
  * ```
  */
