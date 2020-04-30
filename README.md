@@ -32,8 +32,8 @@ A [Controller](control-core/src/main/kotlin/at/florianschuster/control/Controlle
 
 ## examples
 
-*   [counter](example-counter): most basic example. uses `Controller`.
-*   [github search](example-github): github repository search. uses `Controller` combined with android jetpack AAC `ViewModel`.
+*   [counter](examples/example-counter): most basic example. uses `Controller`.
+*   [github search](examples/example-github): github repository search. uses `Controller` combined with android jetpack AAC `ViewModel`.
 
 ## author
 
