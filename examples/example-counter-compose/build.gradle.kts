@@ -44,12 +44,10 @@ dependencies {
     implementation(project(":control-core"))
 
     implementation(Libs.appcompat)
-    implementation(Libs.constraintlayout)
     implementation(Libs.lifecycle_runtime_ktx)
-
     implementation(Libs.ui_layout)
-    implementation(Libs.ui_tooling)
     implementation(Libs.ui_material)
+    implementation(Libs.ui_tooling)
 
     testImplementation(Libs.flow_extensions)
 }

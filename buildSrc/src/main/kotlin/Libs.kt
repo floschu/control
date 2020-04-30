@@ -54,6 +54,12 @@ object Libs {
     /**
      * https://kotlinlang.org/
      */
+    const val kotlin_serialization_unshaded: String =
+            "org.jetbrains.kotlin:kotlin-serialization-unshaded:" + Versions.org_jetbrains_kotlin
+
+    /**
+     * https://kotlinlang.org/
+     */
     const val kotlin_android_extensions: String =
             "org.jetbrains.kotlin:kotlin-android-extensions:" + Versions.org_jetbrains_kotlin
 
@@ -67,6 +73,12 @@ object Libs {
     /**
      * https://kotlinlang.org/
      */
+    const val kotlin_gradle_plugin: String = "org.jetbrains.kotlin:kotlin-gradle-plugin:" +
+            Versions.org_jetbrains_kotlin
+
+    /**
+     * https://kotlinlang.org/
+     */
     const val kotlin_scripting_compiler_embeddable: String =
             "org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:" +
             Versions.org_jetbrains_kotlin
@@ -74,25 +86,13 @@ object Libs {
     /**
      * https://kotlinlang.org/
      */
-    const val kotlin_serialization_unshaded: String =
-            "org.jetbrains.kotlin:kotlin-serialization-unshaded:" + Versions.org_jetbrains_kotlin
+    const val kotlin_serialization: String = "org.jetbrains.kotlin:kotlin-serialization:" +
+            Versions.org_jetbrains_kotlin
 
     /**
      * https://kotlinlang.org/
      */
     const val kotlin_stdlib: String = "org.jetbrains.kotlin:kotlin-stdlib:" +
-            Versions.org_jetbrains_kotlin
-
-    /**
-     * https://kotlinlang.org/
-     */
-    const val kotlin_gradle_plugin: String = "org.jetbrains.kotlin:kotlin-gradle-plugin:" +
-            Versions.org_jetbrains_kotlin
-
-    /**
-     * https://kotlinlang.org/
-     */
-    const val kotlin_serialization: String = "org.jetbrains.kotlin:kotlin-serialization:" +
             Versions.org_jetbrains_kotlin
 
     /**
@@ -105,27 +105,6 @@ object Libs {
      */
     const val fragment_testing: String = "androidx.fragment:fragment-testing:" +
             Versions.androidx_fragment
-
-    const val ui_foundation: String = "androidx.ui:ui-foundation:" + Versions.androidx_ui
-
-    const val ui_framework: String = "androidx.ui:ui-framework:" + Versions.androidx_ui
-
-    const val ui_layout: String = "androidx.ui:ui-layout:" + Versions.androidx_ui
-
-    const val ui_livedata: String = "androidx.ui:ui-livedata:" + Versions.androidx_ui
-
-    const val ui_material: String = "androidx.ui:ui-material:" + Versions.androidx_ui
-
-    const val ui_material_icons_core: String = "androidx.ui:ui-material-icons-core:" +
-        Versions.androidx_ui
-
-    const val ui_material_icons_extended: String = "androidx.ui:ui-material-icons-extended:" +
-        Versions.androidx_ui
-
-    const val ui_text: String = "androidx.ui:ui-text:" + Versions.androidx_ui
-
-    const val ui_tooling: String = "androidx.ui:ui-tooling:" + Versions.androidx_ui
-
 
     /**
      * https://developer.android.com/testing
@@ -141,6 +120,12 @@ object Libs {
      * https://developer.android.com/testing
      */
     const val androidx_test_runner: String = "androidx.test:runner:" + Versions.androidx_test
+
+    const val ui_layout: String = "androidx.ui:ui-layout:" + Versions.androidx_ui
+
+    const val ui_material: String = "androidx.ui:ui-material:" + Versions.androidx_ui
+
+    const val ui_tooling: String = "androidx.ui:ui-tooling:" + Versions.androidx_ui
 
     /**
      * https://developer.android.com/studio
@@ -172,6 +157,9 @@ object Libs {
      */
     const val lifecycle_runtime_ktx: String = "androidx.lifecycle:lifecycle-runtime-ktx:" +
             Versions.lifecycle_runtime_ktx
+
+    const val compose_compiler: String = "androidx.compose:compose-compiler:" +
+            Versions.compose_compiler
 
     /**
      * http://tools.android.com

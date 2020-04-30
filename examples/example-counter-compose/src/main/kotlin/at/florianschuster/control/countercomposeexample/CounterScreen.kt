@@ -50,7 +50,7 @@ internal fun CounterScreen(
 @Preview
 @Composable
 private fun CounterScreenPreviewLoading() {
-    MaterialTheme(colors = Colors.currentColorPalette) {
+    MaterialTheme(colors = AppColors.currentColorPalette) {
         CounterScreen(counterState = CounterState(value = 21, loading = true))
     }
 }
@@ -58,7 +58,7 @@ private fun CounterScreenPreviewLoading() {
 @Preview
 @Composable
 private fun CounterScreenPreviewNotLoading() {
-    MaterialTheme(colors = Colors.currentColorPalette) {
+    MaterialTheme(colors = AppColors.currentColorPalette) {
         CounterScreen(counterState = CounterState(value = 21, loading = false))
     }
 }
