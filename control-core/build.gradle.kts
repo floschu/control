@@ -2,6 +2,7 @@ plugins {
     id("kotlin")
     id("jacoco")
     id("kotlinx-atomicfu")
+    id("info.solidsoft.pitest")
 }
 
 dependencies {
@@ -12,11 +13,7 @@ dependencies {
 }
 
 tasks.jacocoTestReport {
-    reports {
-        xml.isEnabled = true
-        html.isEnabled = false
-        csv.isEnabled = false
-    }
+    reports { csv.isEnabled = false }
     classDirectories.setFrom(
         files(classDirectories.files.map {
             fileTree(it) {
@@ -26,5 +23,18 @@ tasks.jacocoTestReport {
         })
     )
 }
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule { limit { minimum = "0.9".toBigDecimal() } }
+    }
+}
+
+pitest {
+    // mutationThreshold.set(90) TODO enable
+    excludedClasses.add("at.florianschuster.control.ExtensionsKt")
+    excludedClasses.add("at.florianschuster.control.DefaultTagKt**")
+}
+
 
 apply(from = "$rootDir/gradle/deploy.gradle")

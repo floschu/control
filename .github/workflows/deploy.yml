@@ -42,8 +42,33 @@ jobs:
       - name: "Test"
         run: ./gradlew test
 
+  mutationtest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v1
+      - name: "Set up Java"
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: "Mutation Testing"
+        run: ./gradlew pitest
+
+  assemble:
+    needs: [lint, ktlint, test, mutationtest]
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v1
+      - name: "Set up Java"
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: "Assemble"
+        run: ./gradlew assemble
+
   publish:
-    needs: [lint, ktlint, test]
+    needs: [lint, ktlint, test, mutationtest, assemble]
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"

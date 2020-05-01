@@ -95,4 +95,4 @@ fun <T, U> Flow<T>.takeUntil(other: Flow<U>): Flow<T> = flow {
     }
 }
 
-internal class TakeUntilException : CancellationException()
+private class TakeUntilException : CancellationException()
