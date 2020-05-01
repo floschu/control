@@ -42,7 +42,6 @@ internal class GithubViewModelTest {
     @Test
     fun `update query with non-empty text`() {
         // given
-        val query = "control"
         `given github search controller`()
 
         // when
@@ -62,21 +61,20 @@ internal class GithubViewModelTest {
     @Test
     fun `update query with empty text`() {
         // given
-        val query = ""
+        val emptyQuery = ""
         `given github search controller`()
 
         // when
-        sut.controller.dispatch(GithubViewModel.Action.UpdateQuery(query))
+        sut.controller.dispatch(GithubViewModel.Action.UpdateQuery(emptyQuery))
 
         // then
         coVerify { githubApi.repos(any(), any()) wasNot Called }
-        states expect lastEmission(GithubViewModel.State(query = query))
+        states expect lastEmission(GithubViewModel.State(query = emptyQuery))
     }
 
     @Test
     fun `load next page loads correct next page`() {
         // given
-        val query = "control"
         `given github search controller`(
             GithubViewModel.State(query = query, repos = mockReposPage1)
         )
@@ -112,7 +110,6 @@ internal class GithubViewModelTest {
     @Test
     fun `error from api is correctly handled`() {
         // given
-        val query = "control"
         coEvery { githubApi.repos(any(), any()) } throws Exception()
         `given github search controller`()
 
@@ -132,8 +129,6 @@ internal class GithubViewModelTest {
     @Test
     fun `updating query during search resets search`() {
         // given
-        val query = "control"
-        val secondQuery = "controlAgain"
         coEvery { githubApi.repos(query, 1) } coAnswers {
             delay(1000)
             mockResultPage1
@@ -167,5 +162,8 @@ internal class GithubViewModelTest {
 
         private val mockReposPage2: List<Repo> = (3..4).map { Repo(it, "$it", "") }
         private val mockResultPage2 = Result(items = mockReposPage2)
+
+        private const val query = "control"
+        private const val secondQuery = "controlAgain"
     }
 }

@@ -12,7 +12,7 @@ import at.florianschuster.control.githubexample.Repo
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_repo.view.*
 
-class RepoAdapter(
+internal class RepoAdapter(
     private val onItemClick: (Repo) -> Unit
 ) : ListAdapter<Repo, RepoViewHolder>(
     object : DiffUtil.ItemCallback<Repo>() {
@@ -36,7 +36,7 @@ class RepoAdapter(
         holder.bind(getItem(position), onItemClick)
 }
 
-class RepoViewHolder(
+internal class RepoViewHolder(
     override val containerView: View
 ) : RecyclerView.ViewHolder(containerView), LayoutContainer {
     fun bind(repo: Repo, onItemClick: (Repo) -> Unit) {
