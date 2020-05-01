@@ -47,10 +47,9 @@ sealed class ControllerLog {
 }
 
 internal fun ControllerLog.log(event: ControllerEvent) {
-    logger?.invoke(LoggerScopeImpl(event), event.toString())
+    logger?.invoke(loggerScope(event), event.toString())
 }
 
-@Suppress("FunctionName")
-internal fun LoggerScopeImpl(event: ControllerEvent) = object : LoggerScope {
+internal fun loggerScope(event: ControllerEvent) = object : LoggerScope {
     override val event: ControllerEvent = event
 }

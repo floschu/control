@@ -3,9 +3,12 @@ package at.florianschuster.control
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
+import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.spyk
+import io.mockk.verify
 import org.junit.Test
+import java.io.PrintStream
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -29,17 +32,19 @@ internal class ControllerLogTest {
 
     @Test
     fun `println logger, methods are called`() {
-        val sut = spyk<ControllerLog.Println>()
-        assertNotNull(sut.logger)
+        val out = mockk<PrintStream>(relaxed = true)
+        System.setOut(out)
+        val capturedLogMessage = slot<Any>()
+        every { out.println(capture(capturedLogMessage)) } just Runs
 
-        val capturedLogMessage = slot<String>()
-        every { sut.logger.invoke(any(), capture(capturedLogMessage)) } just Runs
+        val sut = ControllerLog.Println
+        assertNotNull(sut.logger)
 
         sut.log(CreatedEvent)
         assertEquals(CreatedEvent.toString(), capturedLogMessage.captured)
-
         sut.log(DestroyedEvent)
         assertEquals(DestroyedEvent.toString(), capturedLogMessage.captured)
+        verify(exactly = 2) { out.println(any<Any>()) }
     }
 
     @Test
@@ -59,7 +64,7 @@ internal class ControllerLogTest {
     @Test
     fun `LoggerScope factory function`() {
         val event = ControllerEvent.Created(tag)
-        val scope = LoggerScopeImpl(event)
+        val scope = loggerScope(event)
 
         assertEquals(event, scope.event)
     }
