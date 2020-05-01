@@ -30,17 +30,21 @@ tasks.jacocoTestReport {
 
 tasks.jacocoTestCoverageVerification {
     violationRules {
-        rule { limit { minimum = "0.9".toBigDecimal() } }
+        rule { limit { minimum = "0.95".toBigDecimal() } }
     }
 }
 
 pitest {
     pitestVersion.set(Versions.info_solidsoft_pitest_gradle_plugin)
     targetClasses.add("at.florianschuster.control.*")
-    mutationThreshold.set(100)
+    mutationThreshold.set(95)
     excludedClasses.addAll(
         "at.florianschuster.control.DefaultTagKt**",
-        "at.florianschuster.control.ExtensionsKt**"
+        "at.florianschuster.control.ExtensionsKt**",
+
+        // pitest cannot handle invokeSuspend correctly
+        "at.florianschuster.control.ImplementationKt.1.2",
+        "at.florianschuster.control.ImplementationKt.1"
     )
     threads.set(4)
     jvmArgs.add("-ea")
