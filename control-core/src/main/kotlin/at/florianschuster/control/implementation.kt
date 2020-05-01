@@ -85,7 +85,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
     init {
         val actionFlow: Flow<Action> = actionsTransformer(actionChannel.asFlow())
 
-        val mutatorScope = MutatorScopeImpl({ currentState }, actionFlow)
+        val mutatorScope = mutatorScope({ currentState }, actionFlow)
         val mutationFlow: Flow<Mutation> = actionFlow.flatMapMerge { action ->
             controllerLog.log(ControllerEvent.Action(tag, action.toString()))
             mutatorScope.mutator(action).catch { cause ->
@@ -131,8 +131,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
     }
 }
 
-@Suppress("FunctionName")
-internal fun <Action, State> MutatorScopeImpl(
+internal fun <Action, State> mutatorScope(
     stateAccessor: () -> State,
     actionFlow: Flow<Action>
 ): MutatorScope<Action, State> = object : MutatorScope<Action, State> {

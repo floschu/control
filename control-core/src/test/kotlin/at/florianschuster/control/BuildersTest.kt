@@ -24,7 +24,7 @@ internal class BuildersTest {
         assertEquals(this, sut.scope)
         assertEquals(expectedInitialState, sut.initialState)
 
-        assertEquals(null, sut.mutator.invoke(MutatorScopeImpl({ 1 }, flowOf(2)), 3).singleOrNull())
+        assertEquals(null, sut.mutator.invoke(mutatorScope({ 1 }, flowOf(2)), 3).singleOrNull())
         assertEquals(1, sut.reducer.invoke(0, 1))
 
         assertEquals(1, sut.actionsTransformer.invoke(flowOf(1)).single())
@@ -53,7 +53,7 @@ internal class BuildersTest {
         assertEquals(this, sut.scope)
         assertEquals(expectedInitialState, sut.initialState)
 
-        assertEquals(3, sut.mutator.invoke(MutatorScopeImpl({ 1 }, flowOf(2)), 3).single())
+        assertEquals(3, sut.mutator.invoke(mutatorScope({ 1 }, flowOf(2)), 3).single())
         assertEquals(1, sut.reducer.invoke(0, 1))
 
         assertEquals(1, sut.actionsTransformer.invoke(flowOf(1)).single())

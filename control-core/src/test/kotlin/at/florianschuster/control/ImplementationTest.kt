@@ -10,13 +10,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
 import org.junit.Test
@@ -189,7 +186,7 @@ internal class ImplementationTest {
     fun `MutatorScope is built correctly`() {
         val stateAccessor = { 1 }
         val actions = flowOf(1)
-        val sut = MutatorScopeImpl(stateAccessor, actions)
+        val sut = mutatorScope(stateAccessor, actions)
 
         assertEquals(stateAccessor(), sut.currentState)
         assertEquals(actions, sut.actions)
