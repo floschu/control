@@ -37,19 +37,21 @@ tasks.jacocoTestCoverageVerification {
 pitest {
     pitestVersion.set(Versions.info_solidsoft_pitest_gradle_plugin)
     targetClasses.add("at.florianschuster.control.*")
-    mutationThreshold.set(95)
+    mutationThreshold.set(100)
     excludedClasses.addAll(
         "at.florianschuster.control.DefaultTagKt**",
         "at.florianschuster.control.ExtensionsKt**",
 
-        // pitest cannot handle invokeSuspend correctly
-        "at.florianschuster.control.ImplementationKt.1.2",
-        "at.florianschuster.control.ImplementationKt.1"
+        // pitest cannot handle some invokeSuspend functions correctly
+        "at.florianschuster.control.ControllerImplementation$1$2",
+        "at.florianschuster.control.ControllerImplementation$1"
     )
     threads.set(4)
     jvmArgs.add("-ea")
     avoidCallsTo.addAll(
         "kotlin.jvm.internal",
+
+        // coroutines
         "kotlin.ResultKt",
         "kotlinx.coroutines.channels.ChannelsKt",
         "kotlinx.coroutines.Job\$DefaultImpls",
