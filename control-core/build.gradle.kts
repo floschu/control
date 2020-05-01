@@ -39,23 +39,19 @@ pitest {
     targetClasses.add("at.florianschuster.control.*")
     mutationThreshold.set(100)
     excludedClasses.addAll(
-        "at.florianschuster.control.DefaultTagKt**",
-        "at.florianschuster.control.ExtensionsKt**",
+        "at.florianschuster.control.DefaultTagKt**", // inline function
+        "at.florianschuster.control.ExtensionsKt**", // too many inline collects
 
         // pitest cannot handle some invokeSuspend functions correctly
-        "at.florianschuster.control.ControllerImplementation$1$2",
-        "at.florianschuster.control.ControllerImplementation$1"
+        "at.florianschuster.control.ControllerImplementation\$1\$2",
+        "at.florianschuster.control.ControllerImplementation\$1"
     )
     threads.set(4)
     jvmArgs.add("-ea")
     avoidCallsTo.addAll(
         "kotlin.jvm.internal",
-
-        // coroutines
         "kotlin.ResultKt",
-        "kotlinx.coroutines.channels.ChannelsKt",
-        "kotlinx.coroutines.Job\$DefaultImpls",
-        "kotlinx.coroutines.sync.Mutex"
+        "kotlinx.coroutines"
     )
     verbose.set(true)
 }
