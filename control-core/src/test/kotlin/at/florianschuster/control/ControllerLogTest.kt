@@ -56,6 +56,14 @@ internal class ControllerLogTest {
         assertEquals(DestroyedEvent.toString(), capturedLogMessage.captured)
     }
 
+    @Test
+    fun `LoggerScope factory function`() {
+        val event = ControllerEvent.Created(tag)
+        val scope = LoggerScopeImpl(event)
+
+        assertEquals(event, scope.event)
+    }
+
     companion object {
         private const val tag = "TestTag"
         private val CreatedEvent: ControllerEvent = ControllerEvent.Created(tag)
