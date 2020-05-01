@@ -50,4 +50,10 @@ dependencies {
     implementation(Libs.ui_tooling)
 
     testImplementation(Libs.flow_extensions)
+
+    androidTestImplementation(Libs.androidx_test_rules)
+    androidTestImplementation(Libs.androidx_test_runner)
+    androidTestImplementation(Libs.flow_extensions)
+    androidTestImplementation(Libs.ui_test)
+    androidTestImplementation(Libs.junit_ktx)
 }

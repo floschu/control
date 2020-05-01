@@ -31,8 +31,8 @@ private fun MainScreen() {
                 TopAppBar(title = { Text(text = ContextAmbient.current.getString(R.string.app_name)) })
             },
             bodyContent = {
-                val counterState by controller.state.collectAsState(controller.currentState)
-                CounterScreen(counterState, controller::dispatch)
+                val state by controller.collectAsState()
+                CounterScreen(counterState = state, action = controller::dispatch)
             }
         )
     }

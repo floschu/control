@@ -54,12 +54,6 @@ object Libs {
     /**
      * https://kotlinlang.org/
      */
-    const val kotlin_serialization_unshaded: String =
-            "org.jetbrains.kotlin:kotlin-serialization-unshaded:" + Versions.org_jetbrains_kotlin
-
-    /**
-     * https://kotlinlang.org/
-     */
     const val kotlin_android_extensions: String =
             "org.jetbrains.kotlin:kotlin-android-extensions:" + Versions.org_jetbrains_kotlin
 
@@ -88,6 +82,12 @@ object Libs {
      */
     const val kotlin_serialization: String = "org.jetbrains.kotlin:kotlin-serialization:" +
             Versions.org_jetbrains_kotlin
+
+    /**
+     * https://kotlinlang.org/
+     */
+    const val kotlin_serialization_unshaded: String =
+            "org.jetbrains.kotlin:kotlin-serialization-unshaded:" + Versions.org_jetbrains_kotlin
 
     /**
      * https://kotlinlang.org/
@@ -124,6 +124,10 @@ object Libs {
     const val ui_layout: String = "androidx.ui:ui-layout:" + Versions.androidx_ui
 
     const val ui_material: String = "androidx.ui:ui-material:" + Versions.androidx_ui
+
+    const val ui_platform: String = "androidx.ui:ui-platform:" + Versions.androidx_ui
+
+    const val ui_test: String = "androidx.ui:ui-test:" + Versions.androidx_ui
 
     const val ui_tooling: String = "androidx.ui:ui-tooling:" + Versions.androidx_ui
 

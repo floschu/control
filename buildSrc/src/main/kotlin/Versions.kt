@@ -22,7 +22,7 @@ object Versions {
 
     const val org_jetbrains_kotlinx: String = "0.14.3"
 
-    const val org_jetbrains_kotlin: String = "1.3.71"
+    const val org_jetbrains_kotlin: String = "1.3.72"
 
     const val androidx_fragment: String = "1.2.4"
 

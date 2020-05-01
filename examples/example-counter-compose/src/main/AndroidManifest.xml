@@ -20,5 +20,7 @@
             </intent-filter>
         </activity>
 
+        <!-- needed for testing -->
+        <activity android:name="androidx.activity.ComponentActivity" />
     </application>
 </manifest>

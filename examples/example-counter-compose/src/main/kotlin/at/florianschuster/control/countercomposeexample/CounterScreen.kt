@@ -3,6 +3,7 @@ package at.florianschuster.control.countercomposeexample
 import androidx.compose.Composable
 import androidx.ui.core.Alignment
 import androidx.ui.core.Modifier
+import androidx.ui.core.tag
 import androidx.ui.foundation.Text
 import androidx.ui.layout.Arrangement
 import androidx.ui.layout.Row
@@ -23,7 +24,7 @@ internal fun CounterScreen(
 ) {
     Stack(modifier = Modifier.fillMaxSize()) {
         Row(
-            modifier = Modifier.fillMaxWidth() + Modifier.gravity(Alignment.Center),
+            modifier = Modifier.fillMaxWidth().gravity(Alignment.Center),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             TextButton(onClick = { action(CounterAction.Decrement) }) {
@@ -32,7 +33,8 @@ internal fun CounterScreen(
             Text(
                 text = "${counterState.value}",
                 color = MaterialTheme.colors.secondary,
-                style = MaterialTheme.typography.h3
+                style = MaterialTheme.typography.h3,
+                modifier = Modifier.tag("valueText")
             )
             TextButton(onClick = { action(CounterAction.Increment) }) {
                 Text(text = "+", style = MaterialTheme.typography.h4)
@@ -40,7 +42,9 @@ internal fun CounterScreen(
         }
         if (counterState.loading) {
             CircularProgressIndicator(
-                modifier = Modifier.padding(16.dp) + Modifier.gravity(Alignment.BottomCenter),
+                modifier = Modifier.padding(16.dp)
+                    .gravity(Alignment.BottomCenter)
+                    .tag("progressIndicator"),
                 color = MaterialTheme.colors.secondary
             )
         }
