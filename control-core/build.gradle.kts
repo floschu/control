@@ -12,7 +12,11 @@ dependencies {
 }
 
 tasks.jacocoTestReport {
-    reports { csv.isEnabled = false }
+    reports {
+        html.isEnabled = false
+        csv.isEnabled = false
+        xml.isEnabled = true
+    }
     classDirectories.setFrom(
         files(classDirectories.files.map {
             fileTree(it) {
