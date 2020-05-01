@@ -51,7 +51,7 @@ internal fun CounterScreen(
     }
 }
 
-@Preview
+@Preview(name = "Loading")
 @Composable
 private fun CounterScreenPreviewLoading() {
     MaterialTheme(colors = AppColors.currentColorPalette) {
@@ -59,7 +59,7 @@ private fun CounterScreenPreviewLoading() {
     }
 }
 
-@Preview
+@Preview(name = "Not Loading")
 @Composable
 private fun CounterScreenPreviewNotLoading() {
     MaterialTheme(colors = AppColors.currentColorPalette) {
