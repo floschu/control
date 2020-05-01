@@ -185,6 +185,16 @@ internal class ImplementationTest {
         states expect emissions(0, 42, 43, 85)
     }
 
+    @Test
+    fun `MutatorScope is built correctly`() {
+        val stateAccessor = { 1 }
+        val actions = flowOf(1)
+        val sut = MutatorScopeImpl(stateAccessor, actions)
+
+        assertEquals(stateAccessor(), sut.currentState)
+        assertEquals(actions, sut.actions)
+    }
+
     private fun CoroutineScope.operationController() =
         createController<List<String>, List<String>, List<String>>(
 
