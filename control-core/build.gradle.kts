@@ -35,9 +35,23 @@ tasks.jacocoTestCoverageVerification {
 }
 
 pitest {
-    // mutationThreshold.set(90) TODO enable
-    excludedClasses.add("at.florianschuster.control.ExtensionsKt")
-    excludedClasses.add("at.florianschuster.control.DefaultTagKt**")
+    pitestVersion.set(Versions.info_solidsoft_pitest_gradle_plugin)
+    targetClasses.add("at.florianschuster.control.*")
+    mutationThreshold.set(100)
+    excludedClasses.addAll(
+        "at.florianschuster.control.DefaultTagKt**",
+        "at.florianschuster.control.ExtensionsKt**"
+    )
+    threads.set(4)
+    jvmArgs.add("-ea")
+    avoidCallsTo.addAll(
+        "kotlin.jvm.internal",
+        "kotlin.ResultKt",
+        "kotlinx.coroutines.channels.ChannelsKt",
+        "kotlinx.coroutines.Job\$DefaultImpls",
+        "kotlinx.coroutines.sync.Mutex"
+    )
+    verbose.set(true)
 }
 
 
