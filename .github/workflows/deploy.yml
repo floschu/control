@@ -6,7 +6,7 @@ on:
       - '*'
 
 jobs:
-  checks:
+  all_checks:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
@@ -19,7 +19,7 @@ jobs:
         run: ./gradlew lint ktlintCheck test jacocoTestCoverageVerification pitest assemble
 
   publish:
-    needs: [checks]
+    needs: [all_checks]
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
