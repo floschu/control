@@ -47,6 +47,15 @@ internal class ControllerStartTest {
         assertTrue(sut.stateJob.isActive)
     }
 
+    @Test
+    fun `verify double checked locking`() {
+        val sut = testCoroutineScope.counterController(coroutineStart = CoroutineStart.LAZY)
+
+        assertFalse(sut.stateJob.isActive)
+        sut.stateJob.start()
+        assertFalse(sut.startStateJob())
+    }
+
     private fun CoroutineScope.counterController(
         coroutineStart: CoroutineStart
     ) = createSynchronousController<Int, Int>(
