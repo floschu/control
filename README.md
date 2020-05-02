@@ -45,6 +45,15 @@ A [Controller](control-core/src/main/kotlin/at/florianschuster/control/Controlle
 *   [counter](examples/example-counter): most basic example. uses `Controller`.
 *   [github search](examples/example-github): github repository search. uses `Controller` combined with android jetpack AAC `ViewModel`.
 
+# coverage
+
+test coverage is automatically run by github actions on `[push]`
+
+|  | threshold | run | output |
+|---:|:---:|---|---|
+| instruction & branch | 90% | `./gradlew test jacocoTestReport` | `./control-core/build/reports/jacoco/test/` |
+| mutation | 100% | `./gradlew pitest` | `./control-core/build/reports/pitest/` |
+
 ## author
 
 visit my [website](https://florianschuster.at/).
