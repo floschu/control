@@ -15,7 +15,7 @@ dependencies {
 tasks.jacocoTestReport {
     reports {
         xml.isEnabled = true
-        html.isEnabled = false
+        html.isEnabled = true
         csv.isEnabled = false
     }
     classDirectories.setFrom(
