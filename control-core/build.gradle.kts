@@ -14,9 +14,9 @@ dependencies {
 
 tasks.jacocoTestReport {
     reports {
+        xml.isEnabled = true
         html.isEnabled = false
         csv.isEnabled = false
-        xml.isEnabled = true
     }
     classDirectories.setFrom(
         files(classDirectories.files.map {
@@ -30,7 +30,7 @@ tasks.jacocoTestReport {
 
 tasks.jacocoTestCoverageVerification {
     violationRules {
-        rule { limit { minimum = "0.95".toBigDecimal() } }
+        rule { limit { minimum = "0.9".toBigDecimal() } }
     }
 }
 
