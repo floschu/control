@@ -1,6 +1,27 @@
 <p align="center"><img alt="flow" width="600" src=".media/control.png"></p>
 
-[![version](https://img.shields.io/bintray/v/flosch/control/control-core?label=core-version&logoColor=f88909)](https://bintray.com/flosch/control/control-core) [![last commit](https://img.shields.io/github/last-commit/floschu/control?logoColor=ffffff)](https://github.com/floschu/control/) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/39072347acb94bf79651d7f16bfa63ca)](https://www.codacy.com/manual/floschu/control?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=floschu/control&amp;utm_campaign=Badge_Grade) [![codecov](https://codecov.io/gh/floschu/control/branch/develop/graph/badge.svg)](https://codecov.io/gh/floschu/control) [![build](https://github.com/floschu/control/workflows/build/badge.svg)](https://github.com/floschu/control/actions) [![license](https://img.shields.io/badge/license-Apache%202.0-blue.svg?color=7b6fe2)](LICENSE)
+<p align=center>
+    <a href="https://bintray.com/flosch/control/control-core">
+        <img alt="version" src="https://img.shields.io/bintray/v/flosch/control/control-core?label=core-version&logoColor=f88909" />
+    </a>
+    <a href="LICENSE">
+        <img alt="license" src="https://img.shields.io/badge/license-Apache%202.0-blue.svg?color=7b6fe2" />
+    </a>
+    <br/>
+    <br/>
+    <a href="https://github.com/floschu/control/">
+        <img alt="last commit" src="https://img.shields.io/github/last-commit/floschu/control?logoColor=ffffff" /> 
+    <a/>
+    <a href="https://www.codacy.com/manual/floschu/control?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=floschu/control&amp;utm_campaign=Badge_Grade">
+        <img alt="code quality" src="https://api.codacy.com/project/badge/Grade/39072347acb94bf79651d7f16bfa63ca" /> 
+    <a/>
+    <a href="https://codecov.io/gh/floschu/control">
+        <img alt="coverage" src="https://codecov.io/gh/floschu/control/branch/develop/graph/badge.svg" />
+    <a/>
+    <a href="https://github.com/floschu/control/actions">
+        <img alt="build" src="https://github.com/floschu/control/workflows/build/badge.svg" />
+    <a/>
+</p>
 
 ## installation
 
