@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
  * Executes th effect every time the [Controller] or the [context] changes.
  */
 @Composable
-fun <S> Controller<*, *, S>.collectAsState(): State<S> {
+internal fun <S> Controller<*, *, S>.collectAsState(): State<S> {
     val context = Dispatchers.Main
     val mutableState = state { currentState }
     onPreCommit(this, context) {
