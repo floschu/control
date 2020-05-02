@@ -13,14 +13,12 @@ import org.gradle.plugin.use.PluginDependencySpec
  */
 object Versions {
     const val org_jetbrains_kotlinx_kotlinx_serialization: String = "0.20.0"
-    // available: "0.20.0-1.4-M1-release-99"
+             // available: "0.20.0-1.4-M1-release-99"
 
     const val org_jetbrains_kotlinx_kotlinx_coroutines: String = "1.3.5"
-    // available: "1.3.5-1.4-M1-release-99"
+             // available: "1.3.5-1.4-M1-release-99"
 
     const val io_github_reactivecircus_flowbinding: String = "0.10.2" // available: "0.11.1"
-
-    const val org_jetbrains_kotlinx: String = "0.14.3"
 
     const val org_jetbrains_kotlin: String = "1.3.71" // available: "1.3.72"
 
@@ -36,11 +34,15 @@ object Versions {
 
     const val de_fayard_buildsrcversions_gradle_plugin: String = "0.7.0"
 
-    const val info_solidsoft_pitest_gradle_plugin: String = "1.5.0"
-
     const val com_jfrog_bintray_gradle_plugin: String = "1.8.4" // available: "1.8.5"
 
+    const val binary_compatibility_validator: String = "0.2.3"
+
+    const val atomicfu_gradle_plugin: String = "0.14.3"
+
     const val lifecycle_runtime_ktx: String = "2.2.0"
+
+    const val gradle_pitest_plugin: String = "1.5.0"
 
     const val constraintlayout: String = "2.0.0-beta4"
 
@@ -53,6 +55,8 @@ object Versions {
     const val appcompat: String = "1.1.0"
 
     const val junit_ktx: String = "1.1.1"
+
+    const val atomicfu: String = "0.14.3"
 
     const val material: String = "1.1.0"
 
@@ -78,4 +82,4 @@ object Versions {
  */
 val PluginDependenciesSpec.buildSrcVersions: PluginDependencySpec
     inline get() =
-        id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
+            id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
