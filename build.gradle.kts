@@ -11,7 +11,7 @@ buildscript {
         classpath(Libs.com_android_tools_build_gradle)
         classpath(Libs.kotlin_serialization)
         classpath(Libs.atomicfu_gradle_plugin)
-        classpath(Libs.info_solidsoft_pitest_gradle_plugin)
+        classpath(Libs.gradle_pitest_plugin)
     }
 }
 

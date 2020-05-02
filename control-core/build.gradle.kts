@@ -35,7 +35,7 @@ tasks.jacocoTestCoverageVerification {
 }
 
 pitest {
-    pitestVersion.set(Versions.info_solidsoft_pitest_gradle_plugin)
+    pitestVersion.set(Versions.gradle_pitest_plugin)
     targetClasses.add("at.florianschuster.control.*")
     mutationThreshold.set(100)
     excludedClasses.addAll(

@@ -125,8 +125,6 @@ object Libs {
 
     const val ui_material: String = "androidx.ui:ui-material:" + Versions.androidx_ui
 
-    const val ui_platform: String = "androidx.ui:ui-platform:" + Versions.androidx_ui
-
     const val ui_test: String = "androidx.ui:ui-test:" + Versions.androidx_ui
 
     const val ui_tooling: String = "androidx.ui:ui-tooling:" + Versions.androidx_ui
@@ -152,10 +150,6 @@ object Libs {
             "de.fayard.buildSrcVersions:de.fayard.buildSrcVersions.gradle.plugin:" +
             Versions.de_fayard_buildsrcversions_gradle_plugin
 
-    const val info_solidsoft_pitest_gradle_plugin: String =
-            "info.solidsoft.gradle.pitest:gradle-pitest-plugin:" +
-            Versions.info_solidsoft_pitest_gradle_plugin
-
     const val com_jfrog_bintray_gradle_plugin: String =
             "com.jfrog.bintray:com.jfrog.bintray.gradle.plugin:" +
             Versions.com_jfrog_bintray_gradle_plugin
@@ -165,6 +159,12 @@ object Libs {
      */
     const val lifecycle_runtime_ktx: String = "androidx.lifecycle:lifecycle-runtime-ktx:" +
             Versions.lifecycle_runtime_ktx
+
+    /**
+     * http://gradle-pitest-plugin.solidsoft.info/
+     */
+    const val gradle_pitest_plugin: String = "info.solidsoft.gradle.pitest:gradle-pitest-plugin:" +
+            Versions.gradle_pitest_plugin
 
     const val compose_compiler: String = "androidx.compose:compose-compiler:" +
             Versions.compose_compiler

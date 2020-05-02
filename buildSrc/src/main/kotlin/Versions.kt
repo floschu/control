@@ -13,10 +13,10 @@ import org.gradle.plugin.use.PluginDependencySpec
  */
 object Versions {
     const val org_jetbrains_kotlinx_kotlinx_serialization: String = "0.20.0"
-    // available: "0.20.0-1.4-M1-release-99"
+             // available: "0.20.0-1.4-M1-release-99"
 
     const val org_jetbrains_kotlinx_kotlinx_coroutines: String = "1.3.5"
-    // available: "1.3.5-1.4-M1-release-99"
+             // available: "1.3.5-1.4-M1-release-99"
 
     const val io_github_reactivecircus_flowbinding: String = "0.11.1"
 
@@ -38,11 +38,11 @@ object Versions {
 
     const val de_fayard_buildsrcversions_gradle_plugin: String = "0.7.0"
 
-    const val info_solidsoft_pitest_gradle_plugin: String = "1.5.0"
-
     const val com_jfrog_bintray_gradle_plugin: String = "1.8.4" // available: "1.8.5"
 
     const val lifecycle_runtime_ktx: String = "2.2.0"
+
+    const val gradle_pitest_plugin: String = "1.5.0"
 
     const val compose_compiler: String = "0.1.0-dev10"
 
