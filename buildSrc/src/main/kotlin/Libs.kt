@@ -152,6 +152,10 @@ object Libs {
             "de.fayard.buildSrcVersions:de.fayard.buildSrcVersions.gradle.plugin:" +
             Versions.de_fayard_buildsrcversions_gradle_plugin
 
+    const val info_solidsoft_pitest_gradle_plugin: String =
+            "info.solidsoft.gradle.pitest:gradle-pitest-plugin:" +
+            Versions.info_solidsoft_pitest_gradle_plugin
+
     const val com_jfrog_bintray_gradle_plugin: String =
             "com.jfrog.bintray:com.jfrog.bintray.gradle.plugin:" +
             Versions.com_jfrog_bintray_gradle_plugin

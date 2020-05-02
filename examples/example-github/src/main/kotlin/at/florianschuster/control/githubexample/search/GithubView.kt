@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.sample
 import reactivecircus.flowbinding.android.widget.textChanges
 import reactivecircus.flowbinding.recyclerview.scrollEvents
 
-class GithubView : Fragment(R.layout.view_github) {
+internal class GithubView : Fragment(R.layout.view_github) {
 
     private val viewModel: GithubViewModel by viewModels { GithubViewModelFactory }
 
@@ -55,13 +55,11 @@ class GithubView : Fragment(R.layout.view_github) {
             .launchIn(scope = viewLifecycleOwner.lifecycleScope)
 
         // state
-        viewModel.controller.state
-            .distinctMap(by = GithubViewModel.State::repos)
+        viewModel.controller.state.distinctMap(by = GithubViewModel.State::repos)
             .bind(to = repoAdapter::submitList)
             .launchIn(scope = viewLifecycleOwner.lifecycleScope)
 
-        viewModel.controller.state
-            .distinctMap(by = GithubViewModel.State::loadingNextPage)
+        viewModel.controller.state.distinctMap(by = GithubViewModel.State::loadingNextPage)
             .bind(to = loadingProgressBar::isVisible::set)
             .launchIn(scope = viewLifecycleOwner.lifecycleScope)
     }

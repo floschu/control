@@ -27,20 +27,20 @@ import kotlinx.coroutines.launch
 @ExperimentalCoroutinesApi
 @FlowPreview
 internal class ControllerImplementation<Action, Mutation, State>(
-    scope: CoroutineScope,
-    dispatcher: CoroutineDispatcher,
-    coroutineStart: CoroutineStart,
+    internal val scope: CoroutineScope,
+    internal val dispatcher: CoroutineDispatcher,
+    internal val coroutineStart: CoroutineStart,
 
-    initialState: State,
-    mutator: Mutator<Action, Mutation, State>,
-    reducer: Reducer<Mutation, State>,
+    internal val initialState: State,
+    internal val mutator: Mutator<Action, Mutation, State>,
+    internal val reducer: Reducer<Mutation, State>,
 
-    actionsTransformer: Transformer<Action>,
-    mutationsTransformer: Transformer<Mutation>,
-    statesTransformer: Transformer<State>,
+    internal val actionsTransformer: Transformer<Action>,
+    internal val mutationsTransformer: Transformer<Mutation>,
+    internal val statesTransformer: Transformer<State>,
 
-    private val tag: String,
-    private val controllerLog: ControllerLog
+    internal val tag: String,
+    internal val controllerLog: ControllerLog
 ) : Controller<Action, Mutation, State> {
 
     internal val stateJob: Job // internal for testing
@@ -85,7 +85,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
     init {
         val actionFlow: Flow<Action> = actionsTransformer(actionChannel.asFlow())
 
-        val mutatorScope = MutatorScopeImpl({ currentState }, actionFlow)
+        val mutatorScope = mutatorScope({ currentState }, actionFlow)
         val mutationFlow: Flow<Mutation> = actionFlow.flatMapMerge { action ->
             controllerLog.log(ControllerEvent.Action(tag, action.toString()))
             mutatorScope.mutator(action).catch { cause ->
@@ -129,13 +129,12 @@ internal class ControllerImplementation<Action, Mutation, State>(
             stateJob.start()
         }
     }
+}
 
-    @Suppress("FunctionName")
-    private fun <Action, State> MutatorScopeImpl(
-        stateAccessor: () -> State,
-        actionFlow: Flow<Action>
-    ): MutatorScope<Action, State> = object : MutatorScope<Action, State> {
-        override val currentState: State get() = stateAccessor()
-        override val actions: Flow<Action> = actionFlow
-    }
+internal fun <Action, State> mutatorScope(
+    stateAccessor: () -> State,
+    actionFlow: Flow<Action>
+): MutatorScope<Action, State> = object : MutatorScope<Action, State> {
+    override val currentState: State get() = stateAccessor()
+    override val actions: Flow<Action> = actionFlow
 }

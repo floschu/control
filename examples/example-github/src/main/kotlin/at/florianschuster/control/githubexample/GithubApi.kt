@@ -10,7 +10,7 @@ import retrofit2.Retrofit
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface GithubApi {
+internal interface GithubApi {
 
     @GET("search/repositories")
     suspend fun repos(@Query("q") query: String, @Query("page") page: Int): Result
@@ -36,10 +36,10 @@ interface GithubApi {
 }
 
 @Serializable
-data class Result(val items: List<Repo>)
+internal data class Result(val items: List<Repo>)
 
 @Serializable
-data class Repo(
+internal data class Repo(
     val id: Int,
     @SerialName("full_name") val name: String,
     val description: String? = null

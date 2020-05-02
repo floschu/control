@@ -10,14 +10,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -113,22 +110,27 @@ internal class ImplementationTest {
         testFlow expect emissions(4, 5)
     }
 
-    @Test(expected = ControllerError.Mutate::class)
-    fun `state flow throws error from mutator`() = runBlockingTest {
-        val sut = counterController(mutatorErrorIndex = 2)
+    @Test
+    fun `state flow throws error from mutator`() {
+        val scope = TestCoroutineScope()
+        val sut = scope.counterController(mutatorErrorIndex = 2)
+        sut.dispatch(Unit)
+        sut.dispatch(Unit)
+        sut.dispatch(Unit)
 
-        sut.dispatch(Unit)
-        sut.dispatch(Unit)
-        sut.dispatch(Unit)
+        assertTrue(scope.uncaughtExceptions.first() is ControllerError.Mutate)
     }
 
-    @Test(expected = ControllerError.Reduce::class)
-    fun `state flow throws error from reducer`() = runBlockingTest {
-        val sut = counterController(reducerErrorIndex = 2)
+    @Test
+    fun `state flow throws error from reducer`() {
+        val scope = TestCoroutineScope()
+        val sut = scope.counterController(reducerErrorIndex = 2)
 
         sut.dispatch(Unit)
         sut.dispatch(Unit)
         sut.dispatch(Unit)
+
+        assertTrue(scope.uncaughtExceptions.first() is ControllerError.Reduce)
     }
 
     @Test
@@ -185,6 +187,16 @@ internal class ImplementationTest {
         states expect emissions(0, 42, 43, 85)
     }
 
+    @Test
+    fun `MutatorScope is built correctly`() {
+        val stateAccessor = { 1 }
+        val actions = flowOf(1)
+        val sut = mutatorScope(stateAccessor, actions)
+
+        assertEquals(stateAccessor(), sut.currentState)
+        assertEquals(actions, sut.actions)
+    }
+
     private fun CoroutineScope.operationController() =
         createController<List<String>, List<String>, List<String>>(
 
@@ -219,16 +231,13 @@ internal class ImplementationTest {
     ) = createController<Unit, Unit, Int>(
         initialState = 0,
         mutator = { action ->
-            when (currentState) {
-                mutatorErrorIndex -> flow {
-                    emit(action)
-                    error("test")
-                }
-                else -> flowOf(action)
+            flow {
+                check(currentState != mutatorErrorIndex)
+                emit(action)
             }
         },
         reducer = { _, previousState ->
-            if (previousState == reducerErrorIndex) error("test")
+            check(previousState != reducerErrorIndex)
             previousState + 1
         }
     )
