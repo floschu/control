@@ -142,13 +142,16 @@ object Libs {
             "de.fayard.buildSrcVersions:de.fayard.buildSrcVersions.gradle.plugin:" +
             Versions.de_fayard_buildsrcversions_gradle_plugin
 
-    const val info_solidsoft_pitest_gradle_plugin: String =
-            "info.solidsoft.gradle.pitest:gradle-pitest-plugin:" +
-            Versions.info_solidsoft_pitest_gradle_plugin
-
     const val com_jfrog_bintray_gradle_plugin: String =
             "com.jfrog.bintray:com.jfrog.bintray.gradle.plugin:" +
             Versions.com_jfrog_bintray_gradle_plugin
+
+    /**
+     * https://github.com/floschu/coroutines-test-extensions
+     */
+    const val coroutines_test_extensions: String =
+            "at.florianschuster.test:coroutines-test-extensions:" +
+            Versions.coroutines_test_extensions
 
     /**
      * https://developer.android.com/jetpack/androidx
@@ -157,16 +160,16 @@ object Libs {
             Versions.lifecycle_runtime_ktx
 
     /**
+     * http://gradle-pitest-plugin.solidsoft.info/
+     */
+    const val gradle_pitest_plugin: String = "info.solidsoft.gradle.pitest:gradle-pitest-plugin:" +
+            Versions.gradle_pitest_plugin
+
+    /**
      * http://tools.android.com
      */
     const val constraintlayout: String = "androidx.constraintlayout:constraintlayout:" +
             Versions.constraintlayout
-
-    /**
-     * https://github.com/floschu/flow-test-extensions
-     */
-    const val flow_extensions: String = "at.florianschuster.test:flow-extensions:" +
-            Versions.flow_extensions
 
     /**
      * https://developer.android.com/testing

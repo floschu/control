@@ -3,7 +3,7 @@ package at.florianschuster.control.githubexample.search
 import at.florianschuster.control.githubexample.GithubApi
 import at.florianschuster.control.githubexample.Repo
 import at.florianschuster.control.githubexample.Result
-import at.florianschuster.test.flow.TestCoroutineScopeRule
+import at.florianschuster.test.coroutines.TestCoroutineScopeRule
 import at.florianschuster.test.flow.TestFlow
 import at.florianschuster.test.flow.emissionCount
 import at.florianschuster.test.flow.emissions
