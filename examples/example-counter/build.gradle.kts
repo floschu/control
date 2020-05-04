@@ -44,6 +44,7 @@ dependencies {
 
     testImplementation(Libs.coroutines_test_extensions)
 
+    androidTestImplementation(project(":control-test"))
     androidTestImplementation(Libs.androidx_test_rules)
     androidTestImplementation(Libs.androidx_test_runner)
     androidTestImplementation(Libs.core_ktx)

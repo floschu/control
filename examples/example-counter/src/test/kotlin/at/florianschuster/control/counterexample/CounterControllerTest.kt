@@ -19,7 +19,7 @@ internal class CounterControllerTest {
     private lateinit var states: TestFlow<CounterState>
 
     private fun `given counter controller`() {
-        controller = CounterController(testCoroutineScope)
+        controller = testCoroutineScope.createCounterController()
         states = controller.state.testIn(testCoroutineScope)
     }
 

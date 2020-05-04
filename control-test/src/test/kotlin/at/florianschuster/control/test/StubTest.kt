@@ -1,10 +1,9 @@
-package at.florianschuster.control
+package at.florianschuster.control.test
 
 import at.florianschuster.test.coroutines.TestCoroutineScopeRule
 import at.florianschuster.test.flow.emissions
 import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.testIn
-import kotlinx.coroutines.CoroutineScope
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -21,12 +20,11 @@ internal class StubTest {
             listOf("two"),
             listOf("three")
         )
-        val sut = testCoroutineScope.createStringController()
-        sut.stubEnabled = true
+        val sut = ControllerStub<List<String>, Unit, List<String>>(initialState)
 
         expectedActions.forEach(sut::dispatch)
 
-        assertEquals(expectedActions, sut.stub.actions)
+        assertEquals(expectedActions, sut.dispatchedActions)
     }
 
     @Test
@@ -36,11 +34,10 @@ internal class StubTest {
             listOf("two"),
             listOf("three")
         )
-        val sut = testCoroutineScope.createStringController()
-        sut.stubEnabled = true
+        val sut = ControllerStub<List<String>, Unit, List<String>>(initialState)
         val testFlow = sut.state.testIn(testCoroutineScope)
 
-        expectedStates.forEach(sut.stub::setState)
+        expectedStates.forEach(sut::emitState)
 
         testFlow expect emissions(listOf(initialState) + expectedStates)
     }
@@ -52,35 +49,17 @@ internal class StubTest {
             listOf("two"),
             listOf("three")
         )
-        val sut = testCoroutineScope.createStringController()
-        sut.stubEnabled = true
+        val sut = ControllerStub<List<String>, Unit, List<String>>(initialState)
 
-        sut.stub.setState(listOf("something 1"))
-        sut.stub.setState(listOf("something 2"))
+        sut.emitState(listOf("something 1"))
+        sut.emitState(listOf("something 2"))
 
         val testFlow = sut.state.testIn(testCoroutineScope)
 
-        expectedStates.forEach(sut.stub::setState)
+        expectedStates.forEach(sut::emitState)
 
         testFlow expect emissions(listOf(listOf("something 2")) + expectedStates)
     }
-
-    @Test
-    fun `stub action does not trigger state machine`() {
-        val sut = testCoroutineScope.createStringController()
-        sut.stubEnabled = true
-
-        sut.dispatch(listOf("test"))
-
-        assertEquals(initialState, sut.currentState)
-    }
-
-    private fun CoroutineScope.createStringController() =
-        createSynchronousController<List<String>, List<String>>(
-            tag = "string_controller",
-            initialState = initialState,
-            reducer = { previousState, mutation -> previousState + mutation }
-        )
 
     companion object {
         private val initialState = listOf("initialState")

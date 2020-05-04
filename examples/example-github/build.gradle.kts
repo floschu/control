@@ -54,6 +54,7 @@ dependencies {
     testImplementation(Libs.coroutines_test_extensions)
     testImplementation(Libs.mockk)
 
+    androidTestImplementation(project(":control-test"))
     androidTestImplementation(Libs.core_ktx)
     androidTestImplementation(Libs.junit_ktx)
     androidTestImplementation(Libs.espresso_core)

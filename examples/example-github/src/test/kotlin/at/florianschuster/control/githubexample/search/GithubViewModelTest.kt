@@ -35,7 +35,7 @@ internal class GithubViewModelTest {
     private fun `given github search controller`(
         initialState: GithubViewModel.State = GithubViewModel.State()
     ) {
-        sut = GithubViewModel(initialState, githubApi, testCoroutineScope.dispatcher)
+        sut = GithubViewModel(initialState, testCoroutineScope.dispatcher, githubApi)
         states = sut.controller.state.testIn(testCoroutineScope)
     }
 

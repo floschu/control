@@ -47,40 +47,23 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     private val actionChannel = BroadcastChannel<Action>(BUFFERED)
     private val stateChannel = ConflatedBroadcastChannel<State>()
-    private val controllerStub by lazy { ControllerStubImplementation<Action, State>(initialState) }
 
     override val state: Flow<State>
-        get() = if (!stubEnabled) {
+        get() {
             if (!stateJob.isActive) startStateJob()
-            stateChannel.asFlow()
-        } else {
-            controllerStub.stateChannel.asFlow()
+            return stateChannel.asFlow()
         }
 
     override val currentState: State
-        get() = if (!stubEnabled) {
+        get() {
             if (!stateJob.isActive) startStateJob()
-            stateChannel.value
-        } else {
-            controllerStub.stateChannel.value
+            return stateChannel.value
         }
 
     override fun dispatch(action: Action) {
-        if (!stubEnabled) {
-            if (!stateJob.isActive) startStateJob()
-            actionChannel.offer(action)
-        } else {
-            controllerStub.mutableActions.add(action)
-        }
+        if (!stateJob.isActive) startStateJob()
+        actionChannel.offer(action)
     }
-
-    override var stubEnabled: Boolean = false
-        set(value) {
-            controllerLog.log(ControllerEvent.Stub(tag, value))
-            field = value
-        }
-
-    override val stub: ControllerStub<Action, State> get() = controllerStub
 
     init {
         val actionFlow: Flow<Action> = actionsTransformer(actionChannel.asFlow())

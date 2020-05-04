@@ -27,10 +27,7 @@ internal data class CounterState(
     val loading: Boolean = false
 )
 
-@Suppress("FunctionName")
-internal fun CounterController(
-    scope: CoroutineScope
-): CounterController = scope.createController(
+internal fun CoroutineScope.createCounterController(): CounterController = createController(
 
     // we start with the initial state
     initialState = CounterState(value = 0, loading = false),

@@ -47,6 +47,6 @@ internal class CounterView : Fragment(R.layout.view_counter) {
     companion object {
         internal var CounterControllerProvider: (
             scope: CoroutineScope
-        ) -> CounterController = ::CounterController
+        ) -> CounterController = CoroutineScope::createCounterController
     }
 }

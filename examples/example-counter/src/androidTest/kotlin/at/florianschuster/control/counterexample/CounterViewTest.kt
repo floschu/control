@@ -8,7 +8,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import kotlinx.coroutines.test.TestCoroutineScope
+import at.florianschuster.control.test.ControllerStub
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,12 +17,12 @@ import kotlin.test.assertEquals
 @RunWith(AndroidJUnit4::class)
 internal class CounterViewTest {
 
-    private lateinit var controller: CounterController
+    private lateinit var controllerStub: ControllerStub<CounterAction, CounterMutation, CounterState>
 
     @Before
     fun setup() {
-        controller = CounterController(TestCoroutineScope()).apply { stubEnabled = true }
-        CounterView.CounterControllerProvider = { controller }
+        controllerStub = ControllerStub(initialState = CounterState())
+        CounterView.CounterControllerProvider = { controllerStub }
         launchFragmentInContainer<CounterView>()
     }
 
@@ -32,7 +32,7 @@ internal class CounterViewTest {
         onView(withId(R.id.increaseButton)).perform(click())
 
         // then
-        assertEquals(CounterAction.Increment, controller.stub.actions.last())
+        assertEquals(CounterAction.Increment, controllerStub.dispatchedActions.last())
     }
 
     @Test
@@ -41,7 +41,7 @@ internal class CounterViewTest {
         onView(withId(R.id.decreaseButton)).perform(click())
 
         // then
-        assertEquals(CounterAction.Decrement, controller.stub.actions.last())
+        assertEquals(CounterAction.Decrement, controllerStub.dispatchedActions.last())
     }
 
     @Test
@@ -50,7 +50,7 @@ internal class CounterViewTest {
         val testValue = 1
 
         // when
-        controller.stub.setState(CounterState(value = testValue))
+        controllerStub.emitState(CounterState(value = testValue))
 
         // then
         onView(withId(R.id.valueTextView)).check(matches(withText("$testValue")))
@@ -59,7 +59,7 @@ internal class CounterViewTest {
     @Test
     fun whenStateOffersLoadingProgressBarIsVisible() {
         // when
-        controller.stub.setState(CounterState(loading = true))
+        controllerStub.emitState(CounterState(loading = true))
 
         // then
         onView(withId(R.id.loadingProgressBar)).check(matches(isDisplayed()))
