@@ -37,9 +37,6 @@ internal class EventTest {
             assertTrue(lastEvents[2] is ControllerEvent.State)
         }
 
-        sut.stubEnabled = true
-        assertTrue(events.last() is ControllerEvent.Stub)
-
         sut.stateJob.cancel()
         assertTrue(events.last() is ControllerEvent.Completed)
     }
