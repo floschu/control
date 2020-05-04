@@ -27,7 +27,7 @@ internal class GithubViewTest {
 
     @Before
     fun setup() {
-        GithubViewModel.controllerFactory = { _, initialState, _, _ ->
+        GithubViewModel.ControllerFactory = { _, initialState, _, _ ->
             controllerStub = ControllerStub(initialState)
             controllerStub
         }

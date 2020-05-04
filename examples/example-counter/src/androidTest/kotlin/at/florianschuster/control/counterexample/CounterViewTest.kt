@@ -22,7 +22,7 @@ internal class CounterViewTest {
     @Before
     fun setup() {
         controllerStub = ControllerStub(initialState = CounterState())
-        CounterView.CounterControllerProvider = { controllerStub }
+        CounterView.ControllerFactory = { controllerStub }
         launchFragmentInContainer<CounterView>()
     }
 

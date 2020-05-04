@@ -26,10 +26,10 @@ internal class GithubViewModel(
     dispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : ViewModel() {
 
-    val controller = controllerFactory(viewModelScope, initialState, api, dispatcher)
+    val controller = ControllerFactory(viewModelScope, initialState, api, dispatcher)
 
     companion object {
-        var controllerFactory: (
+        internal var ControllerFactory: (
             scope: CoroutineScope,
             state: GithubState,
             api: GithubApi,
