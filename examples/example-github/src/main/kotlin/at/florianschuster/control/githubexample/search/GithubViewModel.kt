@@ -13,6 +13,8 @@ import at.florianschuster.control.takeUntil
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterIsInstance
@@ -21,20 +23,15 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 internal class GithubViewModel(
-    initialState: GithubState = GithubState(), // could be injected
+    initialState: GithubState = GithubState(),
     api: GithubApi = GithubApi(),
-    dispatcher: CoroutineDispatcher = Dispatchers.Default
-) : ViewModel() {
+    private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+    controller: GithubController = scope.createGithubController(initialState, api)
+) : ViewModel(), GithubController by controller {
 
-    val controller = ControllerFactory(viewModelScope, initialState, api, dispatcher)
-
-    companion object {
-        internal var ControllerFactory: (
-            scope: CoroutineScope,
-            state: GithubState,
-            api: GithubApi,
-            dispatcher: CoroutineDispatcher
-        ) -> GithubController = CoroutineScope::createGithubController
+    override fun onCleared() {
+        super.onCleared()
+        scope.cancel()
     }
 }
 
@@ -61,8 +58,7 @@ internal data class GithubState(
 
 internal fun CoroutineScope.createGithubController(
     initialState: GithubState,
-    api: GithubApi,
-    dispatcher: CoroutineDispatcher = Dispatchers.Default
+    api: GithubApi
 ): GithubController = createController(
     initialState = initialState,
 
@@ -109,9 +105,6 @@ internal fun CoroutineScope.createGithubController(
             is GithubMutation.SetLoadingNextPage -> previousState.copy(loadingNextPage = mutation.loading)
         }
     },
-
-    // viewModelScope uses Dispatchers.Main, we do not want to run on Main
-    dispatcher = dispatcher,
 
     controllerLog = ControllerLog.Custom { message ->
         if (event is ControllerEvent.State) Log.d("GithubViewModel", message)

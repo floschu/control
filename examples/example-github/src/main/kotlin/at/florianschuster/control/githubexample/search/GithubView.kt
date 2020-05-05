@@ -6,6 +6,8 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,7 +25,7 @@ import reactivecircus.flowbinding.recyclerview.scrollEvents
 
 internal class GithubView : Fragment(R.layout.view_github) {
 
-    private val viewModel: GithubViewModel by viewModels()
+    private val viewModel: GithubViewModel by viewModels { GithubViewModelFactory }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -42,22 +44,22 @@ internal class GithubView : Fragment(R.layout.view_github) {
             .debounce(500)
             .map { it.toString() }
             .map { GithubAction.UpdateQuery(it) }
-            .bind(to = viewModel.controller::dispatch)
+            .bind(to = viewModel::dispatch)
             .launchIn(scope = viewLifecycleOwner.lifecycleScope)
 
         repoRecyclerView.scrollEvents()
             .sample(500)
             .filter { it.view.shouldLoadMore() }
             .map { GithubAction.LoadNextPage }
-            .bind(to = viewModel.controller::dispatch)
+            .bind(to = viewModel::dispatch)
             .launchIn(scope = viewLifecycleOwner.lifecycleScope)
 
         // state
-        viewModel.controller.state.distinctMap(by = GithubState::repos)
+        viewModel.state.distinctMap(by = GithubState::repos)
             .bind(to = repoAdapter::submitList)
             .launchIn(scope = viewLifecycleOwner.lifecycleScope)
 
-        viewModel.controller.state.distinctMap(by = GithubState::loadingNextPage)
+        viewModel.state.distinctMap(by = GithubState::loadingNextPage)
             .bind(to = loadingProgressBar::isVisible::set)
             .launchIn(scope = viewLifecycleOwner.lifecycleScope)
     }
@@ -65,5 +67,12 @@ internal class GithubView : Fragment(R.layout.view_github) {
     private fun RecyclerView.shouldLoadMore(threshold: Int = 8): Boolean {
         val layoutManager = layoutManager as? LinearLayoutManager ?: return false
         return layoutManager.findLastVisibleItemPosition() + threshold > layoutManager.itemCount
+    }
+
+    companion object {
+        internal var GithubViewModelFactory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T = GithubViewModel() as T
+        }
     }
 }

@@ -2,6 +2,8 @@ package at.florianschuster.control.githubexample.search
 
 import android.view.View
 import androidx.fragment.app.testing.launchFragmentInContainer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
@@ -27,9 +29,11 @@ internal class GithubViewTest {
 
     @Before
     fun setup() {
-        GithubViewModel.ControllerFactory = { _, initialState, _, _ ->
-            controllerStub = ControllerStub(initialState)
-            controllerStub
+        controllerStub = ControllerStub(GithubState())
+        val viewModel = GithubViewModel(controller = controllerStub)
+        GithubView.GithubViewModelFactory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T = viewModel as T
         }
         launchFragmentInContainer<GithubView>(themeResId = R.style.Theme_MaterialComponents)
     }

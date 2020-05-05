@@ -35,8 +35,8 @@ internal class GithubViewModelTest {
     private fun `given github search controller`(
         initialState: GithubState = GithubState()
     ) {
-        sut = GithubViewModel(initialState, githubApi, testCoroutineScope.dispatcher)
-        states = sut.controller.state.testIn(testCoroutineScope)
+        sut = GithubViewModel(initialState, githubApi, testCoroutineScope)
+        states = sut.state.testIn(testCoroutineScope)
     }
 
     @Test
@@ -45,7 +45,7 @@ internal class GithubViewModelTest {
         `given github search controller`()
 
         // when
-        sut.controller.dispatch(GithubAction.UpdateQuery(query))
+        sut.dispatch(GithubAction.UpdateQuery(query))
 
         // then
         coVerify(exactly = 1) { githubApi.repos(query, 1) }
@@ -65,7 +65,7 @@ internal class GithubViewModelTest {
         `given github search controller`()
 
         // when
-        sut.controller.dispatch(GithubAction.UpdateQuery(emptyQuery))
+        sut.dispatch(GithubAction.UpdateQuery(emptyQuery))
 
         // then
         coVerify { githubApi.repos(any(), any()) wasNot Called }
@@ -80,7 +80,7 @@ internal class GithubViewModelTest {
         )
 
         // when
-        sut.controller.dispatch(GithubAction.LoadNextPage)
+        sut.dispatch(GithubAction.LoadNextPage)
 
         // then
         coVerify(exactly = 1) { githubApi.repos(any(), 2) }
@@ -99,7 +99,7 @@ internal class GithubViewModelTest {
         `given github search controller`(initialState)
 
         // when
-        sut.controller.dispatch(GithubAction.LoadNextPage)
+        sut.dispatch(GithubAction.LoadNextPage)
 
         // then
         coVerify { githubApi.repos(any(), any()) wasNot Called }
@@ -114,7 +114,7 @@ internal class GithubViewModelTest {
         `given github search controller`()
 
         // when
-        sut.controller.dispatch(GithubAction.UpdateQuery(query))
+        sut.dispatch(GithubAction.UpdateQuery(query))
 
         // then
         coVerify(exactly = 1) { githubApi.repos(query, 1) }
@@ -140,9 +140,9 @@ internal class GithubViewModelTest {
         `given github search controller`()
 
         // when
-        sut.controller.dispatch(GithubAction.UpdateQuery(query))
+        sut.dispatch(GithubAction.UpdateQuery(query))
         testCoroutineScope.advanceTimeBy(500) // updated before last query can finish
-        sut.controller.dispatch(GithubAction.UpdateQuery(secondQuery))
+        sut.dispatch(GithubAction.UpdateQuery(secondQuery))
         testCoroutineScope.advanceUntilIdle()
 
         // then
