@@ -6,7 +6,6 @@ plugins {
 
 dependencies {
     api(project(":control-core"))
-    testImplementation(Libs.mockk)
     testImplementation(Libs.coroutines_test_extensions)
 }
 

@@ -40,6 +40,7 @@ internal class StubTest {
         expectedStates.forEach(sut::emitState)
 
         testFlow expect emissions(listOf(initialState) + expectedStates)
+        assertEquals(listOf("three"), sut.currentState)
     }
 
     @Test
