@@ -43,7 +43,8 @@ A [Controller](control-core/src/main/kotlin/at/florianschuster/control/Controlle
 ## examples
 
 *   [counter](examples/example-counter): most basic example. uses `Controller`.
-*   [github search](examples/example-github): github repository search. uses `Controller` combined with android jetpack AAC `ViewModel`.
+*   [github search](examples/example-github): github repository search. uses `Controller` combined with _Android Jetpack AAC_ `ViewModel`.
+*   [counter compose](https://github.com/floschu/control/pull/9): like the counter example, but uses _Jetpack Compose_.
 
 # coverage
 
