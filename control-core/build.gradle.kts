@@ -57,4 +57,4 @@ pitest {
 }
 
 
-//apply(from = "$rootDir/gradle/deploy.gradle") TODO gradle 6.3
+apply(from = "$rootDir/gradle/deploy.gradle")
