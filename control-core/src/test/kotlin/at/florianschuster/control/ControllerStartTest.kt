@@ -1,6 +1,6 @@
 package at.florianschuster.control
 
-import at.florianschuster.test.flow.TestCoroutineScopeRule
+import at.florianschuster.test.coroutines.TestCoroutineScopeRule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import org.junit.Rule
@@ -45,6 +45,15 @@ internal class ControllerStartTest {
         assertFalse(sut.stateJob.isActive)
         sut.startStateJob()
         assertTrue(sut.stateJob.isActive)
+    }
+
+    @Test
+    fun `verify double checked locking`() {
+        val sut = testCoroutineScope.counterController(coroutineStart = CoroutineStart.LAZY)
+
+        assertFalse(sut.stateJob.isActive)
+        sut.stateJob.start()
+        assertFalse(sut.startStateJob())
     }
 
     private fun CoroutineScope.counterController(

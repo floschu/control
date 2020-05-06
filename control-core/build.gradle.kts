@@ -9,13 +9,13 @@ dependencies {
     api(Libs.kotlin_stdlib)
     api(Libs.kotlinx_coroutines_core)
     testImplementation(Libs.mockk)
-    testImplementation(Libs.flow_extensions)
+    testImplementation(Libs.coroutines_test_extensions)
 }
 
 tasks.jacocoTestReport {
     reports {
         xml.isEnabled = true
-        html.isEnabled = false
+        html.isEnabled = true
         csv.isEnabled = false
     }
     classDirectories.setFrom(

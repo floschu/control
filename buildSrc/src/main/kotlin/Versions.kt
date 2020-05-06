@@ -38,17 +38,17 @@ object Versions {
 
     const val de_fayard_buildsrcversions_gradle_plugin: String = "0.7.0"
 
-    const val com_jfrog_bintray_gradle_plugin: String = "1.8.4" // available: "1.8.5"
+    const val com_jfrog_bintray_gradle_plugin: String = "1.8.5"
+
+    const val coroutines_test_extensions: String = "0.1.2"
 
     const val lifecycle_runtime_ktx: String = "2.2.0"
 
-    const val gradle_pitest_plugin: String = "1.5.0"
+    const val gradle_pitest_plugin: String = "1.5.1"
 
     const val compose_compiler: String = "0.1.0-dev10"
 
     const val constraintlayout: String = "2.0.0-beta4"
-
-    const val flow_extensions: String = "0.0.4"
 
     const val espresso_core: String = "3.2.0"
 
@@ -69,11 +69,11 @@ object Versions {
     const val mockk: String = "1.10.0"
 
     /**
-     * Current version: "6.3"
+     * Current version: "6.4"
      * See issue 19: How to update Gradle itself?
      * https://github.com/jmfayard/buildSrcVersions/issues/19
      */
-    const val gradleLatestVersion: String = "6.3"
+    const val gradleLatestVersion: String = "6.4"
 }
 
 /**

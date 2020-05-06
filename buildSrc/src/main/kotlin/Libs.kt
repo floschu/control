@@ -155,6 +155,13 @@ object Libs {
             Versions.com_jfrog_bintray_gradle_plugin
 
     /**
+     * https://github.com/floschu/coroutines-test-extensions
+     */
+    const val coroutines_test_extensions: String =
+            "at.florianschuster.test:coroutines-test-extensions:" +
+            Versions.coroutines_test_extensions
+
+    /**
      * https://developer.android.com/jetpack/androidx
      */
     const val lifecycle_runtime_ktx: String = "androidx.lifecycle:lifecycle-runtime-ktx:" +
@@ -174,12 +181,6 @@ object Libs {
      */
     const val constraintlayout: String = "androidx.constraintlayout:constraintlayout:" +
             Versions.constraintlayout
-
-    /**
-     * https://github.com/floschu/flow-test-extensions
-     */
-    const val flow_extensions: String = "at.florianschuster.test:flow-extensions:" +
-            Versions.flow_extensions
 
     /**
      * https://developer.android.com/testing

@@ -124,10 +124,9 @@ internal class ControllerImplementation<Action, Mutation, State>(
         }
     }
 
-    internal fun startStateJob() = kotlinx.atomicfu.locks.synchronized(this) {
-        if (!stateJob.isActive) { // double checked locking
-            stateJob.start()
-        }
+    internal fun startStateJob(): Boolean = kotlinx.atomicfu.locks.synchronized(this) {
+        return if (stateJob.isActive) false // double checked locking
+        else stateJob.start()
     }
 }
 
