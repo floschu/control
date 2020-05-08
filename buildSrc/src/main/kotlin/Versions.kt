@@ -15,8 +15,7 @@ object Versions {
     const val org_jetbrains_kotlinx_kotlinx_serialization: String = "0.20.0"
              // available: "0.20.0-1.4-M1-release-99"
 
-    const val org_jetbrains_kotlinx_kotlinx_coroutines: String = "1.3.5"
-             // available: "1.3.5-1.4-M1-release-99"
+    const val org_jetbrains_kotlinx_kotlinx_coroutines: String = "1.3.6"
 
     const val io_github_reactivecircus_flowbinding: String = "0.11.1"
 
@@ -42,7 +41,7 @@ object Versions {
 
     const val lifecycle_runtime_ktx: String = "2.2.0"
 
-    const val gradle_pitest_plugin: String = "1.5.0"
+    const val gradle_pitest_plugin: String = "1.5.1"
 
     const val constraintlayout: String = "2.0.0-beta4"
 
@@ -65,11 +64,11 @@ object Versions {
     const val mockk: String = "1.10.0"
 
     /**
-     * Current version: "5.6.4"
+     * Current version: "6.4"
      * See issue 19: How to update Gradle itself?
      * https://github.com/jmfayard/buildSrcVersions/issues/19
      */
-    const val gradleLatestVersion: String = "6.3"
+    const val gradleLatestVersion: String = "6.4"
 }
 
 /**
