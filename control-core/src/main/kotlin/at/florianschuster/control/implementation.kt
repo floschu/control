@@ -9,8 +9,8 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -46,23 +46,23 @@ internal class ControllerImplementation<Action, Mutation, State>(
     internal val stateJob: Job // internal for testing
 
     private val actionChannel = BroadcastChannel<Action>(BUFFERED)
-    private val stateChannel = ConflatedBroadcastChannel<State>()
+    private val stateFlow = MutableStateFlow(initialState)
     private val controllerStub by lazy { ControllerStubImplementation<Action, State>(initialState) }
 
     override val state: Flow<State>
         get() = if (!stubEnabled) {
             if (!stateJob.isActive) startStateJob()
-            stateChannel.asFlow()
+            stateFlow
         } else {
-            controllerStub.stateChannel.asFlow()
+            controllerStub.stateFlow
         }
 
     override val currentState: State
         get() = if (!stubEnabled) {
             if (!stateJob.isActive) startStateJob()
-            stateChannel.value
+            stateFlow.value
         } else {
-            controllerStub.stateChannel.value
+            controllerStub.stateFlow.value
         }
 
     override fun dispatch(action: Action) {
@@ -117,7 +117,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
                 .onStart { controllerLog.log(ControllerEvent.Started(tag)) }
                 .onEach { state ->
                     controllerLog.log(ControllerEvent.State(tag, state.toString()))
-                    stateChannel.send(state)
+                    this@ControllerImplementation.stateFlow.value = state
                 }
                 .onCompletion { controllerLog.log(ControllerEvent.Completed(tag)) }
                 .collect()
