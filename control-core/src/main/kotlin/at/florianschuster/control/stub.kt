@@ -2,7 +2,7 @@ package at.florianschuster.control
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
+import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
  * Retrieves a [ControllerStub] for this [Controller] used for view testing.
@@ -52,11 +52,11 @@ internal class ControllerStubImplementation<Action, State>(
 ) : ControllerStub<Action, State> {
 
     internal val mutableActions = mutableListOf<Action>()
-    internal val stateChannel = ConflatedBroadcastChannel(initialState)
+    internal val stateFlow = MutableStateFlow(initialState)
 
     override val dispatchedActions: List<Action> get() = mutableActions
 
     override fun emitState(state: State) {
-        stateChannel.offer(state)
+        stateFlow.value = state
     }
 }
