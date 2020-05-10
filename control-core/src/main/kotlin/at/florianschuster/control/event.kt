@@ -54,8 +54,8 @@ sealed class ControllerEvent(
      * When the [ControllerImplementation.stub] is set to enabled.
      */
     class Stub internal constructor(
-        tag: String, enabled: Boolean
-    ) : ControllerEvent(tag, "stub: enabled = $enabled")
+        tag: String
+    ) : ControllerEvent(tag, "is now stubbed")
 
     /**
      * When the [ControllerImplementation] stream is completed.

@@ -8,7 +8,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import kotlinx.coroutines.test.TestCoroutineScope
+import at.florianschuster.control.stub
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,8 +21,10 @@ internal class CounterViewTest {
 
     @Before
     fun setup() {
-        controller = CounterController(TestCoroutineScope()).apply { stubEnabled = true }
-        CounterView.CounterControllerProvider = { controller }
+        CounterView.CounterControllerProvider = { scope ->
+            controller = CounterController(scope).apply { stub() }
+            controller
+        }
         launchFragmentInContainer<CounterView>()
     }
 
@@ -32,7 +34,7 @@ internal class CounterViewTest {
         onView(withId(R.id.increaseButton)).perform(click())
 
         // then
-        assertEquals(CounterAction.Increment, controller.stub.actions.last())
+        assertEquals(CounterAction.Increment, controller.stub().dispatchedActions.last())
     }
 
     @Test
@@ -41,7 +43,7 @@ internal class CounterViewTest {
         onView(withId(R.id.decreaseButton)).perform(click())
 
         // then
-        assertEquals(CounterAction.Decrement, controller.stub.actions.last())
+        assertEquals(CounterAction.Decrement, controller.stub().dispatchedActions.last())
     }
 
     @Test
@@ -50,7 +52,7 @@ internal class CounterViewTest {
         val testValue = 1
 
         // when
-        controller.stub.setState(CounterState(value = testValue))
+        controller.stub().emitState(CounterState(value = testValue))
 
         // then
         onView(withId(R.id.valueTextView)).check(matches(withText("$testValue")))
@@ -59,7 +61,7 @@ internal class CounterViewTest {
     @Test
     fun whenStateOffersLoadingProgressBarIsVisible() {
         // when
-        controller.stub.setState(CounterState(loading = true))
+        controller.stub().emitState(CounterState(loading = true))
 
         // then
         onView(withId(R.id.loadingProgressBar)).check(matches(isDisplayed()))
