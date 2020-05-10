@@ -71,7 +71,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     override fun dispatch(action: Action) {
         if (stubInitialized) {
-            stub.mutableActions.add(action)
+            stub.mutableDispatchedActions.add(action)
         } else {
             if (!stateJob.isActive) startStateJob()
             actionChannel.offer(action)

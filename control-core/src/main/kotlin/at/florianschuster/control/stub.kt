@@ -51,10 +51,10 @@ internal class ControllerStubImplementation<Action, State>(
     initialState: State
 ) : ControllerStub<Action, State> {
 
-    internal val mutableActions = mutableListOf<Action>()
+    internal val mutableDispatchedActions = mutableListOf<Action>()
     internal val stateFlow = MutableStateFlow(initialState)
 
-    override val dispatchedActions: List<Action> get() = mutableActions
+    override val dispatchedActions: List<Action> get() = mutableDispatchedActions
 
     override fun emitState(state: State) {
         stateFlow.value = state
