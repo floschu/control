@@ -143,6 +143,13 @@ object Libs {
             Versions.binary_compatibility_validator
 
     /**
+     * https://github.com/floschu/coroutines-test-extensions
+     */
+    const val coroutines_test_extensions: String =
+            "at.florianschuster.test:coroutines-test-extensions:" +
+            Versions.coroutines_test_extensions
+
+    /**
      * https://github.com/Kotlin/atomicfu
      */
     const val atomicfu_gradle_plugin: String = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:" +
@@ -165,12 +172,6 @@ object Libs {
      */
     const val constraintlayout: String = "androidx.constraintlayout:constraintlayout:" +
             Versions.constraintlayout
-
-    /**
-     * https://github.com/floschu/flow-test-extensions
-     */
-    const val flow_extensions: String = "at.florianschuster.test:flow-extensions:" +
-            Versions.flow_extensions
 
     /**
      * https://developer.android.com/testing

@@ -42,12 +42,12 @@ dependencies {
     debugImplementation(Libs.fragment_ktx)
     debugImplementation(Libs.fragment_testing)
 
-    testImplementation(Libs.flow_extensions)
+    testImplementation(Libs.coroutines_test_extensions)
 
     androidTestImplementation(Libs.androidx_test_rules)
     androidTestImplementation(Libs.androidx_test_runner)
     androidTestImplementation(Libs.core_ktx)
     androidTestImplementation(Libs.espresso_core)
-    androidTestImplementation(Libs.flow_extensions)
+    androidTestImplementation(Libs.coroutines_test_extensions)
     androidTestImplementation(Libs.junit_ktx)
 }

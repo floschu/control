@@ -30,10 +30,4 @@ bintray {
     }
 }
 
-apply from: "https://raw.githubusercontent.com/sky-uk/gradle-maven-plugin/master/gradle-mavenizer.gradle"
-
-// override from sky-uk plugin to correctly package sources
-task sourcesJar(type: Jar, overwrite: true) {
-    from sourceSets.main.allSource
-    archiveClassifier.set("sources")
-}
+apply from: "https://raw.githubusercontent.com/floschu/gradle-maven-plugin/master/gradle-mavenizer.gradle"

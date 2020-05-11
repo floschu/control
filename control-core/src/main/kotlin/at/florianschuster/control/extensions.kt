@@ -19,13 +19,6 @@ fun <T> Flow<T>.bind(
 ): Flow<T> = onEach { to(it) }
 
 /**
- * Binds a [Flow] of [Action] to [Controller.dispatch].
- */
-fun <Action> Flow<Action>.bind(
-    to: Controller<Action, *, *>
-): Flow<Action> = bind(to::dispatch)
-
-/**
  * Maps emissions of a [Flow] and only emits those that are distinct from their immediate
  * predecessors.
  */

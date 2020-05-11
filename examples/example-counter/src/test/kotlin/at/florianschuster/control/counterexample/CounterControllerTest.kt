@@ -1,6 +1,6 @@
 package at.florianschuster.control.counterexample
 
-import at.florianschuster.test.flow.TestCoroutineScopeRule
+import at.florianschuster.test.coroutines.TestCoroutineScopeRule
 import at.florianschuster.test.flow.TestFlow
 import at.florianschuster.test.flow.emissionCount
 import at.florianschuster.test.flow.emissions

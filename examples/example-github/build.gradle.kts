@@ -51,7 +51,7 @@ dependencies {
     implementation(Libs.retrofit2_kotlinx_serialization_converter)
     debugImplementation(Libs.fragment_testing)
 
-    testImplementation(Libs.flow_extensions)
+    testImplementation(Libs.coroutines_test_extensions)
     testImplementation(Libs.mockk)
 
     androidTestImplementation(Libs.core_ktx)
@@ -59,6 +59,6 @@ dependencies {
     androidTestImplementation(Libs.espresso_core)
     androidTestImplementation(Libs.androidx_test_rules)
     androidTestImplementation(Libs.androidx_test_runner)
-    androidTestImplementation(Libs.flow_extensions)
+    androidTestImplementation(Libs.coroutines_test_extensions)
     androidTestImplementation(Libs.mockk)
 }

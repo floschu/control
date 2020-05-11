@@ -33,18 +33,6 @@ internal class ExtensionsTest {
     }
 
     @Test
-    fun `bind controller emits values correctly`() = runBlockingTest {
-        val sut = spyk<Controller<Int, Unit, Unit>>()
-        flow {
-            emit(1)
-            emit(2)
-        }.bind(to = sut).launchIn(this)
-
-        verify(exactly = 1) { sut.dispatch(1) }
-        verify(exactly = 1) { sut.dispatch(2) }
-    }
-
-    @Test
     fun `distinctMap works`() = runBlockingTest {
         val result = listOf(0, 1, 1, 2, 2, 3, 4, 4, 5, 5).asFlow().distinctMap { it * 2 }.toList()
         assertEquals(listOf(0, 2, 4, 6, 8, 10), result)

@@ -1,6 +1,6 @@
 package at.florianschuster.control
 
-import at.florianschuster.test.flow.TestCoroutineScopeRule
+import at.florianschuster.test.coroutines.TestCoroutineScopeRule
 import at.florianschuster.test.flow.emission
 import at.florianschuster.test.flow.emissionCount
 import at.florianschuster.test.flow.emissions
@@ -82,7 +82,7 @@ internal class ImplementationTest {
     }
 
     @Test
-    fun `synchronous controller builder`() {
+    fun `synchronous controller`() {
         val counterSut = testCoroutineScope.createSynchronousController<Int, Int>(
             tag = "counter",
             initialState = 0,
@@ -94,6 +94,19 @@ internal class ImplementationTest {
         counterSut.dispatch(3)
 
         assertEquals(6, counterSut.currentState)
+    }
+
+    @Test
+    fun `only distinct states are emitted`() {
+        val sut = testCoroutineScope.createSynchronousController<Unit, Int>(
+            0,
+            reducer = { _, previousState -> previousState }
+        )
+        val testFlow = sut.state.testIn(testCoroutineScope)
+        sut.dispatch(Unit)
+        sut.dispatch(Unit)
+        sut.dispatch(Unit)
+        testFlow expect emissionCount(1) // no state changes
     }
 
     @Test

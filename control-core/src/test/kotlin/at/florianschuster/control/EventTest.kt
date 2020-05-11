@@ -37,7 +37,7 @@ internal class EventTest {
             assertTrue(lastEvents[2] is ControllerEvent.State)
         }
 
-        sut.stubEnabled = true
+        sut.stub()
         assertTrue(events.last() is ControllerEvent.Stub)
 
         sut.stateJob.cancel()
@@ -45,7 +45,7 @@ internal class EventTest {
     }
 
     @Test
-    fun `ControllerImplementation logs mutator error correctly`() { // todo
+    fun `ControllerImplementation logs mutator error correctly`() {
         val events = mutableListOf<ControllerEvent>()
         val sut = TestCoroutineScope().eventsController(events)
 
@@ -57,7 +57,7 @@ internal class EventTest {
     }
 
     @Test
-    fun `ControllerImplementation logs reducer error correctly`() { // todo
+    fun `ControllerImplementation logs reducer error correctly`() {
         val events = mutableListOf<ControllerEvent>()
         val sut = TestCoroutineScope().eventsController(events)
 
