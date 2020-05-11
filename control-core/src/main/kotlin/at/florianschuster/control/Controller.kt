@@ -53,17 +53,6 @@ interface Controller<Action, Mutation, State> {
      * The [State] [Flow]. Use this to collect [State] changes.
      */
     val state: Flow<State>
-
-    /**
-     * Set to true if you want to enable stubbing with [stub].
-     * This has be set before binding [Controller.state] or [dispatch] an [Action].
-     */
-    var stubEnabled: Boolean
-
-    /**
-     * Use this [ControllerStub] for view testing.
-     */
-    val stub: ControllerStub<Action, State>
 }
 
 /**

@@ -43,44 +43,40 @@ internal class ControllerImplementation<Action, Mutation, State>(
     internal val controllerLog: ControllerLog
 ) : Controller<Action, Mutation, State> {
 
-    internal val stateJob: Job // internal for testing
+    internal val stateJob: Job
 
     private val actionChannel = BroadcastChannel<Action>(BUFFERED)
     private val stateFlow = MutableStateFlow(initialState)
-    private val controllerStub by lazy { ControllerStubImplementation<Action, State>(initialState) }
+
+    // region stub
+
+    internal lateinit var stub: ControllerStubImplementation<Action, State>
+    internal val stubInitialized: Boolean get() = this::stub.isInitialized
+
+    // endregion
+
+    // region controller
 
     override val state: Flow<State>
-        get() = if (!stubEnabled) {
+        get() = if (stubInitialized) stub.stateFlow else {
             if (!stateJob.isActive) startStateJob()
             stateFlow
-        } else {
-            controllerStub.stateFlow
         }
 
     override val currentState: State
-        get() = if (!stubEnabled) {
+        get() = if (stubInitialized) stub.stateFlow.value else {
             if (!stateJob.isActive) startStateJob()
             stateFlow.value
-        } else {
-            controllerStub.stateFlow.value
         }
 
     override fun dispatch(action: Action) {
-        if (!stubEnabled) {
+        if (stubInitialized) {
+            stub.mutableDispatchedActions.add(action)
+        } else {
             if (!stateJob.isActive) startStateJob()
             actionChannel.offer(action)
-        } else {
-            controllerStub.mutableActions.add(action)
         }
     }
-
-    override var stubEnabled: Boolean = false
-        set(value) {
-            controllerLog.log(ControllerEvent.Stub(tag, value))
-            field = value
-        }
-
-    override val stub: ControllerStub<Action, State> get() = controllerStub
 
     init {
         val actionFlow: Flow<Action> = actionsTransformer(actionChannel.asFlow())
@@ -128,6 +124,8 @@ internal class ControllerImplementation<Action, Mutation, State>(
         return if (stateJob.isActive) false // double checked locking
         else stateJob.start()
     }
+
+    // endregion
 }
 
 internal fun <Action, State> mutatorScope(

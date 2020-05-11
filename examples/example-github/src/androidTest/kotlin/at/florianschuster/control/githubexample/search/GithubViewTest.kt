@@ -14,6 +14,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import at.florianschuster.control.githubexample.R
+import at.florianschuster.control.stub
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.not
 import org.junit.Before
@@ -28,10 +29,12 @@ internal class GithubViewTest {
 
     @Before
     fun setup() {
-        viewModel = GithubViewModel().apply { controller.stubEnabled = true }
         GithubView.GithubViewModelFactory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T = viewModel as T
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                viewModel = GithubViewModel().apply { controller.stub() }
+                return viewModel as T
+            }
         }
         launchFragmentInContainer<GithubView>(themeResId = R.style.Theme_MaterialComponents)
     }
@@ -48,20 +51,20 @@ internal class GithubViewTest {
         // then
         assertEquals(
             GithubViewModel.Action.UpdateQuery(testQuery),
-            viewModel.controller.stub.actions.last()
+            viewModel.controller.stub().dispatchedActions.last()
         )
     }
 
     @Test
     fun whenStateOffersLoadingNextPageThenProgressBarIsShown() {
         // when
-        viewModel.controller.stub.setState(GithubViewModel.State(loadingNextPage = true))
+        viewModel.controller.stub().emitState(GithubViewModel.State(loadingNextPage = true))
 
         // then
         onView(withId(R.id.loadingProgressBar)).check(matches(isDisplayed()))
 
         // when
-        viewModel.controller.stub.setState(GithubViewModel.State(loadingNextPage = false))
+        viewModel.controller.stub().emitState(GithubViewModel.State(loadingNextPage = false))
 
         // then
         onView(withId(R.id.loadingProgressBar)).check(matches(not(isDisplayed())))
