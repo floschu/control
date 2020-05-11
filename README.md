@@ -38,7 +38,6 @@ A [Controller](control-core/src/main/kotlin/at/florianschuster/control/Controlle
 4. [controller testing](https://github.com/floschu/control/wiki/controller-testing)
 5. [view testing](https://github.com/floschu/control/wiki/view-testing)
 6. [logging](https://github.com/floschu/control/wiki/logging)
-7. [helpers](https://github.com/floschu/control/wiki/helpers)
 
 ## examples
 
