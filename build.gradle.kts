@@ -12,6 +12,7 @@ buildscript {
         classpath(Libs.kotlin_serialization)
         classpath(Libs.atomicfu_gradle_plugin)
         classpath(Libs.gradle_pitest_plugin)
+        classpath(Libs.binary_compatibility_validator)
     }
 }
 
@@ -19,6 +20,12 @@ plugins {
     buildSrcVersions
     jacoco
     id("org.jlleitschuh.gradle.ktlint").version(Versions.org_jlleitschuh_gradle_ktlint_gradle_plugin)
+}
+
+apply(plugin = "binary-compatibility-validator")
+
+configure<kotlinx.validation.ApiValidationExtension> {
+    ignoredProjects.addAll(listOf("example-counter", "example-github"))
 }
 
 allprojects {

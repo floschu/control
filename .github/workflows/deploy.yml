@@ -16,7 +16,7 @@ jobs:
         with:
           java-version: 1.8
       - name: "Checks all the things"
-        run: ./gradlew lint ktlintCheck test jacocoTestCoverageVerification pitest assemble
+        run: ./gradlew lint ktlintCheck test jacocoTestCoverageVerification pitest apiCheck assemble
 
   publish:
     needs: [all_checks]

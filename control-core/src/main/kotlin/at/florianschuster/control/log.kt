@@ -34,7 +34,7 @@ sealed class ControllerLog {
     /**
      * Uses a custom [Logger] to log.
      */
-    data class Custom(override val logger: Logger) : ControllerLog()
+    class Custom(override val logger: Logger) : ControllerLog()
 
     companion object {
 

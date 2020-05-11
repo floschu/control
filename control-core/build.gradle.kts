@@ -59,5 +59,4 @@ pitest {
     verbose.set(true)
 }
 
-
 apply(from = "$rootDir/gradle/deploy.gradle")
