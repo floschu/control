@@ -3,7 +3,7 @@ package at.florianschuster.control
 /**
  * Errors that can happen in a [Controller].
  */
-sealed class ControllerError(
+internal sealed class ControllerError(
     message: String,
     cause: Throwable
 ) : RuntimeException(message, cause) {
@@ -11,7 +11,7 @@ sealed class ControllerError(
     /**
      * Error during [Mutator].
      */
-    internal class Mutate(
+    class Mutate(
         tag: String,
         action: String,
         cause: Throwable
@@ -20,7 +20,7 @@ sealed class ControllerError(
     /**
      * Error during [Reducer].
      */
-    internal class Reduce(
+    class Reduce(
         tag: String,
         previousState: String,
         mutation: String,
