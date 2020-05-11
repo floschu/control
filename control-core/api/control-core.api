@@ -11,9 +11,6 @@ public abstract interface class at/florianschuster/control/Controller {
 	public abstract fun getState ()Lkotlinx/coroutines/flow/Flow;
 }
 
-public final class at/florianschuster/control/Controller$Companion {
-}
-
 public abstract class at/florianschuster/control/ControllerEvent {
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun toString ()Ljava/lang/String;
@@ -67,9 +64,6 @@ public final class at/florianschuster/control/ControllerLog$Println : at/florian
 public abstract interface class at/florianschuster/control/ControllerStub {
 	public abstract fun emitState (Ljava/lang/Object;)V
 	public abstract fun getDispatchedActions ()Ljava/util/List;
-}
-
-public final class at/florianschuster/control/ControllerStub$Companion {
 }
 
 public final class at/florianschuster/control/ExtensionsKt {
