@@ -39,8 +39,6 @@ interface ControllerStub<Action, State> {
      * Use this to verify if [State] is correctly bound to a view.
      */
     fun emitState(state: State)
-
-    companion object
 }
 
 /**

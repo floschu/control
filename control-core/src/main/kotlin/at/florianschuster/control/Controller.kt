@@ -53,8 +53,6 @@ interface Controller<Action, Mutation, State> {
      * The [State] [Flow]. Use this to collect [State] changes.
      */
     val state: Flow<State>
-
-    companion object
 }
 
 /**
