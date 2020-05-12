@@ -40,6 +40,11 @@ import kotlinx.coroutines.flow.Flow
 interface Controller<Action, Mutation, State> {
 
     /**
+     * The initial [State].
+     */
+    val initialState: State
+
+    /**
      * Dispatches an [Action] to be processed by this [Controller].
      */
     fun dispatch(action: Action)
@@ -95,13 +100,19 @@ typealias Mutator<Action, Mutation, State> = MutatorScope<Action, State>.(
 interface MutatorScope<Action, State> {
 
     /**
-     * A generated property in [ControllerImplementation.MutatorScopeImpl], thus always
-     * providing the current [State] when accessed.
+     * Provides the [Controller.initialState].
+     */
+    val initialState: State
+
+    /**
+     * Provides [Controller.currentState] as a generated property, thus always providing the
+     * latest [State] when accessed.
      */
     val currentState: State
 
     /**
-     * Accessed after [Action] [Transformer] is applied.
+     * Provides the [Action] coming in through [Controller.dispatch]. Accessed after
+     * [Transformer] is applied.
      *
      * Use if a [Flow] inside the [Mutator] needs to be cancelled or transformed due to an
      * incoming [Action]:

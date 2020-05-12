@@ -22,6 +22,7 @@ internal class StubTest {
     @Test
     fun `custom controller implementation cannot be stubbed`() {
         val sut = object : Controller<Int, Int, Int> {
+            override val initialState: Int get() = error("")
             override fun dispatch(action: Int) = Unit
             override val currentState: Int get() = error("")
             override val state: Flow<Int> get() = error("")

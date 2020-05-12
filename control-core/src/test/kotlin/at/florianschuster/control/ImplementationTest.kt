@@ -202,10 +202,12 @@ internal class ImplementationTest {
 
     @Test
     fun `MutatorScope is built correctly`() {
+        val initialState = 3
         val stateAccessor = { 1 }
         val actions = flowOf(1)
-        val sut = mutatorScope(stateAccessor, actions)
+        val sut = mutatorScope(initialState, stateAccessor, actions)
 
+        assertEquals(initialState, sut.initialState)
         assertEquals(stateAccessor(), sut.currentState)
         assertEquals(actions, sut.actions)
     }

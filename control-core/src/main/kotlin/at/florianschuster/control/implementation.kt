@@ -31,7 +31,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
     internal val dispatcher: CoroutineDispatcher,
     internal val coroutineStart: CoroutineStart,
 
-    internal val initialState: State,
+    override val initialState: State,
     internal val mutator: Mutator<Action, Mutation, State>,
     internal val reducer: Reducer<Mutation, State>,
 
@@ -81,7 +81,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
     init {
         val actionFlow: Flow<Action> = actionsTransformer(actionChannel.asFlow())
 
-        val mutatorScope = mutatorScope({ currentState }, actionFlow)
+        val mutatorScope = mutatorScope(initialState, { currentState }, actionFlow)
         val mutationFlow: Flow<Mutation> = actionFlow.flatMapMerge { action ->
             controllerLog.log(ControllerEvent.Action(tag, action.toString()))
             mutatorScope.mutator(action).catch { cause ->
@@ -129,9 +129,11 @@ internal class ControllerImplementation<Action, Mutation, State>(
 }
 
 internal fun <Action, State> mutatorScope(
+    initialState: State,
     stateAccessor: () -> State,
     actionFlow: Flow<Action>
 ): MutatorScope<Action, State> = object : MutatorScope<Action, State> {
+    override val initialState: State = initialState
     override val currentState: State get() = stateAccessor()
     override val actions: Flow<Action> = actionFlow
 }
