@@ -10,7 +10,7 @@
 
 ---
 
-## [Unreleased] - yyyy-mm-dd
+## [Template] - yyyy-mm-dd
 
 ### added
 
