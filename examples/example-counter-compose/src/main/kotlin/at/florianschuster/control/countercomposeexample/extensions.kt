@@ -1,29 +1,16 @@
 package at.florianschuster.control.countercomposeexample
 
 import androidx.compose.Composable
-import androidx.compose.FrameManager
 import androidx.compose.State
-import androidx.compose.onPreCommit
-import androidx.compose.state
+import androidx.compose.collectAsState
 import at.florianschuster.control.Controller
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 /**
- * Collects values from [Controller.state] and represents its latest value via [State].
- * Executes th effect every time the [Controller] or the [context] changes.
+ * Collects values from the [Controller.state] and represents its latest value via [State].
+ * Every time state is emitted, the returned [State] will be updated causing
+ * recomposition of every [State.value] usage.
  */
 @Composable
-internal fun <S> Controller<*, *, S>.collectAsState(): State<S> {
-    val context = Dispatchers.Main
-    val mutableState = state { currentState }
-    onPreCommit(this, context) {
-        val job = CoroutineScope(context).launch {
-            state.collect { FrameManager.framed { mutableState.value = it } }
-        }
-        onDispose { job.cancel() }
-    }
-    return mutableState
+internal fun <S> Controller<*, *, S>.collectState(): State<S> {
+    return state.collectAsState(initial = currentState)
 }

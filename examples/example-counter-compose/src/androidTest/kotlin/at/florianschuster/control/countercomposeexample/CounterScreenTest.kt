@@ -6,6 +6,7 @@ import androidx.ui.test.createComposeRule
 import androidx.ui.test.doClick
 import androidx.ui.test.findByTag
 import androidx.ui.test.findByText
+import at.florianschuster.control.stub
 import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Before
 import org.junit.Rule
@@ -24,9 +25,9 @@ internal class CounterScreenTest {
 
     @Before
     fun setup() {
-        controller = CounterController(TestCoroutineScope()).apply { stubEnabled = true }
+        controller = CounterController(TestCoroutineScope()).apply { stub() }
         composeTestRule.setContent {
-            val state by controller.collectAsState()
+            val state by controller.collectState()
             CounterScreen(counterState = state, action = controller::dispatch)
         }
     }
@@ -40,7 +41,7 @@ internal class CounterScreenTest {
         }
 
         // then
-        assertEquals(CounterAction.Increment, controller.stub.actions.last())
+        assertEquals(CounterAction.Increment, controller.stub().dispatchedActions.last())
     }
 
     @Test
@@ -52,7 +53,7 @@ internal class CounterScreenTest {
         }
 
         // then
-        assertEquals(CounterAction.Decrement, controller.stub.actions.last())
+        assertEquals(CounterAction.Decrement, controller.stub().dispatchedActions.last())
     }
 
     @Test
@@ -61,7 +62,7 @@ internal class CounterScreenTest {
         val testValue = 42
 
         // when
-        controller.stub.setState(CounterState(value = testValue))
+        controller.stub().emitState(CounterState(value = testValue))
 
         // then
         findByText("$testValue").assertIsDisplayed()
@@ -70,7 +71,7 @@ internal class CounterScreenTest {
     @Test
     fun whenStateOffersNotLoadingProgressBarDoesNotExist() {
         // when
-        controller.stub.setState(CounterState(loading = false))
+        controller.stub().emitState(CounterState(loading = false))
 
         // then
         findByTag("progressIndicator").assertDoesNotExist()

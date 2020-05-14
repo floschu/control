@@ -28,15 +28,14 @@ internal class AppActivity : ComponentActivity() {
 
 @Composable
 private fun AppScreen() {
-    val controller = CounterController(LifecycleOwnerAmbient.current.lifecycleScope)
-    val controllerState by controller.collectAsState()
-
     MaterialTheme(colors = AppColors.currentColorPalette) {
         Scaffold(
             topAppBar = {
                 TopAppBar(title = { Text(text = ContextAmbient.current.getString(R.string.app_name)) })
             },
             bodyContent = {
+                val controller = CounterController(LifecycleOwnerAmbient.current.lifecycleScope)
+                val controllerState by controller.collectState()
                 CounterScreen(counterState = controllerState, action = controller::dispatch)
             }
         )
