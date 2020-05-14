@@ -53,7 +53,7 @@ object Versions {
 
     const val espresso_core: String = "3.2.0"
 
-    const val lint_gradle: String = "27.1.0-alpha08"
+    const val lint_gradle: String = "27.1.0-alpha09"
 
     const val appcompat: String = "1.1.0"
 
@@ -67,7 +67,7 @@ object Versions {
 
     const val ktlint: String = "0.36.0"
 
-    const val aapt2: String = "4.1.0-alpha08-6376216"
+    const val aapt2: String = "4.1.0-alpha09-6422342"
 
     const val mockk: String = "1.10.0"
 
