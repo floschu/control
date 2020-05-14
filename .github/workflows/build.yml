@@ -63,6 +63,18 @@ jobs:
       - name: "Mutation Testing"
         run: ./gradlew pitest
 
+  api_validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v1
+      - name: "Set up Java"
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: "Validates the Api"
+        run: ./gradlew apiCheck
+
   assemble:
     needs: [lint, ktlint, test, check_coverage, mutation_test]
     runs-on: ubuntu-latest

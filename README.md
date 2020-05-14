@@ -6,10 +6,10 @@
 </p>
 
 <p align=center>
-    <a href="https://github.com/floschu/control/"><img alt="last commit" src="https://img.shields.io/github/last-commit/floschu/control?logoColor=ffffff" /><a/> 
-    <a href="https://www.codacy.com/manual/floschu/control?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=floschu/control&amp;utm_campaign=Badge_Grade"><img alt="code quality" src="https://api.codacy.com/project/badge/Grade/39072347acb94bf79651d7f16bfa63ca" /><a/> 
-    <a href="https://codecov.io/gh/floschu/control"><img alt="coverage" src="https://codecov.io/gh/floschu/control/branch/develop/graph/badge.svg" /><a/> 
-    <a href="https://github.com/floschu/control/actions"><img alt="build" src="https://github.com/floschu/control/workflows/build/badge.svg" /><a/>
+    <a href="https://github.com/floschu/control/"><img alt="last commit" src="https://img.shields.io/github/last-commit/floschu/control?logoColor=ffffff" /></a>
+    <a href="https://www.codacy.com/manual/floschu/control?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=floschu/control&amp;utm_campaign=Badge_Grade"><img alt="code quality" src="https://api.codacy.com/project/badge/Grade/39072347acb94bf79651d7f16bfa63ca" /></a>
+    <a href="https://codecov.io/gh/floschu/control"><img alt="coverage" src="https://codecov.io/gh/floschu/control/branch/develop/graph/badge.svg" /></a>
+    <a href="https://github.com/floschu/control/actions"><img alt="build" src="https://github.com/floschu/control/workflows/build/badge.svg" /></a>
 </p>
 
 ## installation
@@ -38,15 +38,16 @@ A [Controller](control-core/src/main/kotlin/at/florianschuster/control/Controlle
 4. [controller testing](https://github.com/floschu/control/wiki/controller-testing)
 5. [view testing](https://github.com/floschu/control/wiki/view-testing)
 6. [logging](https://github.com/floschu/control/wiki/logging)
-7. [helpers](https://github.com/floschu/control/wiki/helpers)
+
+the changelog can be found [here](https://github.com/floschu/control/blob/develop/CHANGELOG.md)
 
 ## examples
 
 *   [counter](examples/example-counter): most basic example. uses `Controller`.
-*   [github search](examples/example-github): github repository search. uses `Controller` combined with android jetpack AAC `ViewModel`.
-*   [counter compose](examples/example-counter-compose): same as _counter_, but using [Jetpack Compose](https://developer.android.com/jetpack/compose).
+*   [github search](examples/example-github): github repository search. uses `Controller` combined with _Android Jetpack AAC_ `ViewModel`.
+*   [counter compose](https://github.com/floschu/control/pull/9): like the counter example, but uses _Jetpack Compose_.
 
-# coverage
+## coverage
 
 test coverage is automatically run by github actions on `[push]`
 
@@ -54,6 +55,8 @@ test coverage is automatically run by github actions on `[push]`
 |---:|:---:|---|---|
 | instruction/branch | 90% | `./gradlew test jacocoTestReport` | `./control-core/build/reports/jacoco/` |
 | mutation | 100% | `./gradlew pitest` | `./control-core/build/reports/pitest/` |
+
+
 
 ## author
 

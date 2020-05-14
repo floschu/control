@@ -15,12 +15,9 @@ object Versions {
     const val org_jetbrains_kotlinx_kotlinx_serialization: String = "0.20.0"
              // available: "0.20.0-1.4-M1-release-99"
 
-    const val org_jetbrains_kotlinx_kotlinx_coroutines: String = "1.3.5"
-             // available: "1.3.5-1.4-M1-release-99"
+    const val org_jetbrains_kotlinx_kotlinx_coroutines: String = "1.3.6"
 
     const val io_github_reactivecircus_flowbinding: String = "0.11.1"
-
-    const val org_jetbrains_kotlinx: String = "0.14.3"
 
     const val org_jetbrains_kotlin: String = "1.3.72"
 
@@ -28,9 +25,9 @@ object Versions {
 
     const val androidx_test: String = "1.2.0"
 
-    const val androidx_ui: String = "0.1.0-dev10"
+    const val androidx_ui: String = "0.1.0-dev11"
 
-    const val com_android_tools_build_gradle: String = "4.1.0-alpha08"
+    const val com_android_tools_build_gradle: String = "4.1.0-alpha09"
 
     const val org_jlleitschuh_gradle_ktlint_gradle_plugin: String = "9.2.1"
 
@@ -40,13 +37,17 @@ object Versions {
 
     const val com_jfrog_bintray_gradle_plugin: String = "1.8.5"
 
+    const val binary_compatibility_validator: String = "0.2.3"
+
     const val coroutines_test_extensions: String = "0.1.2"
+
+    const val atomicfu_gradle_plugin: String = "0.14.3"
 
     const val lifecycle_runtime_ktx: String = "2.2.0"
 
     const val gradle_pitest_plugin: String = "1.5.1"
 
-    const val compose_compiler: String = "0.1.0-dev10"
+    const val compose_compiler: String = "0.1.0-dev11"
 
     const val constraintlayout: String = "2.0.0-beta4"
 
@@ -57,6 +58,8 @@ object Versions {
     const val appcompat: String = "1.1.0"
 
     const val junit_ktx: String = "1.1.1"
+
+    const val atomicfu: String = "0.14.3"
 
     const val material: String = "1.1.0"
 

@@ -41,17 +41,6 @@ object Libs {
             Versions.io_github_reactivecircus_flowbinding
 
     /**
-     * https://github.com/Kotlin/atomicfu
-     */
-    const val atomicfu_gradle_plugin: String = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:" +
-            Versions.org_jetbrains_kotlinx
-
-    /**
-     * 0.14.3
-     */
-    const val atomicfu: String = "org.jetbrains.kotlinx:atomicfu:" + Versions.org_jetbrains_kotlinx
-
-    /**
      * https://kotlinlang.org/
      */
     const val kotlin_android_extensions: String =
@@ -155,11 +144,24 @@ object Libs {
             Versions.com_jfrog_bintray_gradle_plugin
 
     /**
+     * https://github.com/Kotlin/binary-compatibility-validator
+     */
+    const val binary_compatibility_validator: String =
+            "org.jetbrains.kotlinx:binary-compatibility-validator:" +
+            Versions.binary_compatibility_validator
+
+    /**
      * https://github.com/floschu/coroutines-test-extensions
      */
     const val coroutines_test_extensions: String =
             "at.florianschuster.test:coroutines-test-extensions:" +
             Versions.coroutines_test_extensions
+
+    /**
+     * https://github.com/Kotlin/atomicfu
+     */
+    const val atomicfu_gradle_plugin: String = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:" +
+            Versions.atomicfu_gradle_plugin
 
     /**
      * https://developer.android.com/jetpack/androidx
@@ -202,6 +204,11 @@ object Libs {
      * https://developer.android.com/testing
      */
     const val junit_ktx: String = "androidx.test.ext:junit-ktx:" + Versions.junit_ktx
+
+    /**
+     * 0.14.3
+     */
+    const val atomicfu: String = "org.jetbrains.kotlinx:atomicfu:" + Versions.atomicfu
 
     /**
      * http://developer.android.com/tools/extras/support-library.html
