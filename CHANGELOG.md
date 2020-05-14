@@ -1,16 +1,15 @@
 # changelog
 
----
 
-## [1.0.0] - 2020-mm-dd
+## 🎉 [1.0.0] - 2020-mm-dd
 
 ### added
 
 - todo
 
----
 
-## [Template] - yyyy-mm-dd
+
+## 🎉 [Template] - yyyy-mm-dd
 
 ### added
 
