@@ -1,32 +1,19 @@
 # changelog
 
+## [0.10.0] - 2020-05-11
 
-## 🎉 [1.0.0] - 2020-mm-dd
+### `ControllerStub`
 
-### added
+- `ControllerStub` is removed from `Controller` interface.  
+The stub is now accessible via the `Controller.stub()` extension function. Once a `Controller` is stubbed via this extension function, it cannot be un-stubbed.
 
-- todo
+## [0.9.0] - 2020-05-10
 
+### API dump
 
+- binary compatibility is now verified on each build/publish.
 
-## 🎉 [Template] - yyyy-mm-dd
+### `StateFlow`
 
-### added
-
-- new features
-
-### changed
-
-- udpated to existing functionality
-
-### deprecated
-
-- will be removed in future releases
-
-### fixed
-
-- bug fixes
-
-### removed
-
-- once deprecated, now removed
+- `ControllerImplemenation` now uses `MutableStateFlow` instead of `ConflatedBroadCastChannel` internally.
+- `Controller.state` emissions are now distinct by default (via `StateFlow`).
