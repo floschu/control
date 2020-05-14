@@ -39,13 +39,15 @@ A [Controller](control-core/src/main/kotlin/at/florianschuster/control/Controlle
 5. [view testing](https://github.com/floschu/control/wiki/view-testing)
 6. [logging](https://github.com/floschu/control/wiki/logging)
 
+the changelog can be found [here](https://github.com/floschu/control/blob/develop/CHANGELOG.md)
+
 ## examples
 
 *   [counter](examples/example-counter): most basic example. uses `Controller`.
 *   [github search](examples/example-github): github repository search. uses `Controller` combined with _Android Jetpack AAC_ `ViewModel`.
 *   [counter compose](https://github.com/floschu/control/pull/9): like the counter example, but uses _Jetpack Compose_.
 
-# coverage
+## coverage
 
 test coverage is automatically run by github actions on `[push]`
 
@@ -53,6 +55,8 @@ test coverage is automatically run by github actions on `[push]`
 |---:|:---:|---|---|
 | instruction/branch | 90% | `./gradlew test jacocoTestReport` | `./control-core/build/reports/jacoco/` |
 | mutation | 100% | `./gradlew pitest` | `./control-core/build/reports/pitest/` |
+
+
 
 ## author
 
