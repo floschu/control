@@ -79,36 +79,34 @@ internal class ControllerImplementation<Action, Mutation, State>(
     }
 
     init {
-        val actionFlow: Flow<Action> = actionsTransformer(actionChannel.asFlow())
+        stateJob = scope.launch(
+            context = dispatcher + CoroutineName(tag),
+            start = coroutineStart
+        ) {
+            val actionFlow: Flow<Action> = actionsTransformer(actionChannel.asFlow())
 
-        val mutatorScope = mutatorScope({ currentState }, actionFlow)
-        val mutationFlow: Flow<Mutation> = actionFlow.flatMapMerge { action ->
-            controllerLog.log(ControllerEvent.Action(tag, action.toString()))
-            mutatorScope.mutator(action).catch { cause ->
-                val error = ControllerError.Mutate(tag, "$action", cause)
-                controllerLog.log(ControllerEvent.Error(tag, error))
-                throw error
-            }
-        }
-
-        val stateFlow: Flow<State> = mutationsTransformer(mutationFlow)
-            .onEach { controllerLog.log(ControllerEvent.Mutation(tag, it.toString())) }
-            .scan(initialState) { previousState, mutation ->
-                try {
-                    reducer(mutation, previousState)
-                } catch (cause: Throwable) {
-                    val error = ControllerError.Reduce(tag, "$previousState", "$mutation", cause)
+            val mutatorScope = mutatorScope({ currentState }, actionFlow)
+            val mutationFlow: Flow<Mutation> = actionFlow.flatMapMerge { action ->
+                controllerLog.log(ControllerEvent.Action(tag, action.toString()))
+                mutatorScope.mutator(action).catch { cause ->
+                    val error = ControllerError.Mutate(tag, "$action", cause)
                     controllerLog.log(ControllerEvent.Error(tag, error))
                     throw error
                 }
             }
 
-        controllerLog.log(ControllerEvent.Created(tag))
+            val stateFlow: Flow<State> = mutationsTransformer(mutationFlow)
+                .onEach { controllerLog.log(ControllerEvent.Mutation(tag, it.toString())) }
+                .scan(initialState) { previousState, mutation ->
+                    runCatching { reducer(mutation, previousState) }.getOrElse { cause ->
+                        val error = ControllerError.Reduce(
+                            tag, "$previousState", "$mutation", cause
+                        )
+                        controllerLog.log(ControllerEvent.Error(tag, error))
+                        throw error
+                    }
+                }
 
-        stateJob = scope.launch(
-            context = dispatcher + CoroutineName(tag),
-            start = coroutineStart
-        ) {
             statesTransformer(stateFlow)
                 .onStart { controllerLog.log(ControllerEvent.Started(tag)) }
                 .onEach { state ->
@@ -118,6 +116,8 @@ internal class ControllerImplementation<Action, Mutation, State>(
                 .onCompletion { controllerLog.log(ControllerEvent.Completed(tag)) }
                 .collect()
         }
+
+        controllerLog.log(ControllerEvent.Created(tag))
     }
 
     internal fun startStateJob(): Boolean = kotlinx.atomicfu.locks.synchronized(this) {
