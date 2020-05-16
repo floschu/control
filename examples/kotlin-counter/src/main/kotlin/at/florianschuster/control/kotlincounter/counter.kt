@@ -7,7 +7,11 @@ import kotlin.system.exitProcess
 
 private const val AvailableCommands = "available commands -> + , - , exit"
 
-internal fun main(args: Array<String>) {
+/**
+ * small counter example in which you can increment (with +) and decrement (with -) a value.
+ * the state of the [CounterController] is printed via [println].
+ */
+internal fun main() {
     println("🎛 <control-counter>")
     println("$AvailableCommands\n")
 
