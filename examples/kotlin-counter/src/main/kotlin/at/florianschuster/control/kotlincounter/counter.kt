@@ -7,12 +7,11 @@ import kotlin.system.exitProcess
 
 private const val AvailableCommands = "available commands -> + , - , exit"
 
-// todo why is controller not started on first dispatch
-internal fun main() {
+internal fun main(args: Array<String>) {
     println("🎛 <control-counter>")
     println("$AvailableCommands\n")
 
-    val scope = CoroutineScope(Dispatchers.IO)
+    val scope = CoroutineScope(Dispatchers.Unconfined)
     val controller = scope.createCounterController()
 
     while (true) {

@@ -4,20 +4,22 @@ import at.florianschuster.control.ControllerLog
 import at.florianschuster.control.Controller
 import at.florianschuster.control.createController
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 
 typealias CounterController = Controller<CounterAction, CounterMutation, CounterState>
 
 /**
- * the action triggered by the view.
+ * actions triggered by the view.
  */
-enum class CounterAction {
-    Increment, Decrement
+sealed class CounterAction {
+    object Increment : CounterAction()
+    object Decrement : CounterAction()
 }
 
 /**
- * the mutation that is used to alter the state.
+ * mutations that are used to alter the state.
  */
 sealed class CounterMutation {
     object IncreaseValue : CounterMutation()
