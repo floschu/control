@@ -1,4 +1,5 @@
 include(":control-core")
 
-include(":examples:example-counter")
-include(":examples:example-github")
+include(":examples:kotlin-counter")
+include(":examples:android-counter")
+include(":examples:android-github")
