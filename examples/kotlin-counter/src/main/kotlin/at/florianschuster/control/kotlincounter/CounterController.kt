@@ -9,24 +9,33 @@ import kotlinx.coroutines.flow.flow
 
 typealias CounterController = Controller<CounterAction, CounterMutation, CounterState>
 
-// action triggered by view
+/**
+ * the action triggered by the view.
+ */
 enum class CounterAction {
     Increment, Decrement
 }
 
-// mutation that is used to alter the state
+/**
+ * the mutation that is used to alter the state.
+ */
 sealed class CounterMutation {
     object IncreaseValue : CounterMutation()
     object DecreaseValue : CounterMutation()
     data class SetLoading(val loading: Boolean) : CounterMutation()
 }
 
-// immutable state
+/**
+ * the immutable state.
+ */
 data class CounterState(
     val value: Int = 0,
     val loading: Boolean = false
 )
 
+/**
+ * creates a [CounterController] from the [CoroutineScope].
+ */
 fun CoroutineScope.createCounterController(): CounterController = createController(
 
     // we start with the initial state

@@ -8,7 +8,7 @@ import kotlin.system.exitProcess
 private const val AvailableCommands = "available commands -> + , - , exit"
 
 // todo why is controller not started on first dispatch
-fun main() {
+internal fun main() {
     println("🎛 <control-counter>")
     println("$AvailableCommands\n")
 
