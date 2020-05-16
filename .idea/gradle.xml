@@ -13,8 +13,9 @@
             <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/control-core" />
             <option value="$PROJECT_DIR$/examples" />
-            <option value="$PROJECT_DIR$/examples/example-counter" />
-            <option value="$PROJECT_DIR$/examples/example-github" />
+            <option value="$PROJECT_DIR$/examples/android-counter" />
+            <option value="$PROJECT_DIR$/examples/android-github" />
+            <option value="$PROJECT_DIR$/examples/kotlin-counter" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
