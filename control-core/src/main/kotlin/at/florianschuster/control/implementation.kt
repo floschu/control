@@ -98,9 +98,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
             val stateFlow: Flow<State> = mutationsTransformer(mutationFlow)
                 .onEach { controllerLog.log(ControllerEvent.Mutation(tag, it.toString())) }
                 .scan(initialState) { previousState, mutation ->
-                    try {
-                        reducer(mutation, previousState)
-                    } catch (cause: Throwable) {
+                    runCatching { reducer(mutation, previousState) }.getOrElse { cause ->
                         val error = ControllerError.Reduce(
                             tag, "$previousState", "$mutation", cause
                         )
