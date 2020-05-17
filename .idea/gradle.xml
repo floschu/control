@@ -14,9 +14,9 @@
             <option value="$PROJECT_DIR$/control-core" />
             <option value="$PROJECT_DIR$/examples" />
             <option value="$PROJECT_DIR$/examples/android-counter" />
+            <option value="$PROJECT_DIR$/examples/android-counter-compose" />
             <option value="$PROJECT_DIR$/examples/android-github" />
             <option value="$PROJECT_DIR$/examples/kotlin-counter" />
-            <option value="$PROJECT_DIR$/examples/example-counter-compose" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

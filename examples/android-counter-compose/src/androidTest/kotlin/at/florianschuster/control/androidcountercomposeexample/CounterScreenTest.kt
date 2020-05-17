@@ -1,4 +1,4 @@
-package at.florianschuster.control.countercomposeexample
+package at.florianschuster.control.androidcountercomposeexample
 
 import androidx.compose.getValue
 import androidx.ui.test.assertIsDisplayed
@@ -6,6 +6,10 @@ import androidx.ui.test.createComposeRule
 import androidx.ui.test.doClick
 import androidx.ui.test.findByTag
 import androidx.ui.test.findByText
+import at.florianschuster.control.kotlincounter.CounterAction
+import at.florianschuster.control.kotlincounter.CounterController
+import at.florianschuster.control.kotlincounter.CounterState
+import at.florianschuster.control.kotlincounter.createCounterController
 import at.florianschuster.control.stub
 import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Before
@@ -25,7 +29,7 @@ internal class CounterScreenTest {
 
     @Before
     fun setup() {
-        controller = CounterController(TestCoroutineScope()).apply { stub() }
+        controller = TestCoroutineScope().createCounterController().apply { stub() }
         composeTestRule.setContent {
             val state by controller.collectState()
             CounterScreen(counterState = state, action = controller::dispatch)

@@ -25,7 +25,7 @@ plugins {
 apply(plugin = "binary-compatibility-validator")
 
 configure<kotlinx.validation.ApiValidationExtension> {
-    ignoredProjects.addAll(listOf("kotlin-counter", "android-counter", "android-github", "example-counter-compose"))
+    ignoredProjects.addAll(listOf("kotlin-counter", "android-counter", "android-counter-compose", "android-github"))
 }
 
 allprojects {

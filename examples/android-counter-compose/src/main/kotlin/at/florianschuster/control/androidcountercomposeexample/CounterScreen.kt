@@ -1,4 +1,4 @@
-package at.florianschuster.control.countercomposeexample
+package at.florianschuster.control.androidcountercomposeexample
 
 import androidx.compose.Composable
 import androidx.ui.core.Alignment
@@ -16,6 +16,8 @@ import androidx.ui.material.MaterialTheme
 import androidx.ui.material.TextButton
 import androidx.ui.tooling.preview.Preview
 import androidx.ui.unit.dp
+import at.florianschuster.control.kotlincounter.CounterAction
+import at.florianschuster.control.kotlincounter.CounterState
 
 @Composable
 internal fun CounterScreen(

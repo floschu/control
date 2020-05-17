@@ -1,4 +1,4 @@
-package at.florianschuster.control.countercomposeexample
+package at.florianschuster.control.androidcountercomposeexample
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -17,6 +17,7 @@ import androidx.ui.material.Scaffold
 import androidx.ui.material.TopAppBar
 import androidx.ui.material.darkColorPalette
 import androidx.ui.material.lightColorPalette
+import at.florianschuster.control.kotlincounter.createCounterController
 
 internal class AppActivity : ComponentActivity() {
 
@@ -28,13 +29,13 @@ internal class AppActivity : ComponentActivity() {
 
 @Composable
 private fun AppScreen() {
+    val controller = LifecycleOwnerAmbient.current.lifecycleScope.createCounterController()
     MaterialTheme(colors = AppColors.currentColorPalette) {
         Scaffold(
             topAppBar = {
                 TopAppBar(title = { Text(text = ContextAmbient.current.getString(R.string.app_name)) })
             },
             bodyContent = {
-                val controller = CounterController(LifecycleOwnerAmbient.current.lifecycleScope)
                 val controllerState by controller.collectState()
                 CounterScreen(counterState = controllerState, action = controller::dispatch)
             }
