@@ -43,9 +43,10 @@ the changelog can be found [here](https://github.com/floschu/control/blob/develo
 
 ## examples
 
-*   [counter](examples/example-counter): most basic example. uses `Controller`.
-*   [github search](examples/example-github): github repository search. uses `Controller` combined with _Android Jetpack AAC_ `ViewModel`.
-*   [counter compose](https://github.com/floschu/control/pull/9): like the counter example, but uses _Jetpack Compose_.
+*   [kotlin-counter](examples/kotlin-counter): most basic kotlin example. uses `Controller`.
+*   [android-counter](examples/android-counter): most basic android example. uses `Controller` from kotlin-counter.
+*   [android-github-search](examples/android-github): android github repository search. uses `Controller` combined with _Android Jetpack AAC_ `ViewModel`.
+*   [android-counter-compose](https://github.com/floschu/control/pull/9): like the android counter example, but uses _Jetpack Compose_.
 
 ## coverage
 
