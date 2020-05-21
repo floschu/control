@@ -110,6 +110,14 @@ object Libs {
      */
     const val androidx_test_runner: String = "androidx.test:runner:" + Versions.androidx_test
 
+    const val ui_layout: String = "androidx.ui:ui-layout:" + Versions.androidx_ui
+
+    const val ui_material: String = "androidx.ui:ui-material:" + Versions.androidx_ui
+
+    const val ui_test: String = "androidx.ui:ui-test:" + Versions.androidx_ui
+
+    const val ui_tooling: String = "androidx.ui:ui-tooling:" + Versions.androidx_ui
+
     /**
      * https://developer.android.com/studio
      */
@@ -166,6 +174,9 @@ object Libs {
      */
     const val gradle_pitest_plugin: String = "info.solidsoft.gradle.pitest:gradle-pitest-plugin:" +
             Versions.gradle_pitest_plugin
+
+    const val compose_compiler: String = "androidx.compose:compose-compiler:" +
+            Versions.compose_compiler
 
     /**
      * http://tools.android.com

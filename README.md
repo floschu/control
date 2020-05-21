@@ -6,9 +6,9 @@
 </p>
 
 <p align=center>
-    <a href="https://github.com/floschu/control/"><img alt="last commit" src="https://img.shields.io/github/last-commit/floschu/control?logoColor=ffffff" /></a> 
-    <a href="https://www.codacy.com/manual/floschu/control?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=floschu/control&amp;utm_campaign=Badge_Grade"><img alt="code quality" src="https://api.codacy.com/project/badge/Grade/39072347acb94bf79651d7f16bfa63ca" /></a> 
-    <a href="https://codecov.io/gh/floschu/control"><img alt="coverage" src="https://codecov.io/gh/floschu/control/branch/develop/graph/badge.svg" /></a> 
+    <a href="https://github.com/floschu/control/"><img alt="last commit" src="https://img.shields.io/github/last-commit/floschu/control?logoColor=ffffff" /></a>
+    <a href="https://www.codacy.com/manual/floschu/control?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=floschu/control&amp;utm_campaign=Badge_Grade"><img alt="code quality" src="https://api.codacy.com/project/badge/Grade/39072347acb94bf79651d7f16bfa63ca" /></a>
+    <a href="https://codecov.io/gh/floschu/control"><img alt="coverage" src="https://codecov.io/gh/floschu/control/branch/develop/graph/badge.svg" /></a>
     <a href="https://github.com/floschu/control/actions"><img alt="build" src="https://github.com/floschu/control/workflows/build/badge.svg" /></a>
 </p>
 
@@ -46,7 +46,7 @@ the changelog can be found [here](https://github.com/floschu/control/blob/develo
 *   [kotlin-counter](examples/kotlin-counter): most basic kotlin example. uses `Controller`.
 *   [android-counter](examples/android-counter): most basic android example. uses `Controller` from kotlin-counter.
 *   [android-github-search](examples/android-github): android github repository search. uses `Controller` combined with _Android Jetpack AAC_ `ViewModel`.
-*   [android-counter-compose](https://github.com/floschu/control/pull/9): like the android counter example, but uses _Jetpack Compose_.
+*   [android-counter-compose](examples/android-counter-compose): like the android counter example, but uses _Jetpack Compose_.
 
 ## coverage
 

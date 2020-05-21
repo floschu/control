@@ -13,7 +13,7 @@ import org.gradle.plugin.use.PluginDependencySpec
  */
 object Versions {
     const val org_jetbrains_kotlinx_kotlinx_serialization: String = "0.20.0"
-             // available: "0.20.0-1.4-M1-release-99"
+    // available: "0.20.0-1.4-M1-release-99"
 
     const val org_jetbrains_kotlinx_kotlinx_coroutines: String = "1.3.7"
 
@@ -25,7 +25,9 @@ object Versions {
 
     const val androidx_test: String = "1.2.0"
 
-    const val com_android_tools_build_gradle: String = "3.6.3"
+    const val androidx_ui: String = "0.1.0-dev11"
+
+    const val com_android_tools_build_gradle: String = "4.1.0-alpha09"
 
     const val org_jlleitschuh_gradle_ktlint_gradle_plugin: String = "9.2.1"
 
@@ -45,11 +47,13 @@ object Versions {
 
     const val gradle_pitest_plugin: String = "1.5.1"
 
+    const val compose_compiler: String = "0.1.0-dev11"
+
     const val constraintlayout: String = "2.0.0-beta4"
 
     const val espresso_core: String = "3.2.0"
 
-    const val lint_gradle: String = "26.6.3"
+    const val lint_gradle: String = "27.1.0-alpha09"
 
     const val appcompat: String = "1.1.0"
 
@@ -59,11 +63,11 @@ object Versions {
 
     const val material: String = "1.1.0"
 
-    const val retrofit: String = "2.8.2"
+    const val retrofit: String = "2.9.0"
 
     const val ktlint: String = "0.36.0"
 
-    const val aapt2: String = "3.6.3-6040484"
+    const val aapt2: String = "4.1.0-alpha09-6422342"
 
     const val mockk: String = "1.10.0"
 
@@ -81,4 +85,4 @@ object Versions {
  */
 val PluginDependenciesSpec.buildSrcVersions: PluginDependencySpec
     inline get() =
-            id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
+        id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
