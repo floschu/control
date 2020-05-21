@@ -4,9 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.compose.Composable
 import androidx.compose.getValue
-import androidx.lifecycle.lifecycleScope
 import androidx.ui.core.ContextAmbient
-import androidx.ui.core.LifecycleOwnerAmbient
 import androidx.ui.core.setContent
 import androidx.ui.foundation.Text
 import androidx.ui.foundation.isSystemInDarkTheme
@@ -29,7 +27,7 @@ internal class AppActivity : ComponentActivity() {
 
 @Composable
 private fun AppScreen() {
-    val controller = LifecycleOwnerAmbient.current.lifecycleScope.createCounterController()
+    val controller = ComposeCoroutineScope().createCounterController()
     MaterialTheme(colors = AppColors.currentColorPalette) {
         Scaffold(
             topAppBar = {
