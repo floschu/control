@@ -13,7 +13,7 @@ import org.gradle.plugin.use.PluginDependencySpec
  */
 object Versions {
     const val org_jetbrains_kotlinx_kotlinx_serialization: String = "0.20.0"
-             // available: "0.20.0-1.4-M1-release-99"
+    // available: "0.20.0-1.4-M1-release-99"
 
     const val org_jetbrains_kotlinx_kotlinx_coroutines: String = "1.3.7"
 
@@ -63,7 +63,7 @@ object Versions {
 
     const val material: String = "1.1.0"
 
-    const val retrofit: String = "2.8.2"
+    const val retrofit: String = "2.9.0"
 
     const val ktlint: String = "0.36.0"
 
@@ -85,4 +85,4 @@ object Versions {
  */
 val PluginDependenciesSpec.buildSrcVersions: PluginDependencySpec
     inline get() =
-            id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
+        id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
