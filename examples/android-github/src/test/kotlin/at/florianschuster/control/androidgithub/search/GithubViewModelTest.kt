@@ -2,7 +2,6 @@ package at.florianschuster.control.androidgithub.search
 
 import at.florianschuster.control.androidgithub.GithubApi
 import at.florianschuster.control.androidgithub.Repo
-import at.florianschuster.control.androidgithub.Result
 import at.florianschuster.test.coroutines.TestCoroutineScopeRule
 import at.florianschuster.test.flow.TestFlow
 import at.florianschuster.test.flow.emissionCount
@@ -10,7 +9,6 @@ import at.florianschuster.test.flow.emissions
 import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.lastEmission
 import at.florianschuster.test.flow.testIn
-import io.mockk.Called
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.coVerifyOrder
@@ -26,8 +24,8 @@ internal class GithubViewModelTest {
     val testCoroutineScope = TestCoroutineScopeRule()
 
     private val githubApi: GithubApi = mockk {
-        coEvery { repos(any(), 1) } returns mockResultPage1
-        coEvery { repos(any(), 2) } returns mockResultPage2
+        coEvery { search(any(), 1) } returns mockReposPage1
+        coEvery { search(any(), 2) } returns mockReposPage2
     }
     private lateinit var sut: GithubViewModel
     private lateinit var states: TestFlow<GithubViewModel.State>
@@ -48,7 +46,7 @@ internal class GithubViewModelTest {
         sut.controller.dispatch(GithubViewModel.Action.UpdateQuery(query))
 
         // then
-        coVerify(exactly = 1) { githubApi.repos(query, 1) }
+        coVerify(exactly = 1) { githubApi.search(query, 1) }
         states expect emissions(
             GithubViewModel.State(),
             GithubViewModel.State(query = query),
@@ -68,7 +66,7 @@ internal class GithubViewModelTest {
         sut.controller.dispatch(GithubViewModel.Action.UpdateQuery(emptyQuery))
 
         // then
-        coVerify { githubApi.repos(any(), any()) wasNot Called }
+        coVerify(exactly = 0) { githubApi.search(any(), any()) }
         states expect lastEmission(GithubViewModel.State(query = emptyQuery))
     }
 
@@ -83,7 +81,7 @@ internal class GithubViewModelTest {
         sut.controller.dispatch(GithubViewModel.Action.LoadNextPage)
 
         // then
-        coVerify(exactly = 1) { githubApi.repos(any(), 2) }
+        coVerify(exactly = 1) { githubApi.search(any(), 2) }
         states expect emissions(
             GithubViewModel.State(query = query, repos = mockReposPage1),
             GithubViewModel.State(query, mockReposPage1, 1, true),
@@ -102,22 +100,22 @@ internal class GithubViewModelTest {
         sut.controller.dispatch(GithubViewModel.Action.LoadNextPage)
 
         // then
-        coVerify { githubApi.repos(any(), any()) wasNot Called }
+        coVerify(exactly = 0) { githubApi.search(any(), any()) }
         states expect emissionCount(1)
         states expect emissions(initialState)
     }
 
     @Test
-    fun `error from api is correctly handled`() {
+    fun `empty list from github api is correctly handled`() {
         // given
-        coEvery { githubApi.repos(any(), any()) } throws Exception()
+        coEvery { githubApi.search(any(), any()) } returns emptyList()
         `given github search controller`()
 
         // when
         sut.controller.dispatch(GithubViewModel.Action.UpdateQuery(query))
 
         // then
-        coVerify(exactly = 1) { githubApi.repos(query, 1) }
+        coVerify(exactly = 1) { githubApi.search(query, 1) }
         states expect emissions(
             GithubViewModel.State(),
             GithubViewModel.State(query = query),
@@ -129,13 +127,13 @@ internal class GithubViewModelTest {
     @Test
     fun `updating query during search resets search`() {
         // given
-        coEvery { githubApi.repos(query, 1) } coAnswers {
+        coEvery { githubApi.search(query, 1) } coAnswers {
             delay(1000)
-            mockResultPage1
+            mockReposPage1
         }
-        coEvery { githubApi.repos(secondQuery, 1) } coAnswers {
+        coEvery { githubApi.search(secondQuery, 1) } coAnswers {
             delay(1000)
-            mockResultPage2
+            mockReposPage2
         }
         `given github search controller`()
 
@@ -147,8 +145,8 @@ internal class GithubViewModelTest {
 
         // then
         coVerifyOrder {
-            githubApi.repos(query, 1)
-            githubApi.repos(secondQuery, 1)
+            githubApi.search(query, 1)
+            githubApi.search(secondQuery, 1)
         }
         assertFalse(states.emissions.any { it.repos == mockReposPage1 })
         states expect lastEmission(
@@ -158,10 +156,7 @@ internal class GithubViewModelTest {
 
     companion object {
         private val mockReposPage1: List<Repo> = (0..2).map { Repo(it, "$it", "") }
-        private val mockResultPage1 = Result(items = mockReposPage1)
-
         private val mockReposPage2: List<Repo> = (3..4).map { Repo(it, "$it", "") }
-        private val mockResultPage2 = Result(items = mockReposPage2)
 
         private const val query = "control"
         private const val secondQuery = "controlAgain"

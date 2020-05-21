@@ -14,8 +14,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
@@ -55,7 +55,7 @@ internal class GithubViewModel(
                         emit(Mutation.SetLoadingNextPage(true))
                         emitAll(
                             flow { emit(api.search(currentState.query, 1)) }
-                                .filterNotNull()
+                                .filter { it.isNotEmpty() }
                                 .map { Mutation.SetRepos(it) }
                                 .takeUntil(actions.filterIsInstance<Action.UpdateQuery>())
                         )
@@ -69,7 +69,6 @@ internal class GithubViewModel(
                         emit(Mutation.SetLoadingNextPage(true))
                         emitAll(
                             flow { emit(api.search(state.query, state.page + 1)) }
-                                .filterNotNull()
                                 .map { Mutation.AppendRepos(it) }
                                 .takeUntil(actions.filterIsInstance<Action.UpdateQuery>())
                         )
@@ -98,10 +97,4 @@ internal class GithubViewModel(
             if (event is ControllerEvent.State) Log.d("GithubViewModel", message)
         }
     )
-
-    private suspend fun GithubApi.search(
-        query: String, page: Int
-    ): List<Repo>? = runCatching { repos(query, page).items }
-        .onFailure { Log.e("GithubApi.repos", "with query = $query, page = $page", it) }
-        .getOrNull()
 }

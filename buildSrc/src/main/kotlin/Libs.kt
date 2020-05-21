@@ -119,6 +119,28 @@ object Libs {
     const val ui_tooling: String = "androidx.ui:ui-tooling:" + Versions.androidx_ui
 
     /**
+     * https://github.com/ktorio/ktor
+     */
+    const val ktor_client_cio: String = "io.ktor:ktor-client-cio:" + Versions.io_ktor
+
+    /**
+     * https://github.com/ktorio/ktor
+     */
+    const val ktor_client_json_jvm: String = "io.ktor:ktor-client-json-jvm:" + Versions.io_ktor
+
+    /**
+     * https://github.com/ktorio/ktor
+     */
+    const val ktor_client_logging_jvm: String = "io.ktor:ktor-client-logging-jvm:" +
+            Versions.io_ktor
+
+    /**
+     * https://github.com/ktorio/ktor
+     */
+    const val ktor_client_serialization_jvm: String = "io.ktor:ktor-client-serialization-jvm:" +
+            Versions.io_ktor
+
+    /**
      * https://developer.android.com/studio
      */
     const val com_android_tools_build_gradle: String = "com.android.tools.build:gradle:" +
@@ -127,13 +149,6 @@ object Libs {
     const val org_jlleitschuh_gradle_ktlint_gradle_plugin: String =
             "org.jlleitschuh.gradle.ktlint:org.jlleitschuh.gradle.ktlint.gradle.plugin:" +
             Versions.org_jlleitschuh_gradle_ktlint_gradle_plugin
-
-    /**
-     * https://github.com/JakeWharton/retrofit2-kotlinx-serialization-converter/
-     */
-    const val retrofit2_kotlinx_serialization_converter: String =
-            "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:" +
-            Versions.retrofit2_kotlinx_serialization_converter
 
     const val de_fayard_buildsrcversions_gradle_plugin: String =
             "de.fayard.buildSrcVersions:de.fayard.buildSrcVersions.gradle.plugin:" +
@@ -214,11 +229,6 @@ object Libs {
      * http://developer.android.com/tools/extras/support-library.html
      */
     const val material: String = "com.google.android.material:material:" + Versions.material
-
-    /**
-     * https://github.com/square/retrofit
-     */
-    const val retrofit: String = "com.squareup.retrofit2:retrofit:" + Versions.retrofit
 
     /**
      * https://github.com/pinterest/ktlint
