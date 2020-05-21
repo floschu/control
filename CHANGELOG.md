@@ -11,6 +11,5 @@
 
 ## `[0.9.0]` - 2020-05-10
 
-- binary compatibility is now verified on each build/publish.
 - `ControllerImplemenation` now uses `MutableStateFlow` instead of `ConflatedBroadCastChannel` internally.
 - `Controller.state` emissions are now distinct by default (via `StateFlow`).
