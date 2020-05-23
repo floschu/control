@@ -3,6 +3,7 @@ package at.florianschuster.control
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.jetbrains.annotations.TestOnly
 
 /**
  * Retrieves a [ControllerStub] for this [Controller] used for view testing.
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
  */
 @ExperimentalCoroutinesApi
 @FlowPreview
+@TestOnly
 fun <Action, State> Controller<Action, *, State>.stub(): ControllerStub<Action, State> {
     require(this is ControllerImplementation<Action, *, State>) {
         "Cannot stub a custom implementation of a Controller."

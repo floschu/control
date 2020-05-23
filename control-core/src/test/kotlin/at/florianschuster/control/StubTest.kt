@@ -32,8 +32,8 @@ internal class StubTest {
 
     @Test
     fun `stub is initialized only after accessing stub()`() {
-        val sut =
-            testCoroutineScope.createStringController() as ControllerImplementation<List<String>, List<String>, List<String>>
+        val sut = testCoroutineScope.createStringController()
+            as ControllerImplementation<List<String>, List<String>, List<String>>
         assertFalse(sut.stubInitialized)
 
         assertFailsWith<UninitializedPropertyAccessException> { sut.stub.dispatchedActions }
