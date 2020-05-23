@@ -1,8 +1,9 @@
 # changelog
 
-## `[1.0.0]` - Unreleased
+## `[X.X.X]` - Unreleased
 
 - binary compatibility is now verified on each `[build]` & `[publish]`.
+- `Controller.stub` is now marked as `@TestOnly`
 
 ## `[0.10.0]` - 2020-05-11
 
