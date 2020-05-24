@@ -42,7 +42,6 @@ android {
 
 dependencies {
     implementation(project(":control-core"))
-    implementation(project(":examples:kotlin-counter"))
 
     implementation(Libs.appcompat)
     implementation(Libs.lifecycle_runtime_ktx)

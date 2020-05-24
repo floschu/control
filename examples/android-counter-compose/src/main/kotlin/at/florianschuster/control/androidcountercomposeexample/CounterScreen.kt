@@ -1,6 +1,8 @@
 package at.florianschuster.control.androidcountercomposeexample
 
 import androidx.compose.Composable
+import androidx.compose.getValue
+import androidx.compose.remember
 import androidx.ui.core.Alignment
 import androidx.ui.core.Modifier
 import androidx.ui.core.tag
@@ -16,20 +18,19 @@ import androidx.ui.material.MaterialTheme
 import androidx.ui.material.TextButton
 import androidx.ui.tooling.preview.Preview
 import androidx.ui.unit.dp
-import at.florianschuster.control.kotlincounter.CounterAction
-import at.florianschuster.control.kotlincounter.CounterState
 
 @Composable
 internal fun CounterScreen(
-    counterState: CounterState,
-    action: (CounterAction) -> Unit = {}
+    injectedController: CounterController = CounterController()
 ) {
+    val controller = remember { injectedController }
+    val counterState by controller.collectAsState()
     Stack(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier.fillMaxWidth().gravity(Alignment.Center),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            TextButton(onClick = { action(CounterAction.Decrement) }) {
+            TextButton(onClick = { controller.dispatch(CounterController.Action.Decrement) }) {
                 Text(text = "-", style = MaterialTheme.typography.h4)
             }
             Text(
@@ -38,7 +39,7 @@ internal fun CounterScreen(
                 style = MaterialTheme.typography.h3,
                 modifier = Modifier.tag("valueText")
             )
-            TextButton(onClick = { action(CounterAction.Increment) }) {
+            TextButton(onClick = { controller.dispatch(CounterController.Action.Increment) }) {
                 Text(text = "+", style = MaterialTheme.typography.h4)
             }
         }
@@ -53,18 +54,10 @@ internal fun CounterScreen(
     }
 }
 
-@Preview(name = "Loading")
+@Preview
 @Composable
-private fun CounterScreenPreviewLoading() {
+private fun CounterScreenPreview() {
     MaterialTheme(colors = AppColors.currentColorPalette) {
-        CounterScreen(counterState = CounterState(value = 21, loading = true))
-    }
-}
-
-@Preview(name = "Not Loading")
-@Composable
-private fun CounterScreenPreviewNotLoading() {
-    MaterialTheme(colors = AppColors.currentColorPalette) {
-        CounterScreen(counterState = CounterState(value = 21, loading = false))
+        CounterScreen()
     }
 }

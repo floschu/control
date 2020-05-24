@@ -4,21 +4,19 @@ import androidx.compose.Composable
 import androidx.compose.CompositionLifecycleObserver
 import androidx.compose.State
 import androidx.compose.collectAsState
-import androidx.compose.remember
+import androidx.ui.savedinstancestate.Saver
+import androidx.ui.savedinstancestate.rememberSavedInstanceState
 import at.florianschuster.control.Controller
-import at.florianschuster.control.ControllerLog
 import at.florianschuster.control.ManagedController
-import at.florianschuster.control.Mutator
-import at.florianschuster.control.Reducer
-import at.florianschuster.control.Transformer
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.Flow
+import java.io.Serializable
 
 /**
- * Collects values from the [Controller.state] and represents its latest value via [State].
- * Every time state is emitted, the returned [State] will be updated causing
- * re-composition of every [State.value] usage.
+ * Collects values from the [Controller.state] and represents its latest value via
+ * [androidx.compose.State].
+ *
+ * Every time a new [Controller.state] is emitted, the returned [androidx.compose.State]
+ * will be updated causing re-composition.
  */
 @Composable
 internal fun <S> Controller<*, *, S>.collectAsState(): State<S> {
@@ -26,47 +24,25 @@ internal fun <S> Controller<*, *, S>.collectAsState(): State<S> {
 }
 
 /**
- * An intermediate solution for creating a [Controller] used in [Composable]s.
+ * A [Controller] delegate that implements [CompositionLifecycleObserver].
  *
- * The [Controller] state machine is started once the [Controller] is used in a composition and
- * cancelled once it is no longer used.
- *
- * The [Controller] will be kept across recompositions via [remember]. If any of the parameters
- * change, a new instance of the [Controller] will be created.
+ * The state machine of [controller] is started once [CompositionController] is used in a
+ * composition and cancelled once [CompositionController] is no longer used.
  */
-@Composable
-internal fun <Action, Mutation, State> ComposableController(
-    initialState: State,
-    mutator: Mutator<Action, Mutation, State> = { _ -> emptyFlow() },
-    reducer: Reducer<Mutation, State> = { _, previousState -> previousState },
+interface CompositionController<Action, Mutation, State> :
+    Controller<Action, Mutation, State>, CompositionLifecycleObserver {
 
-    actionsTransformer: Transformer<Action> = { it },
-    mutationsTransformer: Transformer<Mutation> = { it },
-    statesTransformer: Transformer<State> = { it },
+    val controller: ManagedController<Action, Mutation, State>
 
-    tag: String = "TODO defaultTag()",
-    controllerLog: ControllerLog = ControllerLog.default,
+    // region Controller
 
-    dispatcher: CoroutineDispatcher = Dispatchers.Default
-): Controller<Action, Mutation, State> = remember(
-    initialState, mutator, reducer,
-    actionsTransformer, mutationsTransformer, statesTransformer,
-    tag, controllerLog,
-    dispatcher
-) {
-    ComposableLifecycleController(
-        ManagedController(
-            initialState, mutator, reducer,
-            actionsTransformer, mutationsTransformer, statesTransformer,
-            tag, controllerLog,
-            dispatcher
-        )
-    )
-}
+    override fun dispatch(action: Action) = controller.dispatch(action)
+    override val currentState: State get() = controller.currentState
+    override val state: Flow<State> get() = controller.state
 
-private class ComposableLifecycleController<Action, Mutation, State>(
-    private val controller: ManagedController<Action, Mutation, State>
-) : Controller<Action, Mutation, State> by controller, CompositionLifecycleObserver {
+    // endregion
+
+    // region CompositionLifecycleObserver
 
     override fun onEnter() {
         controller.start()
@@ -75,4 +51,6 @@ private class ComposableLifecycleController<Action, Mutation, State>(
     override fun onLeave() {
         controller.cancel()
     }
+
+    // endregion
 }
