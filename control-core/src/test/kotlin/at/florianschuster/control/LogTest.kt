@@ -13,7 +13,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-internal class ControllerLogTest {
+internal class LogTest {
 
     @Test
     fun `setting default logger`() {

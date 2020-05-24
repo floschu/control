@@ -1,12 +1,14 @@
 package at.florianschuster.control
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Test
 import kotlin.test.assertTrue
 
-internal class EventTest {
+internal class ImplementationEventTest {
 
     @Test
     fun `event message contains library name and tag`() {
@@ -24,7 +26,7 @@ internal class EventTest {
 
         assertTrue(events.last() is ControllerEvent.Created)
 
-        sut.startStateJob()
+        sut.start()
         events.takeLast(2).let { lastEvents ->
             assertTrue(lastEvents[0] is ControllerEvent.Started)
             assertTrue(lastEvents[1] is ControllerEvent.State)
@@ -40,7 +42,7 @@ internal class EventTest {
         sut.stub()
         assertTrue(events.last() is ControllerEvent.Stub)
 
-        sut.stateJob.cancel()
+        sut.cancel()
         assertTrue(events.last() is ControllerEvent.Completed)
     }
 
@@ -70,7 +72,10 @@ internal class EventTest {
 
     private fun CoroutineScope.eventsController(
         events: MutableList<ControllerEvent>
-    ) = createController<Int, Int, Int>(
+    ) = ControllerImplementation<Int, Int, Int>(
+        scope = this,
+        dispatcher = scopeDispatcher,
+        coroutineStart = CoroutineStart.LAZY,
         initialState = 0,
         mutator = { action ->
             flow {
@@ -82,8 +87,12 @@ internal class EventTest {
             check(mutation != reducerErrorValue)
             previousState
         },
+        actionsTransformer = { it },
+        mutationsTransformer = { it },
+        statesTransformer = { it },
+        tag = "ImplementationEventTest.EventsController",
         controllerLog = ControllerLog.Custom { events.add(event) }
-    ) as ControllerImplementation<Int, Int, Int>
+    )
 
     companion object {
         private const val mutatorErrorValue = 42

@@ -1,41 +1,40 @@
 package at.florianschuster.control
 
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlin.coroutines.ContinuationInterceptor
 
 /**
- * A [Controller] is an ui-independent class that controls the state of a view. The role of a
+ * A [Controller] is an UI-independent class that controls the state of a view. The role of a
  * [Controller] is to separate business-logic from view-logic. A [Controller] has no dependency
  * to the view, so it can easily be unit tested.
  *
  *
- * <pre>
- *                  [Action] via [dispatch]
- *          +-----------------------------------+
- *          |                                   |
- *     +----+-----+                    +--------|-------+
- *     |          |                    |        v       |
- *     |   View   |                    |   Controller   |
- *     |    ^     |                    |                |
- *     +----|-----+                    +--------+-------+
- *          |                                   |
- *          +-----------------------------------+
- *                  [State] via [state]
- * </pre>
+ * ```
+ *                     dispatch(Action)
+ *          ┌───────────────────────────────────┐
+ *          │                                   │
+ *          │                                   │
+ *     ┏━━━━━━━━━━┓                    ┏━━━━━━━━▼━━━━━━━┓
+ *     ┃          ┃                    ┃                ┃
+ *     ┃   View   ┃                    ┃   Controller   ┃
+ *     ┃          ┃                    ┃                ┃
+ *     ┗━━━━▲━━━━━┛                    ┗━━━━━━━━━━━━━━━━┛
+ *          │                                   │
+ *          │                                   │
+ *          └───────────────────────────────────┘
+ *                          state
+ * ```
  *
  * The [Controller] creates an uni-directional stream of data as shown in the diagram above, by
  * handling incoming [Action]'s via [Controller.dispatch] and creating new [State]'s that
  * can be collected via [Controller.state].
- *
- * Basic Principle: 1 [Action] -> [0..n] [Mutation] -> each 1 new [State]
- *
- * For implementation details look into:
- * 1. [Mutator]: [Action] -> [Mutation]
- * 2. [Reducer]: [Mutation] -> [State]
- * 3. [Transformer]
- * 4. [ControllerImplementation]
- *
- * To create a [Controller] use [CoroutineScope.createController].
  */
 interface Controller<Action, Mutation, State> {
 
@@ -54,6 +53,108 @@ interface Controller<Action, Mutation, State> {
      */
     val state: Flow<State>
 }
+
+/**
+ * Creates a [Controller] bound to the [CoroutineScope] via [ControllerImplementation].
+ * If the [CoroutineScope] is cancelled, the internal state machine of the [Controller] completes.
+ *
+ * The principle of the created state machine is:
+ *
+ *   1 [Action] -> [0..n] [Mutation] -> each 1 new [State]
+ *
+ * ```
+ *                              Action
+ *          ┏━━━━━━━━━━━━━━━━━━━━━│━━━━━━━━━━━━━━━━━┓
+ *          ┃                     │                 ┃
+ *          ┃                     │                 ┃
+ *          ┃                     │                 ┃
+ *          ┃               ┏━━━━━▼━━━━━┓           ┃   side effect   ┏━━━━━━━━━━━━━━━━━━━━┓
+ *          ┃               ┃  mutator ◀───────────────────────────────▶  service/usecase  ┃
+ *          ┃               ┗━━━━━━━━━━━┛           ┃                 ┗━━━━━━━━━━━━━━━━━━━━┛
+ *          ┃                     │                 ┃
+ *          ┃                     │ 0..n mutations  ┃
+ *          ┃                     │                 ┃
+ *          ┃               ┏━━━━━▼━━━━━┓           ┃
+ *          ┃  ┌───────────▶┃  reducer  ┃           ┃
+ *          ┃  │            ┗━━━━━━━━━━━┛           ┃
+ *          ┃  │ previous         │                 ┃
+ *          ┃  │ state            │ new state       ┃
+ *          ┃  │                  │                 ┃
+ *          ┃  │            ┏━━━━━▼━━━━━┓           ┃
+ *          ┃  └────────────┃   state   ┃           ┃
+ *          ┃               ┗━━━━━━━━━━━┛           ┃
+ *          ┃                     │                 ┃
+ *          ┗━━━━━━━━━━━━━━━━━━━━━│━━━━━━━━━━━━━━━━━┛
+ *                                ▼
+ *                              state
+ * ```
+ *
+ * For implementation details look into:
+ * 1. [Mutator]: This corresponds to [Action] -> [Mutation]
+ * 2. [Reducer]: This corresponds to [Mutation] -> [State]
+ * 3. [Transformer]
+ * 4. [ControllerImplementation]
+ */
+@ExperimentalCoroutinesApi
+@FlowPreview
+fun <Action, Mutation, State> CoroutineScope.createController(
+
+    /**
+     * The initial [State] for the internal state machine.
+     */
+    initialState: State,
+    /**
+     * See [Mutator].
+     */
+    mutator: Mutator<Action, Mutation, State> = { _ -> emptyFlow() },
+    /**
+     * See [Reducer].
+     */
+    reducer: Reducer<Mutation, State> = { _, previousState -> previousState },
+
+    /**
+     * See [Transformer].
+     */
+    actionsTransformer: Transformer<Action> = { it },
+    mutationsTransformer: Transformer<Mutation> = { it },
+    statesTransformer: Transformer<State> = { it },
+
+    /**
+     * Used for [ControllerLog] and as [CoroutineName] for the internal state machine.
+     */
+    tag: String = defaultTag(),
+    /**
+     * Log configuration for [ControllerEvent]s. See [ControllerLog].
+     */
+    controllerLog: ControllerLog = ControllerLog.default,
+
+    /**
+     * When the internal state machine [Flow] should be started.
+     *
+     * Default is [CoroutineStart.LAZY] -> [Flow] is started once [Controller.state],
+     * [Controller.currentState] or [Controller.dispatch] are accessed.
+     *
+     * Look into [CoroutineStart] to see how the options would affect the [Flow] start.
+     */
+    coroutineStart: CoroutineStart = CoroutineStart.LAZY,
+
+    /**
+     * Override to launch the internal state machine [Flow] in a different [CoroutineDispatcher]
+     * than the one used in the [CoroutineScope.coroutineContext].
+     *
+     * [Mutator] and [Reducer] will run on this [CoroutineDispatcher].
+     */
+    dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher
+): Controller<Action, Mutation, State> = ControllerImplementation(
+    scope = this, dispatcher = dispatcher, coroutineStart = coroutineStart,
+
+    initialState = initialState, mutator = mutator, reducer = reducer,
+    actionsTransformer = actionsTransformer,
+    mutationsTransformer = mutationsTransformer,
+    statesTransformer = statesTransformer,
+
+    tag = tag, controllerLog = controllerLog
+)
 
 /**
  * A [Mutator] takes an action and transforms it into a [Flow] of [0..n] mutations.
@@ -89,32 +190,17 @@ typealias Mutator<Action, Mutation, State> = MutatorScope<Action, State>.(
 ) -> Flow<Mutation>
 
 /**
- * The [MutatorScope] provides access to the [currentState] and the [actions] [Flow] of the
- * [ControllerImplementation] in a [Mutator].
+ * The [MutatorScope] provides access to the [currentState] and the [actions] [Flow] in a [Mutator].
  */
 interface MutatorScope<Action, State> {
 
     /**
-     * A generated property in [ControllerImplementation.MutatorScopeImpl], thus always
-     * providing the current [State] when accessed.
+     * A generated property, thus always providing the current [State] when accessed.
      */
     val currentState: State
 
     /**
-     * Accessed after [Action] [Transformer] is applied.
-     *
-     * Use if a [Flow] inside the [Mutator] needs to be cancelled or transformed due to an
-     * incoming [Action]:
-     *
-     * ```
-     * mutator = { action ->
-     *     when(action) {
-     *         is Action.Start -> flow {
-     *             emit(someLongRunningSuspendingFunctionThatGeneratesAValue())
-     *         }.takeUntil(actions.filterIsInstance<Action.Stop>())
-     *     }
-     * }
-     * ```
+     * The [Flow] of incoming actions, accessed after [Action] [Transformer] is applied.
      */
     val actions: Flow<Action>
 }

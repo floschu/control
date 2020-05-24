@@ -29,9 +29,10 @@ internal class CounterScreenTest {
 
     @Before
     fun setup() {
+        TODO("use correct controller")
         controller = TestCoroutineScope().createCounterController().apply { stub() }
         composeTestRule.setContent {
-            val state by controller.collectState()
+            val state by controller.collectAsState()
             CounterScreen(counterState = state, action = controller::dispatch)
         }
     }

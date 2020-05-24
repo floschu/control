@@ -1,10 +1,3 @@
-public final class at/florianschuster/control/BuildersKt {
-	public static final fun createController (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Lat/florianschuster/control/ControllerLog;Lkotlinx/coroutines/CoroutineStart;Lkotlinx/coroutines/CoroutineDispatcher;)Lat/florianschuster/control/Controller;
-	public static synthetic fun createController$default (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Lat/florianschuster/control/ControllerLog;Lkotlinx/coroutines/CoroutineStart;Lkotlinx/coroutines/CoroutineDispatcher;ILjava/lang/Object;)Lat/florianschuster/control/Controller;
-	public static final fun createSynchronousController (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Lat/florianschuster/control/ControllerLog;Lkotlinx/coroutines/CoroutineStart;Lkotlinx/coroutines/CoroutineDispatcher;)Lat/florianschuster/control/Controller;
-	public static synthetic fun createSynchronousController$default (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Lat/florianschuster/control/ControllerLog;Lkotlinx/coroutines/CoroutineStart;Lkotlinx/coroutines/CoroutineDispatcher;ILjava/lang/Object;)Lat/florianschuster/control/Controller;
-}
-
 public abstract interface class at/florianschuster/control/Controller {
 	public abstract fun dispatch (Ljava/lang/Object;)V
 	public abstract fun getCurrentState ()Ljava/lang/Object;
@@ -38,6 +31,11 @@ public final class at/florianschuster/control/ControllerEvent$State : at/florian
 }
 
 public final class at/florianschuster/control/ControllerEvent$Stub : at/florianschuster/control/ControllerEvent {
+}
+
+public final class at/florianschuster/control/ControllerKt {
+	public static final fun createController (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Lat/florianschuster/control/ControllerLog;Lkotlinx/coroutines/CoroutineStart;Lkotlinx/coroutines/CoroutineDispatcher;)Lat/florianschuster/control/Controller;
+	public static synthetic fun createController$default (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Lat/florianschuster/control/ControllerLog;Lkotlinx/coroutines/CoroutineStart;Lkotlinx/coroutines/CoroutineDispatcher;ILjava/lang/Object;)Lat/florianschuster/control/Controller;
 }
 
 public abstract class at/florianschuster/control/ControllerLog {
@@ -76,6 +74,16 @@ public final class at/florianschuster/control/ExtensionsKt {
 
 public abstract interface class at/florianschuster/control/LoggerScope {
 	public abstract fun getEvent ()Lat/florianschuster/control/ControllerEvent;
+}
+
+public abstract interface class at/florianschuster/control/ManagedController : at/florianschuster/control/Controller {
+	public abstract fun cancel ()Ljava/lang/Object;
+	public abstract fun start ()Z
+}
+
+public final class at/florianschuster/control/ManagedControllerKt {
+	public static final fun ManagedController (Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Lat/florianschuster/control/ControllerLog;Lkotlinx/coroutines/CoroutineDispatcher;)Lat/florianschuster/control/ManagedController;
+	public static synthetic fun ManagedController$default (Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Lat/florianschuster/control/ControllerLog;Lkotlinx/coroutines/CoroutineDispatcher;ILjava/lang/Object;)Lat/florianschuster/control/ManagedController;
 }
 
 public abstract interface class at/florianschuster/control/MutatorScope {

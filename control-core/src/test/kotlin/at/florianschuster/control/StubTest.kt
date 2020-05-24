@@ -5,7 +5,9 @@ import at.florianschuster.test.flow.emissions
 import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
 import org.junit.Test
 import java.lang.IllegalArgumentException
@@ -33,7 +35,6 @@ internal class StubTest {
     @Test
     fun `stub is initialized only after accessing stub()`() {
         val sut = testCoroutineScope.createStringController()
-            as ControllerImplementation<List<String>, List<String>, List<String>>
         assertFalse(sut.stubInitialized)
 
         assertFailsWith<UninitializedPropertyAccessException> { sut.stub.dispatchedActions }
@@ -101,10 +102,18 @@ internal class StubTest {
     }
 
     private fun CoroutineScope.createStringController() =
-        createSynchronousController<List<String>, List<String>>(
-            tag = "string_controller",
+        ControllerImplementation<List<String>, List<String>, List<String>>(
+            scope = this,
+            dispatcher = scopeDispatcher,
+            coroutineStart = CoroutineStart.LAZY,
             initialState = initialState,
-            reducer = { previousState, mutation -> previousState + mutation }
+            mutator = { flowOf(it) },
+            reducer = { previousState, mutation -> previousState + mutation },
+            actionsTransformer = { it },
+            mutationsTransformer = { it },
+            statesTransformer = { it },
+            tag = "StubTest.StringController",
+            controllerLog = ControllerLog.None
         )
 
     companion object {

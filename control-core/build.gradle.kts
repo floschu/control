@@ -43,8 +43,8 @@ pitest {
         "at.florianschuster.control.ExtensionsKt**", // too many inline collects
 
         // inlined invokeSuspend
-        "at.florianschuster.control.ControllerImplementation\$1\$2",
-        "at.florianschuster.control.ControllerImplementation\$1",
+        "at.florianschuster.control.ControllerImplementation\$stateJob\$1",
+        "at.florianschuster.control.ControllerImplementation\$stateJob\$1\$2",
 
         // lateinit var isInitialized
         "at.florianschuster.control.ControllerImplementation\$stubInitialized\$1"

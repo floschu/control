@@ -5,9 +5,12 @@ import at.florianschuster.test.flow.emission
 import at.florianschuster.test.flow.emissionCount
 import at.florianschuster.test.flow.emissions
 import at.florianschuster.test.flow.expect
+import at.florianschuster.test.flow.lastEmission
 import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flow
@@ -27,7 +30,7 @@ internal class ImplementationTest {
 
     @Test
     fun `initial state only emitted once`() {
-        val sut = testCoroutineScope.operationController()
+        val sut = testCoroutineScope.createOperationController()
         val testFlow = sut.state.testIn(testCoroutineScope)
 
         testFlow expect emissionCount(1)
@@ -36,14 +39,14 @@ internal class ImplementationTest {
 
     @Test
     fun `state is created when accessing current state`() {
-        val sut = testCoroutineScope.operationController()
+        val sut = testCoroutineScope.createOperationController()
 
         assertEquals(listOf("initialState", "transformedState"), sut.currentState)
     }
 
     @Test
     fun `state is created when accessing action`() {
-        val sut = testCoroutineScope.operationController()
+        val sut = testCoroutineScope.createOperationController()
 
         sut.dispatch(listOf("action"))
 
@@ -62,7 +65,7 @@ internal class ImplementationTest {
 
     @Test
     fun `each method is invoked`() {
-        val sut = testCoroutineScope.operationController()
+        val sut = testCoroutineScope.createOperationController()
         val testFlow = sut.state.testIn(testCoroutineScope)
 
         sut.dispatch(listOf("action"))
@@ -82,26 +85,8 @@ internal class ImplementationTest {
     }
 
     @Test
-    fun `synchronous controller`() {
-        val counterSut = testCoroutineScope.createSynchronousController<Int, Int>(
-            tag = "counter",
-            initialState = 0,
-            reducer = { action, previousState -> previousState + action }
-        )
-
-        counterSut.dispatch(1)
-        counterSut.dispatch(2)
-        counterSut.dispatch(3)
-
-        assertEquals(6, counterSut.currentState)
-    }
-
-    @Test
     fun `only distinct states are emitted`() {
-        val sut = testCoroutineScope.createSynchronousController<Unit, Int>(
-            0,
-            reducer = { _, previousState -> previousState }
-        )
+        val sut = testCoroutineScope.createAlwaysSameStateController()
         val testFlow = sut.state.testIn(testCoroutineScope)
         sut.dispatch(Unit)
         sut.dispatch(Unit)
@@ -111,7 +96,7 @@ internal class ImplementationTest {
 
     @Test
     fun `collector receives latest and following states`() {
-        val sut = testCoroutineScope.counterController() // 0
+        val sut = testCoroutineScope.createCounterController() // 0
 
         sut.dispatch(Unit) // 1
         sut.dispatch(Unit) // 2
@@ -126,7 +111,7 @@ internal class ImplementationTest {
     @Test
     fun `state flow throws error from mutator`() {
         val scope = TestCoroutineScope()
-        val sut = scope.counterController(mutatorErrorIndex = 2)
+        val sut = scope.createCounterController(mutatorErrorIndex = 2)
         sut.dispatch(Unit)
         sut.dispatch(Unit)
         sut.dispatch(Unit)
@@ -137,7 +122,7 @@ internal class ImplementationTest {
     @Test
     fun `state flow throws error from reducer`() {
         val scope = TestCoroutineScope()
-        val sut = scope.counterController(reducerErrorIndex = 2)
+        val sut = scope.createCounterController(reducerErrorIndex = 2)
 
         sut.dispatch(Unit)
         sut.dispatch(Unit)
@@ -148,7 +133,7 @@ internal class ImplementationTest {
 
     @Test
     fun `cancel via takeUntil`() {
-        val sut = testCoroutineScope.stopWatchController()
+        val sut = testCoroutineScope.createStopWatchController()
 
         sut.dispatch(StopWatchAction.Start)
         testCoroutineScope.advanceTimeBy(2000)
@@ -185,11 +170,7 @@ internal class ImplementationTest {
             emit(42)
         }
 
-        val sut = testCoroutineScope.createSynchronousController<Int, Int>(
-            initialState = 0,
-            actionsTransformer = { merge(it, globalState) },
-            reducer = { action, previousState -> previousState + action }
-        )
+        val sut = testCoroutineScope.createGlobalStateMergeController(globalState)
 
         val states = sut.state.testIn(testCoroutineScope)
 
@@ -204,14 +185,48 @@ internal class ImplementationTest {
     fun `MutatorScope is built correctly`() {
         val stateAccessor = { 1 }
         val actions = flowOf(1)
-        val sut = mutatorScope(stateAccessor, actions)
+        val sut = ControllerImplementation.mutatorScope(stateAccessor, actions)
 
         assertEquals(stateAccessor(), sut.currentState)
         assertEquals(actions, sut.actions)
     }
 
-    private fun CoroutineScope.operationController() =
-        createController<List<String>, List<String>, List<String>>(
+    @Test
+    fun `cancelling the implementation will return the last state`() {
+        val sut = testCoroutineScope.createGlobalStateMergeController(emptyFlow())
+
+        val states = sut.state.testIn(testCoroutineScope)
+
+        sut.dispatch(0)
+        sut.dispatch(1)
+
+        assertEquals(1, sut.cancel())
+
+        sut.dispatch(2)
+
+        states expect lastEmission(1)
+    }
+
+    private fun CoroutineScope.createAlwaysSameStateController() =
+        ControllerImplementation<Unit, Unit, Int>(
+            scope = this,
+            dispatcher = scopeDispatcher,
+            coroutineStart = CoroutineStart.LAZY,
+            initialState = 0,
+            mutator = { flowOf(it) },
+            reducer = { _, previousState -> previousState },
+            actionsTransformer = { it },
+            mutationsTransformer = { it },
+            statesTransformer = { it },
+            tag = "ImplementationTest.AlwaysSameStateController",
+            controllerLog = ControllerLog.None
+        )
+
+    private fun CoroutineScope.createOperationController() =
+        ControllerImplementation<List<String>, List<String>, List<String>>(
+            scope = this,
+            dispatcher = scopeDispatcher,
+            coroutineStart = CoroutineStart.LAZY,
 
             // 1. ["initialState"]
             initialState = listOf("initialState"),
@@ -235,13 +250,19 @@ internal class ImplementationTest {
             reducer = { mutation, previousState -> previousState + mutation },
 
             // 6. ["initialState", "action", "transformedAction", "mutation", "transformedMutation"] + ["transformedState"]
-            statesTransformer = { states -> states.map { it + "transformedState" } }
+            statesTransformer = { states -> states.map { it + "transformedState" } },
+
+            tag = "ImplementationTest.OperationController",
+            controllerLog = ControllerLog.None
         )
 
-    private fun CoroutineScope.counterController(
+    private fun CoroutineScope.createCounterController(
         mutatorErrorIndex: Int? = null,
         reducerErrorIndex: Int? = null
-    ) = createController<Unit, Unit, Int>(
+    ) = ControllerImplementation<Unit, Unit, Int>(
+        scope = this,
+        dispatcher = scopeDispatcher,
+        coroutineStart = CoroutineStart.LAZY,
         initialState = 0,
         mutator = { action ->
             flow {
@@ -252,7 +273,12 @@ internal class ImplementationTest {
         reducer = { _, previousState ->
             check(previousState != reducerErrorIndex)
             previousState + 1
-        }
+        },
+        actionsTransformer = { it },
+        mutationsTransformer = { it },
+        statesTransformer = { it },
+        tag = "ImplementationTest.CounterController",
+        controllerLog = ControllerLog.None
     )
 
     private sealed class StopWatchAction {
@@ -260,21 +286,46 @@ internal class ImplementationTest {
         object Stop : StopWatchAction()
     }
 
-    private fun CoroutineScope.stopWatchController() = createController<StopWatchAction, Int, Int>(
-        initialState = 0,
-        mutator = { action ->
-            when (action) {
-                is StopWatchAction.Start -> {
-                    flow {
-                        while (true) {
-                            delay(1000)
-                            emit(1)
-                        }
-                    }.takeUntil(actions.filterIsInstance<StopWatchAction.Stop>())
+    private fun CoroutineScope.createStopWatchController() =
+        ControllerImplementation<StopWatchAction, Int, Int>(
+            scope = this,
+            dispatcher = scopeDispatcher,
+            coroutineStart = CoroutineStart.LAZY,
+            initialState = 0,
+            mutator = { action ->
+                when (action) {
+                    is StopWatchAction.Start -> {
+                        flow {
+                            while (true) {
+                                delay(1000)
+                                emit(1)
+                            }
+                        }.takeUntil(actions.filterIsInstance<StopWatchAction.Stop>())
+                    }
+                    is StopWatchAction.Stop -> emptyFlow()
                 }
-                is StopWatchAction.Stop -> emptyFlow()
-            }
-        },
-        reducer = { mutation, previousState -> previousState + mutation }
+            },
+            reducer = { mutation, previousState -> previousState + mutation },
+            actionsTransformer = { it },
+            mutationsTransformer = { it },
+            statesTransformer = { it },
+            tag = "ImplementationTest.StopWatchController",
+            controllerLog = ControllerLog.None
+        )
+
+    private fun CoroutineScope.createGlobalStateMergeController(
+        globalState: Flow<Int>
+    ) = ControllerImplementation<Int, Int, Int>(
+        scope = this,
+        dispatcher = scopeDispatcher,
+        coroutineStart = CoroutineStart.LAZY,
+        initialState = 0,
+        mutator = { flowOf(it) },
+        reducer = { action, previousState -> previousState + action },
+        actionsTransformer = { merge(it, globalState) },
+        mutationsTransformer = { it },
+        statesTransformer = { it },
+        tag = "ImplementationTest.GlobalStateMergeController",
+        controllerLog = ControllerLog.None
     )
 }

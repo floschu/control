@@ -13,7 +13,7 @@ interface LoggerScope {
 }
 
 /**
- * Configuration to define how [ControllerEvent]'s are logged by a [ControllerImplementation].
+ * Configuration to define how [ControllerEvent]'s are logged by a [Controller].
  */
 sealed class ControllerLog {
 
@@ -39,17 +39,17 @@ sealed class ControllerLog {
     companion object {
 
         /**
-         * The default [ControllerLog] that is used by a [ControllerImplementation].
-         * Set this to change the logger for all [ControllerImplementation]'s that do not specify one.
+         * The default [ControllerLog] that is used by all [Controller] builders.
+         * Set this to change the default logger for all builders that do not specify one.
          */
         var default: ControllerLog = None
     }
 }
 
-internal fun ControllerLog.log(event: ControllerEvent) {
-    logger?.invoke(loggerScope(event), event.toString())
-}
-
 internal fun loggerScope(event: ControllerEvent) = object : LoggerScope {
     override val event: ControllerEvent = event
+}
+
+internal fun ControllerLog.log(event: ControllerEvent) {
+    logger?.invoke(loggerScope(event), event.toString())
 }
