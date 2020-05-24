@@ -4,12 +4,9 @@ import androidx.compose.Composable
 import androidx.compose.CompositionLifecycleObserver
 import androidx.compose.State
 import androidx.compose.collectAsState
-import androidx.ui.savedinstancestate.Saver
-import androidx.ui.savedinstancestate.rememberSavedInstanceState
 import at.florianschuster.control.Controller
 import at.florianschuster.control.ManagedController
 import kotlinx.coroutines.flow.Flow
-import java.io.Serializable
 
 /**
  * Collects values from the [Controller.state] and represents its latest value via
