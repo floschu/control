@@ -42,7 +42,21 @@ internal class ImplementationStartStopTest {
         )
 
         assertFalse(sut.stateJob.isActive)
+        val started = sut.start()
+        assertTrue(started)
+        assertTrue(sut.stateJob.isActive)
+    }
+
+    @Test
+    fun `manually start implementation when already started`() {
+        val sut = testCoroutineScope.createSimpleCounterController(
+            coroutineStart = CoroutineStart.LAZY
+        )
+
+        assertFalse(sut.stateJob.isActive)
         sut.start()
+        val started = sut.start()
+        assertFalse(started)
         assertTrue(sut.stateJob.isActive)
     }
 
@@ -52,8 +66,9 @@ internal class ImplementationStartStopTest {
             coroutineStart = CoroutineStart.LAZY
         )
 
-        sut.start()
+        val started =  sut.start()
         assertTrue(sut.stateJob.isActive)
+        assertTrue(started)
         sut.cancel()
         assertFalse(sut.stateJob.isActive)
     }
