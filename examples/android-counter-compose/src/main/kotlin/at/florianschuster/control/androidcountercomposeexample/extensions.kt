@@ -23,10 +23,10 @@ internal fun <S> Controller<*, *, S>.collectAsState(): State<S> {
 /**
  * A [Controller] delegate that implements [CompositionLifecycleObserver].
  *
- * The state machine of [controller] is started once [CompositionController] is used in a
- * composition and cancelled once [CompositionController] is no longer used.
+ * The state machine of [controller] is started once [CompositionControllerDelegate] is used in a
+ * composition and cancelled once [CompositionControllerDelegate] is no longer used.
  */
-interface CompositionController<Action, Mutation, State> :
+interface CompositionControllerDelegate<Action, Mutation, State> :
     Controller<Action, Mutation, State>, CompositionLifecycleObserver {
 
     val controller: ManagedController<Action, Mutation, State>

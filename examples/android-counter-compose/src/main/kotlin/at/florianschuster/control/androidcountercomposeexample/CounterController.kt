@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.flowOf
 import java.io.Serializable
 
 class CounterController(
-    initialState: State = State(value = 0, loading = false)
-) : CompositionController<CounterController.Action, CounterController.Mutation, CounterController.State> {
+    initialState: State = State()
+) : CompositionControllerDelegate<CounterController.Action, CounterController.Mutation, CounterController.State> {
 
     sealed class Action {
         object Increment : Action()
