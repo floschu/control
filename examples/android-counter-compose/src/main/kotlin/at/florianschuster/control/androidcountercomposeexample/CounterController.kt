@@ -14,14 +14,12 @@ class CounterController(
     sealed class Action {
         object Increment : Action()
         object Decrement : Action()
-        data class SetValue(val value: Int) : Action()
     }
 
     sealed class Mutation {
         object IncreaseValue : Mutation()
         object DecreaseValue : Mutation()
         data class SetLoading(val loading: Boolean) : Mutation()
-        data class SetValue(val value: Int) : Mutation()
     }
 
     data class State(
@@ -45,7 +43,6 @@ class CounterController(
                     emit(Mutation.DecreaseValue)
                     emit(Mutation.SetLoading(false))
                 }
-                is Action.SetValue -> flowOf(Mutation.SetValue(action.value))
             }
         },
         reducer = { mutation, previousState ->
@@ -53,7 +50,6 @@ class CounterController(
                 is Mutation.IncreaseValue -> previousState.copy(value = previousState.value + 1)
                 is Mutation.DecreaseValue -> previousState.copy(value = previousState.value - 1)
                 is Mutation.SetLoading -> previousState.copy(loading = mutation.loading)
-                is Mutation.SetValue -> previousState.copy(value = mutation.value)
             }
         },
         controllerLog = ControllerLog.Println

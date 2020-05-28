@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.Flow
  * will be updated causing re-composition.
  */
 @Composable
-internal fun <S> Controller<*, *, S>.collectAsState(): State<S> {
+internal fun <S> Controller<*, *, S>.collectState(): State<S> {
     return state.collectAsState(initial = currentState)
 }
 

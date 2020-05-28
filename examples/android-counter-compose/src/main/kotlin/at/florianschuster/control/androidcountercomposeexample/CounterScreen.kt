@@ -24,7 +24,8 @@ internal fun CounterScreen(
     injectedController: CounterController = CounterController()
 ) {
     val controller = remember { injectedController }
-    val counterState by controller.collectAsState()
+    val counterState by controller.collectState()
+
     Stack(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier.fillMaxWidth().gravity(Alignment.Center),
