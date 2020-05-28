@@ -34,8 +34,8 @@ public final class at/florianschuster/control/ControllerEvent$Stub : at/florians
 }
 
 public final class at/florianschuster/control/ControllerKt {
-	public static final fun createController (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Lat/florianschuster/control/ControllerLog;Lkotlinx/coroutines/CoroutineStart;Lkotlinx/coroutines/CoroutineDispatcher;)Lat/florianschuster/control/Controller;
-	public static synthetic fun createController$default (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Lat/florianschuster/control/ControllerLog;Lkotlinx/coroutines/CoroutineStart;Lkotlinx/coroutines/CoroutineDispatcher;ILjava/lang/Object;)Lat/florianschuster/control/Controller;
+	public static final fun createController (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Lat/florianschuster/control/ControllerLog;Lat/florianschuster/control/ControllerStart;Lkotlinx/coroutines/CoroutineDispatcher;)Lat/florianschuster/control/Controller;
+	public static synthetic fun createController$default (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Lat/florianschuster/control/ControllerLog;Lat/florianschuster/control/ControllerStart;Lkotlinx/coroutines/CoroutineDispatcher;ILjava/lang/Object;)Lat/florianschuster/control/Controller;
 }
 
 public abstract class at/florianschuster/control/ControllerLog {
@@ -57,6 +57,17 @@ public final class at/florianschuster/control/ControllerLog$None : at/floriansch
 
 public final class at/florianschuster/control/ControllerLog$Println : at/florianschuster/control/ControllerLog {
 	public static final field INSTANCE Lat/florianschuster/control/ControllerLog$Println;
+}
+
+public abstract class at/florianschuster/control/ControllerStart {
+}
+
+public final class at/florianschuster/control/ControllerStart$Immediately : at/florianschuster/control/ControllerStart {
+	public static final field INSTANCE Lat/florianschuster/control/ControllerStart$Immediately;
+}
+
+public final class at/florianschuster/control/ControllerStart$Lazy : at/florianschuster/control/ControllerStart {
+	public static final field INSTANCE Lat/florianschuster/control/ControllerStart$Lazy;
 }
 
 public abstract interface class at/florianschuster/control/ControllerStub {
