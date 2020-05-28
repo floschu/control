@@ -11,7 +11,7 @@ internal class EventTest {
     @Test
     fun `event message contains library name and tag`() {
         val tag = "some_tag"
-        val event = ControllerEvent.Created(tag)
+        val event = ControllerEvent.Completed(tag)
 
         assertTrue(event.toString().contains("control"))
         assertTrue(event.toString().contains(tag))
@@ -20,9 +20,13 @@ internal class EventTest {
     @Test
     fun `ControllerImplementation logs events correctly`() {
         val events = mutableListOf<ControllerEvent>()
-        val sut = TestCoroutineScope().eventsController(events)
+        val sut = TestCoroutineScope().eventsController(
+            events,
+            controllerStart = ControllerStart.Managed
+        )
 
         assertTrue(events.last() is ControllerEvent.Created)
+        assertTrue(events.last().toString().contains(ControllerStart.Managed.toString()))
 
         sut.start()
         events.takeLast(2).let { lastEvents ->
@@ -69,11 +73,12 @@ internal class EventTest {
     }
 
     private fun CoroutineScope.eventsController(
-        events: MutableList<ControllerEvent>
+        events: MutableList<ControllerEvent>,
+        controllerStart: ControllerStart = ControllerStart.Lazy
     ) = ControllerImplementation<Int, Int, Int>(
         scope = this,
         dispatcher = scopeDispatcher,
-        controllerStart = ControllerStart.Lazy,
+        controllerStart = controllerStart,
         initialState = 0,
         mutator = { action ->
             flow {

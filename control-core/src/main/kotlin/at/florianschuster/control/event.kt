@@ -12,8 +12,8 @@ sealed class ControllerEvent(
      * When the implementation is created.
      */
     class Created internal constructor(
-        tag: String
-    ) : ControllerEvent(tag, "created")
+        tag: String, controllerStart: String
+    ) : ControllerEvent(tag, "created with controllerStart: $controllerStart")
 
     /**
      * When the state machine is started.

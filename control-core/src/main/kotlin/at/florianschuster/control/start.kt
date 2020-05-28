@@ -12,15 +12,22 @@ sealed class ControllerStart {
      * The state machine is started once [Controller.state], [Controller.currentState] or
      * [Controller.dispatch] are accessed.
      */
-    object Lazy : ControllerStart()
+    object Lazy : ControllerStart() {
+        override fun toString(): String = "Lazy"
+    }
 
     /**
      * The state machine is iImmediately started once the [Controller] is built.
      */
-    object Immediately : ControllerStart()
+    object Immediately : ControllerStart() {
+        override fun toString(): String = "Immediately"
+    }
 
     /**
      * The state machine is started once [ManagedController.start] is called.
      */
-    internal object Managed : ControllerStart()
+    internal object Managed : ControllerStart() {
+        override fun toString(): String = "Managed"
+    }
+
 }

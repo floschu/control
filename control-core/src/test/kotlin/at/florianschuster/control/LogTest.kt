@@ -42,8 +42,8 @@ internal class LogTest {
 
         sut.log(CreatedEvent)
         assertEquals(CreatedEvent.toString(), capturedLogMessage.captured)
-        sut.log(DestroyedEvent)
-        assertEquals(DestroyedEvent.toString(), capturedLogMessage.captured)
+        sut.log(CompletedEvent)
+        assertEquals(CompletedEvent.toString(), capturedLogMessage.captured)
         verify(exactly = 2) { out.println(any<Any>()) }
     }
 
@@ -57,21 +57,20 @@ internal class LogTest {
 
         sut.log(CreatedEvent)
         assertEquals(CreatedEvent.toString(), capturedLogMessage.captured)
-        sut.log(DestroyedEvent)
-        assertEquals(DestroyedEvent.toString(), capturedLogMessage.captured)
+        sut.log(CompletedEvent)
+        assertEquals(CompletedEvent.toString(), capturedLogMessage.captured)
     }
 
     @Test
     fun `LoggerScope factory function`() {
-        val event = ControllerEvent.Created(tag)
-        val scope = loggerScope(event)
+        val scope = loggerScope(CreatedEvent)
 
-        assertEquals(event, scope.event)
+        assertEquals(CreatedEvent, scope.event)
     }
 
     companion object {
         private const val tag = "TestTag"
-        private val CreatedEvent: ControllerEvent = ControllerEvent.Created(tag)
-        private val DestroyedEvent: ControllerEvent = ControllerEvent.Created(tag)
+        private val CreatedEvent: ControllerEvent = ControllerEvent.Created(tag, "lazy")
+        private val CompletedEvent: ControllerEvent = ControllerEvent.Completed(tag)
     }
 }
