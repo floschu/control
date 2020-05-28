@@ -156,8 +156,12 @@ fun <Action, Mutation, State> CoroutineScope.createController(
 
 /**
  * Creates a [Controller] bound to a [CoroutineScope] where [Action] == [Mutation].
+ *
  * This means that the [Controller] can only deal with synchronous state reductions without
  * any asynchronous side-effects.
+ *
+ * Internally for the state machine that means that each [Action] is simply pushed through
+ * the [Mutator] as it is and directly reaches the [Reducer].
  */
 @ExperimentalCoroutinesApi
 @FlowPreview
