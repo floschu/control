@@ -25,11 +25,11 @@ object Versions {
 
     const val androidx_test: String = "1.2.0"
 
-    const val androidx_ui: String = "0.1.0-dev11"
+    const val androidx_ui: String = "0.1.0-dev12"
 
     const val io_ktor: String = "1.3.2" // available: "1.3.2-1.4-M1-release-99"
 
-    const val com_android_tools_build_gradle: String = "4.1.0-alpha09"
+    const val com_android_tools_build_gradle: String = "4.1.0-alpha10"
 
     const val org_jlleitschuh_gradle_ktlint_gradle_plugin: String = "9.2.1"
 
@@ -47,13 +47,13 @@ object Versions {
 
     const val gradle_pitest_plugin: String = "1.5.1"
 
-    const val compose_compiler: String = "0.1.0-dev11"
+    const val compose_compiler: String = "0.1.0-dev12"
 
     const val constraintlayout: String = "2.0.0-beta4"
 
     const val espresso_core: String = "3.2.0"
 
-    const val lint_gradle: String = "27.1.0-alpha09"
+    const val lint_gradle: String = "27.1.0-alpha10"
 
     const val appcompat: String = "1.1.0"
 
@@ -65,12 +65,12 @@ object Versions {
 
     const val ktlint: String = "0.36.0"
 
-    const val aapt2: String = "4.1.0-alpha09-6422342"
+    const val aapt2: String = "4.1.0-alpha10-6481518"
 
     const val mockk: String = "1.10.0"
 
     /**
-     * Current version: "6.4.1"
+     * Current version: "6.5-milestone-1"
      * See issue 19: How to update Gradle itself?
      * https://github.com/jmfayard/buildSrcVersions/issues/19
      */
