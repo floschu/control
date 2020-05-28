@@ -6,10 +6,18 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 internal class StartTest {
+
+    @Test
+    fun `start mode toString`() {
+        assertEquals("Lazy", ControllerStart.Lazy.toString())
+        assertEquals("Immediately", ControllerStart.Immediately.toString())
+        assertEquals("Managed", ControllerStart.Managed.toString())
+    }
 
     @Test
     fun `default start mode`() {
