@@ -29,5 +29,4 @@ sealed class ControllerStart {
     internal object Managed : ControllerStart() {
         override fun toString(): String = "Managed"
     }
-
 }
