@@ -94,6 +94,8 @@ interface Controller<Action, Mutation, State> {
  * 2. [Reducer]: This corresponds to [Mutation] -> [State]
  * 3. [Transformer]
  * 4. [ControllerImplementation]
+ *
+ * To create a [Controller] that is not bound to a [CoroutineScope] look into [ManagedController].
  */
 @ExperimentalCoroutinesApi
 @FlowPreview
