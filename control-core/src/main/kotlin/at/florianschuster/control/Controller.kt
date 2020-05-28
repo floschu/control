@@ -7,6 +7,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlin.coroutines.ContinuationInterceptor
 
 /**
@@ -147,6 +149,62 @@ fun <Action, Mutation, State> CoroutineScope.createController(
     initialState = initialState, mutator = mutator, reducer = reducer,
     actionsTransformer = actionsTransformer,
     mutationsTransformer = mutationsTransformer,
+    statesTransformer = statesTransformer,
+
+    tag = tag, controllerLog = controllerLog
+)
+
+/**
+ * Creates a [Controller] bound to a [CoroutineScope] where [Action] == [Mutation].
+ * This means that the [Controller] can only deal with synchronous state reductions without
+ * any asynchronous side-effects.
+ */
+@ExperimentalCoroutinesApi
+@FlowPreview
+fun <Action, State> CoroutineScope.createSynchronousController(
+
+    /**
+     * The initial [State] for the internal state machine.
+     */
+    initialState: State,
+    /**
+     * See [Reducer].
+     */
+    reducer: Reducer<Action, State> = { _, previousState -> previousState },
+
+    /**
+     * See [Transformer].
+     */
+    actionsTransformer: Transformer<Action> = { it },
+    statesTransformer: Transformer<State> = { it },
+
+    /**
+     * Used for [ControllerLog] and as [CoroutineName] for the internal state machine.
+     */
+    tag: String = defaultTag(),
+    /**
+     * Log configuration for [ControllerEvent]s. See [ControllerLog].
+     */
+    controllerLog: ControllerLog = ControllerLog.default,
+
+    /**
+     * When the internal state machine [Flow] should be started. See [ControllerStart].
+     */
+    controllerStart: ControllerStart = ControllerStart.Lazy,
+
+    /**
+     * Override to launch the internal state machine [Flow] in a different [CoroutineDispatcher]
+     * than the one used in the [CoroutineScope.coroutineContext].
+     *
+     * [Reducer] will run on this [CoroutineDispatcher].
+     */
+    dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher
+): Controller<Action, Action, State> = ControllerImplementation(
+    scope = this, dispatcher = dispatcher, controllerStart = controllerStart,
+
+    initialState = initialState, mutator = { flowOf(it) }, reducer = reducer,
+    actionsTransformer = actionsTransformer,
+    mutationsTransformer = { it },
     statesTransformer = statesTransformer,
 
     tag = tag, controllerLog = controllerLog
