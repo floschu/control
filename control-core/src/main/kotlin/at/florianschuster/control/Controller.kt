@@ -3,7 +3,6 @@ package at.florianschuster.control
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -131,14 +130,9 @@ fun <Action, Mutation, State> CoroutineScope.createController(
     controllerLog: ControllerLog = ControllerLog.default,
 
     /**
-     * When the internal state machine [Flow] should be started.
-     *
-     * Default is [CoroutineStart.LAZY] -> [Flow] is started once [Controller.state],
-     * [Controller.currentState] or [Controller.dispatch] are accessed.
-     *
-     * Look into [CoroutineStart] to see how the options would affect the [Flow] start.
+     * When the internal state machine [Flow] should be started. See [ControllerStart].
      */
-    coroutineStart: CoroutineStart = CoroutineStart.LAZY,
+    controllerStart: ControllerStart = ControllerStart.Lazy,
 
     /**
      * Override to launch the internal state machine [Flow] in a different [CoroutineDispatcher]
@@ -148,7 +142,7 @@ fun <Action, Mutation, State> CoroutineScope.createController(
      */
     dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher
 ): Controller<Action, Mutation, State> = ControllerImplementation(
-    scope = this, dispatcher = dispatcher, coroutineStart = coroutineStart,
+    scope = this, dispatcher = dispatcher, controllerStart = controllerStart,
 
     initialState = initialState, mutator = mutator, reducer = reducer,
     actionsTransformer = actionsTransformer,

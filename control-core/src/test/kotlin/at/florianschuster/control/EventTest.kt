@@ -1,14 +1,12 @@
 package at.florianschuster.control
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Test
 import kotlin.test.assertTrue
 
-internal class ImplementationEventTest {
+internal class EventTest {
 
     @Test
     fun `event message contains library name and tag`() {
@@ -75,7 +73,7 @@ internal class ImplementationEventTest {
     ) = ControllerImplementation<Int, Int, Int>(
         scope = this,
         dispatcher = scopeDispatcher,
-        coroutineStart = CoroutineStart.LAZY,
+        controllerStart = ControllerStart.Lazy,
         initialState = 0,
         mutator = { action ->
             flow {

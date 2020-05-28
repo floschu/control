@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 internal class ControllerImplementation<Action, Mutation, State>(
     internal val scope: CoroutineScope,
     internal val dispatcher: CoroutineDispatcher,
-    internal val coroutineStart: CoroutineStart,
+    internal val controllerStart: ControllerStart,
 
     internal val initialState: State,
     internal val mutator: Mutator<Action, Mutation, State>,
@@ -50,7 +50,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     internal val stateJob: Job = scope.launch(
         context = dispatcher + CoroutineName(tag),
-        start = coroutineStart
+        start = CoroutineStart.LAZY
     ) {
         val actionFlow: Flow<Action> = actionsTransformer(actionChannel.asFlow())
 
@@ -99,13 +99,13 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     override val state: Flow<State>
         get() = if (stubInitialized) stub.stateFlow else {
-            start()
+            if (controllerStart is ControllerStart.Lazy) start()
             mutableStateFlow
         }
 
     override val currentState: State
         get() = if (stubInitialized) stub.stateFlow.value else {
-            start()
+            if (controllerStart is ControllerStart.Lazy) start()
             mutableStateFlow.value
         }
 
@@ -113,7 +113,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
         if (stubInitialized) {
             stub.mutableDispatchedActions.add(action)
         } else {
-            start()
+            if (controllerStart is ControllerStart.Lazy) start()
             actionChannel.offer(action)
         }
     }
@@ -135,6 +135,9 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     init {
         controllerLog.log(ControllerEvent.Created(tag))
+        if (controllerStart is ControllerStart.Immediately) {
+            start()
+        }
     }
 
     companion object {

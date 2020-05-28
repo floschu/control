@@ -3,7 +3,6 @@ package at.florianschuster.control
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -36,11 +35,8 @@ interface ManagedController<Action, Mutation, State> : Controller<Action, Mutati
 /**
  * Creates a [ManagedController] via [ControllerImplementation].
  *
- * The internal state machine is started once [Controller.state], [Controller.currentState]
- * or [Controller.dispatch] are accessed or when calling [ManagedController.start].
- *
- * A [ManagedController] also HAS to be cancelled manually via [ManagedController.cancel]
- * to avoid leaks.
+ * The internal state machine is started when calling [ManagedController.start].
+ * A [ManagedController] also HAS to be cancelled via [ManagedController.cancel] to avoid leaks.
  */
 @Suppress("FunctionName")
 @ExperimentalCoroutinesApi
@@ -85,7 +81,7 @@ fun <Action, Mutation, State> ManagedController(
 ): ManagedController<Action, Mutation, State> = ControllerImplementation(
     scope = CoroutineScope(dispatcher),
     dispatcher = dispatcher,
-    coroutineStart = CoroutineStart.LAZY,
+    controllerStart = ControllerStart.Managed,
 
     initialState = initialState,
     mutator = mutator,

@@ -2,7 +2,6 @@ package at.florianschuster.control
 
 import io.mockk.mockk
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.singleOrNull
@@ -36,7 +35,7 @@ internal class ManagedControllerTest {
         assertEquals(expectedTag, sut.tag)
         assertEquals(ControllerLog.default, sut.controllerLog)
 
-        assertEquals(CoroutineStart.LAZY, sut.coroutineStart)
+        assertEquals(ControllerStart.Managed, sut.controllerStart)
         assertEquals(scopeDispatcher, sut.dispatcher)
     }
 }

@@ -8,7 +8,6 @@ import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.lastEmission
 import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -211,7 +210,7 @@ internal class ImplementationTest {
         ControllerImplementation<Unit, Unit, Int>(
             scope = this,
             dispatcher = scopeDispatcher,
-            coroutineStart = CoroutineStart.LAZY,
+            controllerStart = ControllerStart.Lazy,
             initialState = 0,
             mutator = { flowOf(it) },
             reducer = { _, previousState -> previousState },
@@ -226,7 +225,7 @@ internal class ImplementationTest {
         ControllerImplementation<List<String>, List<String>, List<String>>(
             scope = this,
             dispatcher = scopeDispatcher,
-            coroutineStart = CoroutineStart.LAZY,
+            controllerStart = ControllerStart.Lazy,
 
             // 1. ["initialState"]
             initialState = listOf("initialState"),
@@ -262,7 +261,7 @@ internal class ImplementationTest {
     ) = ControllerImplementation<Unit, Unit, Int>(
         scope = this,
         dispatcher = scopeDispatcher,
-        coroutineStart = CoroutineStart.LAZY,
+        controllerStart = ControllerStart.Lazy,
         initialState = 0,
         mutator = { action ->
             flow {
@@ -290,7 +289,7 @@ internal class ImplementationTest {
         ControllerImplementation<StopWatchAction, Int, Int>(
             scope = this,
             dispatcher = scopeDispatcher,
-            coroutineStart = CoroutineStart.LAZY,
+            controllerStart = ControllerStart.Lazy,
             initialState = 0,
             mutator = { action ->
                 when (action) {
@@ -318,7 +317,7 @@ internal class ImplementationTest {
     ) = ControllerImplementation<Int, Int, Int>(
         scope = this,
         dispatcher = scopeDispatcher,
-        coroutineStart = CoroutineStart.LAZY,
+        controllerStart = ControllerStart.Lazy,
         initialState = 0,
         mutator = { flowOf(it) },
         reducer = { action, previousState -> previousState + action },

@@ -5,7 +5,6 @@ import at.florianschuster.test.flow.emissions
 import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
@@ -105,7 +104,7 @@ internal class StubTest {
         ControllerImplementation<List<String>, List<String>, List<String>>(
             scope = this,
             dispatcher = scopeDispatcher,
-            coroutineStart = CoroutineStart.LAZY,
+            controllerStart = ControllerStart.Lazy,
             initialState = initialState,
             mutator = { flowOf(it) },
             reducer = { previousState, mutation -> previousState + mutation },
