@@ -64,12 +64,10 @@ public abstract class at/florianschuster/control/ControllerStart {
 
 public final class at/florianschuster/control/ControllerStart$Immediately : at/florianschuster/control/ControllerStart {
 	public static final field INSTANCE Lat/florianschuster/control/ControllerStart$Immediately;
-	public fun toString ()Ljava/lang/String;
 }
 
 public final class at/florianschuster/control/ControllerStart$Lazy : at/florianschuster/control/ControllerStart {
 	public static final field INSTANCE Lat/florianschuster/control/ControllerStart$Lazy;
-	public fun toString ()Ljava/lang/String;
 }
 
 public abstract interface class at/florianschuster/control/ControllerStub {

@@ -26,7 +26,7 @@ internal class EventTest {
         )
 
         assertTrue(events.last() is ControllerEvent.Created)
-        assertTrue(events.last().toString().contains(ControllerStart.Managed.toString()))
+        assertTrue(events.last().toString().contains(ControllerStart.Managed.logName))
 
         sut.start()
         events.takeLast(2).let { lastEvents ->

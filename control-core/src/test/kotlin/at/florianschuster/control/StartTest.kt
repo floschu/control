@@ -13,10 +13,10 @@ import kotlin.test.assertTrue
 internal class StartTest {
 
     @Test
-    fun `start mode toString`() {
-        assertEquals("Lazy", ControllerStart.Lazy.toString())
-        assertEquals("Immediately", ControllerStart.Immediately.toString())
-        assertEquals("Managed", ControllerStart.Managed.toString())
+    fun `start mode logName`() {
+        assertEquals("Lazy", ControllerStart.Lazy.logName)
+        assertEquals("Immediately", ControllerStart.Immediately.logName)
+        assertEquals("Managed", ControllerStart.Managed.logName)
     }
 
     @Test

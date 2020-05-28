@@ -134,7 +134,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
     // endregion
 
     init {
-        controllerLog.log(ControllerEvent.Created(tag, controllerStart.toString()))
+        controllerLog.log(ControllerEvent.Created(tag, controllerStart.logName))
         if (controllerStart is ControllerStart.Immediately) {
             start()
         }

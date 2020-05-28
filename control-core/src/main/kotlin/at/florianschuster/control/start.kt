@@ -8,25 +8,27 @@ import kotlinx.coroutines.CoroutineScope
  */
 sealed class ControllerStart {
 
+    internal abstract val logName: String
+
     /**
      * The state machine is started once [Controller.state], [Controller.currentState] or
      * [Controller.dispatch] are accessed.
      */
     object Lazy : ControllerStart() {
-        override fun toString(): String = "Lazy"
+        override val logName: String = "Lazy"
     }
 
     /**
      * The state machine is iImmediately started once the [Controller] is built.
      */
     object Immediately : ControllerStart() {
-        override fun toString(): String = "Immediately"
+        override val logName: String = "Immediately"
     }
 
     /**
      * The state machine is started once [ManagedController.start] is called.
      */
     internal object Managed : ControllerStart() {
-        override fun toString(): String = "Managed"
+        override val logName: String = "Managed"
     }
 }
