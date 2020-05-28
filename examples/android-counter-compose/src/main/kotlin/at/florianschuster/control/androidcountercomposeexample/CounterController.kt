@@ -4,8 +4,6 @@ import at.florianschuster.control.ControllerLog
 import at.florianschuster.control.ManagedController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
-import java.io.Serializable
 
 class CounterController(
     initialState: State = State()
@@ -25,7 +23,7 @@ class CounterController(
     data class State(
         val value: Int = 0,
         val loading: Boolean = false
-    ) : Serializable
+    )
 
     override val controller = ManagedController<Action, Mutation, State>(
         initialState = initialState,

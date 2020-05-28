@@ -25,13 +25,20 @@ internal fun CounterScreen(
 ) {
     val controller = remember { injectedController }
     val counterState by controller.collectState()
+    CounterComponent(counterState, controller::dispatch)
+}
 
+@Composable
+private fun CounterComponent(
+    counterState: CounterController.State,
+    dispatch: (CounterController.Action) -> Unit = {}
+) {
     Stack(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier.fillMaxWidth().gravity(Alignment.Center),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            TextButton(onClick = { controller.dispatch(CounterController.Action.Decrement) }) {
+            TextButton(onClick = { dispatch(CounterController.Action.Decrement) }) {
                 Text(text = "-", style = MaterialTheme.typography.h4)
             }
             Text(
@@ -40,7 +47,7 @@ internal fun CounterScreen(
                 style = MaterialTheme.typography.h3,
                 modifier = Modifier.tag("valueText")
             )
-            TextButton(onClick = { controller.dispatch(CounterController.Action.Increment) }) {
+            TextButton(onClick = { dispatch(CounterController.Action.Increment) }) {
                 Text(text = "+", style = MaterialTheme.typography.h4)
             }
         }
@@ -55,10 +62,18 @@ internal fun CounterScreen(
     }
 }
 
-@Preview
+@Preview("not loading")
 @Composable
-private fun CounterScreenPreview() {
+private fun CounterComponentPreview() {
     MaterialTheme(colors = AppColors.currentColorPalette) {
-        CounterScreen()
+        CounterComponent(CounterController.State(value = -1, loading = false))
+    }
+}
+
+@Preview("loading")
+@Composable
+private fun CounterComponentPreviewLoading() {
+    MaterialTheme(colors = AppColors.currentColorPalette) {
+        CounterComponent(CounterController.State(value = 1, loading = true))
     }
 }
