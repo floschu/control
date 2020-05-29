@@ -50,6 +50,8 @@ internal class StartTest {
 
         assertFalse(sut.stateJob.isActive)
         sut.currentState
+        sut.state
+        sut.dispatch(1)
         assertFalse(sut.stateJob.isActive)
 
         val started = sut.start()
