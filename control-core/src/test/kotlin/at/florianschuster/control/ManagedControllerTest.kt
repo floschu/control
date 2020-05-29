@@ -15,10 +15,8 @@ internal class ManagedControllerTest {
     @Test
     fun `default parameters of managed controller builder`() = runBlockingTest {
         val expectedInitialState = 42
-        val expectedTag = defaultTag()
         val sut = ManagedController<Int, Int, Int>(
             expectedInitialState,
-            tag = expectedTag,
             dispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher
         ) as ControllerImplementation<Int, Int, Int>
 
@@ -32,7 +30,7 @@ internal class ManagedControllerTest {
         assertEquals(2, sut.mutationsTransformer(flowOf(2)).single())
         assertEquals(3, sut.statesTransformer(flowOf(3)).single())
 
-        assertEquals(expectedTag, sut.tag)
+        assertEquals(defaultTag(), sut.tag)
         assertEquals(ControllerLog.default, sut.controllerLog)
 
         assertEquals(ControllerStart.Managed, sut.controllerStart)

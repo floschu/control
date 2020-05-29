@@ -16,7 +16,7 @@ internal class DefaultTagTest {
     }
 
     @Test
-    fun `defaultTag in anonymous class`() {
+    fun `defaultTag in anonymous object`() {
         val sut = object {
             val tag = defaultTag()
         }

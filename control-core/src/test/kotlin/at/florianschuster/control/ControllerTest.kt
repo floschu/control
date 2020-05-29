@@ -13,10 +13,8 @@ internal class ControllerTest {
     @Test
     fun `default parameters of controller builder`() = runBlockingTest {
         val expectedInitialState = 42
-        val expectedTag = defaultTag()
         val sut = createController<Int, Int, Int>(
-            initialState = expectedInitialState,
-            tag = expectedTag
+            initialState = expectedInitialState
         ) as ControllerImplementation<Int, Int, Int>
 
         assertEquals(this, sut.scope)
@@ -29,7 +27,7 @@ internal class ControllerTest {
         assertEquals(2, sut.mutationsTransformer(flowOf(2)).single())
         assertEquals(3, sut.statesTransformer(flowOf(3)).single())
 
-        assertEquals(expectedTag, sut.tag)
+        assertEquals(defaultTag(), sut.tag)
         assertEquals(ControllerLog.default, sut.controllerLog)
 
         assertEquals(ControllerStart.Lazy, sut.controllerStart)
@@ -39,10 +37,8 @@ internal class ControllerTest {
     @Test
     fun `default parameters of synchronous controller builder`() = runBlockingTest {
         val expectedInitialState = 42
-        val expectedTag = defaultTag()
         val sut = createSynchronousController<Int, Int>(
-            initialState = expectedInitialState,
-            tag = expectedTag
+            initialState = expectedInitialState
         ) as ControllerImplementation<Int, Int, Int>
 
         assertEquals(this, sut.scope)
@@ -55,7 +51,7 @@ internal class ControllerTest {
         assertEquals(2, sut.mutationsTransformer(flowOf(2)).single())
         assertEquals(3, sut.statesTransformer(flowOf(3)).single())
 
-        assertEquals(expectedTag, sut.tag)
+        assertEquals(defaultTag(), sut.tag)
         assertEquals(ControllerLog.default, sut.controllerLog)
 
         assertEquals(ControllerStart.Lazy, sut.controllerStart)
