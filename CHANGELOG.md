@@ -3,7 +3,12 @@
 ## `[X.X.X]` - Unreleased
 
 - binary compatibility is now verified on each `[build]` & `[publish]`.
-- `Controller.stub` is now marked as `@TestOnly`
+
+## `[0.11.0]` - 2020-XX-XX
+
+- `CoroutineScope.createController` and `CoroutineScope.createSynchronousController` now accept a custom `ControllerStart` parameter instead of `CoroutineStart`.
+- Add `ManagedController`.
+- `Controller.stub` is now marked as `@TestOnly`.
 
 ## `[0.10.0]` - 2020-05-11
 
@@ -12,5 +17,5 @@
 
 ## `[0.9.0]` - 2020-05-10
 
-- `ControllerImplemenation` now uses `MutableStateFlow` instead of `ConflatedBroadCastChannel` internally.
+- `ControllerImplementation` now uses `MutableStateFlow` instead of `ConflatedBroadCastChannel` internally.
 - `Controller.state` emissions are now distinct by default (via `StateFlow`).
