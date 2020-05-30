@@ -23,14 +23,14 @@ object Libs {
     /**
      * https://github.com/reactivecircus/FlowBinding
      */
-    const val flowbinding_android: String =
-            "io.github.reactivecircus.flowbinding:flowbinding-android:" +
+    const val flowbinding_core: String = "io.github.reactivecircus.flowbinding:flowbinding-core:" +
             Versions.io_github_reactivecircus_flowbinding
 
     /**
      * https://github.com/reactivecircus/FlowBinding
      */
-    const val flowbinding_core: String = "io.github.reactivecircus.flowbinding:flowbinding-core:" +
+    const val flowbinding_android: String =
+            "io.github.reactivecircus.flowbinding:flowbinding-android:" +
             Versions.io_github_reactivecircus_flowbinding
 
     /**

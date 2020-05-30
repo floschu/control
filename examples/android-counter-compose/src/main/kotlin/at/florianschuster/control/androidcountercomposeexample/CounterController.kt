@@ -1,55 +1,55 @@
 package at.florianschuster.control.androidcountercomposeexample
 
+import at.florianschuster.control.Controller
 import at.florianschuster.control.ControllerLog
-import at.florianschuster.control.ManagedController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 
-class CounterController(
-    initialState: State = State()
-) : CompositionControllerDelegate<CounterController.Action, CounterController.Mutation, CounterController.State> {
+typealias CounterController = Controller<CounterAction, CounterMutation, CounterState>
 
-    sealed class Action {
-        object Increment : Action()
-        object Decrement : Action()
-    }
-
-    sealed class Mutation {
-        object IncreaseValue : Mutation()
-        object DecreaseValue : Mutation()
-        data class SetLoading(val loading: Boolean) : Mutation()
-    }
-
-    data class State(
-        val value: Int = 0,
-        val loading: Boolean = false
-    )
-
-    override val controller = ManagedController<Action, Mutation, State>(
-        initialState = initialState,
-        mutator = { action ->
-            when (action) {
-                Action.Increment -> flow {
-                    emit(Mutation.SetLoading(true))
-                    delay(500)
-                    emit(Mutation.IncreaseValue)
-                    emit(Mutation.SetLoading(false))
-                }
-                Action.Decrement -> flow {
-                    emit(Mutation.SetLoading(true))
-                    delay(500)
-                    emit(Mutation.DecreaseValue)
-                    emit(Mutation.SetLoading(false))
-                }
-            }
-        },
-        reducer = { mutation, previousState ->
-            when (mutation) {
-                is Mutation.IncreaseValue -> previousState.copy(value = previousState.value + 1)
-                is Mutation.DecreaseValue -> previousState.copy(value = previousState.value - 1)
-                is Mutation.SetLoading -> previousState.copy(loading = mutation.loading)
-            }
-        },
-        controllerLog = ControllerLog.Println
-    )
+sealed class CounterAction {
+    object Increment : CounterAction()
+    object Decrement : CounterAction()
 }
+
+sealed class CounterMutation {
+    object IncreaseValue : CounterMutation()
+    object DecreaseValue : CounterMutation()
+    data class SetLoading(val loading: Boolean) : CounterMutation()
+}
+
+data class CounterState(
+    val value: Int = 0,
+    val loading: Boolean = false
+)
+
+@Suppress("FunctionName")
+internal fun CounterController(
+    initialState: CounterState = CounterState()
+): CounterController = CompositionController(
+    initialState = initialState,
+    mutator = { action ->
+        when (action) {
+            CounterAction.Increment -> flow {
+                emit(CounterMutation.SetLoading(true))
+                delay(500)
+                emit(CounterMutation.IncreaseValue)
+                emit(CounterMutation.SetLoading(false))
+            }
+            CounterAction.Decrement -> flow {
+                emit(CounterMutation.SetLoading(true))
+                delay(500)
+                emit(CounterMutation.DecreaseValue)
+                emit(CounterMutation.SetLoading(false))
+            }
+        }
+    },
+    reducer = { mutation, previousState ->
+        when (mutation) {
+            is CounterMutation.IncreaseValue -> previousState.copy(value = previousState.value + 1)
+            is CounterMutation.DecreaseValue -> previousState.copy(value = previousState.value - 1)
+            is CounterMutation.SetLoading -> previousState.copy(loading = mutation.loading)
+        }
+    },
+    controllerLog = ControllerLog.Println
+)

@@ -20,7 +20,7 @@ internal class CounterScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
-    private lateinit var stub: ControllerStub<CounterController.Action, CounterController.State>
+    private lateinit var stub: ControllerStub<CounterAction, CounterState>
 
     @Before
     fun setup() {
@@ -38,7 +38,7 @@ internal class CounterScreenTest {
         }
 
         // then
-        assertEquals(CounterController.Action.Increment, stub.dispatchedActions.last())
+        assertEquals(CounterAction.Increment, stub.dispatchedActions.last())
     }
 
     @Test
@@ -50,7 +50,7 @@ internal class CounterScreenTest {
         }
 
         // then
-        assertEquals(CounterController.Action.Decrement, stub.dispatchedActions.last())
+        assertEquals(CounterAction.Decrement, stub.dispatchedActions.last())
     }
 
     @Test
@@ -59,7 +59,7 @@ internal class CounterScreenTest {
         val testValue = 42
 
         // when
-        stub.emitState(CounterController.State(value = testValue))
+        stub.emitState(CounterState(value = testValue))
 
         // then
         findByText("$testValue").assertIsDisplayed()
@@ -68,7 +68,7 @@ internal class CounterScreenTest {
     @Test
     fun whenStateOffersNotLoadingProgressBarDoesNotExist() {
         // when
-        stub.emitState(CounterController.State(loading = false))
+        stub.emitState(CounterState(loading = false))
 
         // then
         findByTag("progressIndicator").assertDoesNotExist()
