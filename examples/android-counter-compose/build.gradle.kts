@@ -29,11 +29,9 @@ android {
     sourceSets["test"].java.srcDir("src/test/kotlin")
     sourceSets["androidTest"].java.srcDir("src/androidTest/kotlin")
     sourceSets["debug"].java.srcDir("src/debug/kotlin")
-
     buildFeatures {
         compose = true
     }
-
     composeOptions {
         kotlinCompilerVersion = "1.3.70-dev-withExperimentalGoogleExtensions-20200424"
         kotlinCompilerExtensionVersion = Versions.androidx_ui
