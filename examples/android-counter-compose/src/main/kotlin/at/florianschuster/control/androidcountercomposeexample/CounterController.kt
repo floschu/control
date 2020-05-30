@@ -5,20 +5,20 @@ import at.florianschuster.control.ControllerLog
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 
-typealias CounterController = Controller<CounterAction, CounterMutation, CounterState>
+internal typealias CounterController = Controller<CounterAction, CounterMutation, CounterState>
 
-sealed class CounterAction {
+internal sealed class CounterAction {
     object Increment : CounterAction()
     object Decrement : CounterAction()
 }
 
-sealed class CounterMutation {
+internal sealed class CounterMutation {
     object IncreaseValue : CounterMutation()
     object DecreaseValue : CounterMutation()
     data class SetLoading(val loading: Boolean) : CounterMutation()
 }
 
-data class CounterState(
+internal data class CounterState(
     val value: Int = 0,
     val loading: Boolean = false
 )
