@@ -27,26 +27,66 @@ import kotlinx.coroutines.launch
 @ExperimentalCoroutinesApi
 @FlowPreview
 internal class ControllerImplementation<Action, Mutation, State>(
-    internal val scope: CoroutineScope,
-    internal val dispatcher: CoroutineDispatcher,
-    internal val coroutineStart: CoroutineStart,
+    val scope: CoroutineScope,
+    val dispatcher: CoroutineDispatcher,
+    val controllerStart: ControllerStart,
 
-    internal val initialState: State,
-    internal val mutator: Mutator<Action, Mutation, State>,
-    internal val reducer: Reducer<Mutation, State>,
+    val initialState: State,
+    val mutator: Mutator<Action, Mutation, State>,
+    val reducer: Reducer<Mutation, State>,
 
-    internal val actionsTransformer: Transformer<Action>,
-    internal val mutationsTransformer: Transformer<Mutation>,
-    internal val statesTransformer: Transformer<State>,
+    val actionsTransformer: Transformer<Action>,
+    val mutationsTransformer: Transformer<Mutation>,
+    val statesTransformer: Transformer<State>,
 
-    internal val tag: String,
-    internal val controllerLog: ControllerLog
-) : Controller<Action, Mutation, State> {
+    val tag: String,
+    val controllerLog: ControllerLog
+) : ManagedController<Action, Mutation, State> {
 
-    internal val stateJob: Job
+    // region state machine
 
     private val actionChannel = BroadcastChannel<Action>(BUFFERED)
-    private val stateFlow = MutableStateFlow(initialState)
+    private val mutableStateFlow = MutableStateFlow(initialState)
+
+    internal val stateJob: Job = scope.launch(
+        context = dispatcher + CoroutineName(tag),
+        start = CoroutineStart.LAZY
+    ) {
+        val actionFlow: Flow<Action> = actionsTransformer(actionChannel.asFlow())
+
+        val mutatorContext = createMutatorContext({ currentState }, actionFlow)
+        val mutationFlow: Flow<Mutation> = actionFlow.flatMapMerge { action ->
+            controllerLog.log(ControllerEvent.Action(tag, action.toString()))
+            mutatorContext.mutator(action).catch { cause ->
+                val error = ControllerError.Mutate(tag, "$action", cause)
+                controllerLog.log(ControllerEvent.Error(tag, error))
+                throw error
+            }
+        }
+
+        val stateFlow: Flow<State> = mutationsTransformer(mutationFlow)
+            .onEach { controllerLog.log(ControllerEvent.Mutation(tag, it.toString())) }
+            .scan(initialState) { previousState, mutation ->
+                runCatching { reducer(mutation, previousState) }.getOrElse { cause ->
+                    val error = ControllerError.Reduce(
+                        tag, "$previousState", "$mutation", cause
+                    )
+                    controllerLog.log(ControllerEvent.Error(tag, error))
+                    throw error
+                }
+            }
+
+        statesTransformer(stateFlow)
+            .onStart { controllerLog.log(ControllerEvent.Started(tag)) }
+            .onEach { state ->
+                controllerLog.log(ControllerEvent.State(tag, state.toString()))
+                mutableStateFlow.value = state
+            }
+            .onCompletion { controllerLog.log(ControllerEvent.Completed(tag)) }
+            .collect()
+    }
+
+    // endregion
 
     // region stub
 
@@ -59,79 +99,55 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     override val state: Flow<State>
         get() = if (stubInitialized) stub.stateFlow else {
-            if (!stateJob.isActive) startStateJob()
-            stateFlow
+            if (controllerStart is ControllerStart.Lazy) start()
+            mutableStateFlow
         }
 
     override val currentState: State
         get() = if (stubInitialized) stub.stateFlow.value else {
-            if (!stateJob.isActive) startStateJob()
-            stateFlow.value
+            if (controllerStart is ControllerStart.Lazy) start()
+            mutableStateFlow.value
         }
 
     override fun dispatch(action: Action) {
         if (stubInitialized) {
             stub.mutableDispatchedActions.add(action)
         } else {
-            if (!stateJob.isActive) startStateJob()
+            if (controllerStart is ControllerStart.Lazy) start()
             actionChannel.offer(action)
         }
     }
 
-    init {
-        stateJob = scope.launch(
-            context = dispatcher + CoroutineName(tag),
-            start = coroutineStart
-        ) {
-            val actionFlow: Flow<Action> = actionsTransformer(actionChannel.asFlow())
+    // endregion
 
-            val mutatorScope = mutatorScope({ currentState }, actionFlow)
-            val mutationFlow: Flow<Mutation> = actionFlow.flatMapMerge { action ->
-                controllerLog.log(ControllerEvent.Action(tag, action.toString()))
-                mutatorScope.mutator(action).catch { cause ->
-                    val error = ControllerError.Mutate(tag, "$action", cause)
-                    controllerLog.log(ControllerEvent.Error(tag, error))
-                    throw error
-                }
-            }
+    // region managed controller
 
-            val stateFlow: Flow<State> = mutationsTransformer(mutationFlow)
-                .onEach { controllerLog.log(ControllerEvent.Mutation(tag, it.toString())) }
-                .scan(initialState) { previousState, mutation ->
-                    runCatching { reducer(mutation, previousState) }.getOrElse { cause ->
-                        val error = ControllerError.Reduce(
-                            tag, "$previousState", "$mutation", cause
-                        )
-                        controllerLog.log(ControllerEvent.Error(tag, error))
-                        throw error
-                    }
-                }
-
-            statesTransformer(stateFlow)
-                .onStart { controllerLog.log(ControllerEvent.Started(tag)) }
-                .onEach { state ->
-                    controllerLog.log(ControllerEvent.State(tag, state.toString()))
-                    this@ControllerImplementation.stateFlow.value = state
-                }
-                .onCompletion { controllerLog.log(ControllerEvent.Completed(tag)) }
-                .collect()
-        }
-
-        controllerLog.log(ControllerEvent.Created(tag))
+    override fun start(): Boolean {
+        return if (stateJob.isActive) false else stateJob.start()
     }
 
-    internal fun startStateJob(): Boolean = kotlinx.atomicfu.locks.synchronized(this) {
-        return if (stateJob.isActive) false // double checked locking
-        else stateJob.start()
+    override fun cancel(): State {
+        stateJob.cancel()
+        return mutableStateFlow.value
     }
 
     // endregion
-}
 
-internal fun <Action, State> mutatorScope(
-    stateAccessor: () -> State,
-    actionFlow: Flow<Action>
-): MutatorScope<Action, State> = object : MutatorScope<Action, State> {
-    override val currentState: State get() = stateAccessor()
-    override val actions: Flow<Action> = actionFlow
+    init {
+        controllerLog.log(ControllerEvent.Created(tag, controllerStart.logName))
+        if (controllerStart is ControllerStart.Immediately) {
+            start()
+        }
+    }
+
+    companion object {
+        fun <Action, State> createMutatorContext(
+            stateAccessor: () -> State,
+            actionFlow: Flow<Action>
+        ): MutatorContext<Action, State> = object :
+            MutatorContext<Action, State> {
+            override val currentState: State get() = stateAccessor()
+            override val actions: Flow<Action> = actionFlow
+        }
+    }
 }

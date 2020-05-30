@@ -11,7 +11,7 @@ internal class EventTest {
     @Test
     fun `event message contains library name and tag`() {
         val tag = "some_tag"
-        val event = ControllerEvent.Created(tag)
+        val event = ControllerEvent.Completed(tag)
 
         assertTrue(event.toString().contains("control"))
         assertTrue(event.toString().contains(tag))
@@ -20,11 +20,15 @@ internal class EventTest {
     @Test
     fun `ControllerImplementation logs events correctly`() {
         val events = mutableListOf<ControllerEvent>()
-        val sut = TestCoroutineScope().eventsController(events)
+        val sut = TestCoroutineScope().eventsController(
+            events,
+            controllerStart = ControllerStart.Managed
+        )
 
         assertTrue(events.last() is ControllerEvent.Created)
+        assertTrue(events.last().toString().contains(ControllerStart.Managed.logName))
 
-        sut.startStateJob()
+        sut.start()
         events.takeLast(2).let { lastEvents ->
             assertTrue(lastEvents[0] is ControllerEvent.Started)
             assertTrue(lastEvents[1] is ControllerEvent.State)
@@ -40,7 +44,7 @@ internal class EventTest {
         sut.stub()
         assertTrue(events.last() is ControllerEvent.Stub)
 
-        sut.stateJob.cancel()
+        sut.cancel()
         assertTrue(events.last() is ControllerEvent.Completed)
     }
 
@@ -69,8 +73,12 @@ internal class EventTest {
     }
 
     private fun CoroutineScope.eventsController(
-        events: MutableList<ControllerEvent>
-    ) = createController<Int, Int, Int>(
+        events: MutableList<ControllerEvent>,
+        controllerStart: ControllerStart = ControllerStart.Lazy
+    ) = ControllerImplementation<Int, Int, Int>(
+        scope = this,
+        dispatcher = scopeDispatcher,
+        controllerStart = controllerStart,
         initialState = 0,
         mutator = { action ->
             flow {
@@ -82,8 +90,12 @@ internal class EventTest {
             check(mutation != reducerErrorValue)
             previousState
         },
+        actionsTransformer = { it },
+        mutationsTransformer = { it },
+        statesTransformer = { it },
+        tag = "ImplementationEventTest.EventsController",
         controllerLog = ControllerLog.Custom { events.add(event) }
-    ) as ControllerImplementation<Int, Int, Int>
+    )
 
     companion object {
         private const val mutatorErrorValue = 42

@@ -13,7 +13,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-internal class ControllerLogTest {
+internal class LogTest {
 
     @Test
     fun `setting default logger`() {
@@ -42,8 +42,8 @@ internal class ControllerLogTest {
 
         sut.log(CreatedEvent)
         assertEquals(CreatedEvent.toString(), capturedLogMessage.captured)
-        sut.log(DestroyedEvent)
-        assertEquals(DestroyedEvent.toString(), capturedLogMessage.captured)
+        sut.log(CompletedEvent)
+        assertEquals(CompletedEvent.toString(), capturedLogMessage.captured)
         verify(exactly = 2) { out.println(any<Any>()) }
     }
 
@@ -57,21 +57,19 @@ internal class ControllerLogTest {
 
         sut.log(CreatedEvent)
         assertEquals(CreatedEvent.toString(), capturedLogMessage.captured)
-        sut.log(DestroyedEvent)
-        assertEquals(DestroyedEvent.toString(), capturedLogMessage.captured)
+        sut.log(CompletedEvent)
+        assertEquals(CompletedEvent.toString(), capturedLogMessage.captured)
     }
 
     @Test
-    fun `LoggerScope factory function`() {
-        val event = ControllerEvent.Created(tag)
-        val scope = loggerScope(event)
-
-        assertEquals(event, scope.event)
+    fun `LoggerContext factory function`() {
+        val sut = createLoggerContext(CreatedEvent)
+        assertEquals(CreatedEvent, sut.event)
     }
 
     companion object {
         private const val tag = "TestTag"
-        private val CreatedEvent: ControllerEvent = ControllerEvent.Created(tag)
-        private val DestroyedEvent: ControllerEvent = ControllerEvent.Created(tag)
+        private val CreatedEvent: ControllerEvent = ControllerEvent.Created(tag, "lazy")
+        private val CompletedEvent: ControllerEvent = ControllerEvent.Completed(tag)
     }
 }

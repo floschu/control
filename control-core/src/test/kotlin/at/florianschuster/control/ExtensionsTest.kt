@@ -28,8 +28,7 @@ internal class ExtensionsTest {
 
     @Test(expected = IllegalStateException::class)
     fun `bind lambda throws error`() = runBlockingTest {
-        val lambda = spyk<(Int) -> Unit>()
-        flow<Int> { error("test") }.bind(to = lambda).launchIn(this)
+        flow<Int> { error("test") }.bind { }.launchIn(this)
     }
 
     @Test

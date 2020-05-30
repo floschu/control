@@ -3,7 +3,6 @@ package at.florianschuster.control.androidcountercomposeexample
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.compose.Composable
-import androidx.compose.getValue
 import androidx.ui.core.ContextAmbient
 import androidx.ui.core.setContent
 import androidx.ui.foundation.Text
@@ -15,28 +14,23 @@ import androidx.ui.material.Scaffold
 import androidx.ui.material.TopAppBar
 import androidx.ui.material.darkColorPalette
 import androidx.ui.material.lightColorPalette
-import at.florianschuster.control.kotlincounter.createCounterController
 
 internal class AppActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { AppScreen() }
+        setContent { App() }
     }
 }
 
 @Composable
-private fun AppScreen() {
-    val controller = ComposeCoroutineScope().createCounterController()
+private fun App() {
     MaterialTheme(colors = AppColors.currentColorPalette) {
         Scaffold(
             topAppBar = {
                 TopAppBar(title = { Text(text = ContextAmbient.current.getString(R.string.app_name)) })
             },
-            bodyContent = {
-                val controllerState by controller.collectState()
-                CounterScreen(counterState = controllerState, action = controller::dispatch)
-            }
+            bodyContent = { CounterScreen() }
         )
     }
 }

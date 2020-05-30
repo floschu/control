@@ -40,7 +40,7 @@ dependencies {
     implementation(Libs.flowbinding_android)
     implementation(Libs.flowbinding_core)
     implementation(Libs.lifecycle_runtime_ktx)
-    debugImplementation(Libs.fragment_ktx)
+    implementation(Libs.fragment_ktx)
     debugImplementation(Libs.fragment_testing)
 
     testImplementation(Libs.coroutines_test_extensions)

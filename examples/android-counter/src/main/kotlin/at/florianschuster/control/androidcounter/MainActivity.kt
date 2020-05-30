@@ -2,15 +2,16 @@ package at.florianschuster.control.androidcounter
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.commit
 
 internal class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        if (savedInstanceState != null) return
-        supportFragmentManager.beginTransaction()
-            .replace(android.R.id.content, CounterView())
-            .commit()
+        if (savedInstanceState == null) {
+            supportFragmentManager.commit {
+                replace(android.R.id.content, CounterView())
+            }
+        }
     }
 }

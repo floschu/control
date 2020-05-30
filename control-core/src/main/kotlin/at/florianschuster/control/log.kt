@@ -3,17 +3,17 @@ package at.florianschuster.control
 /**
  * A logger used by [ControllerLog] to log [ControllerEvent]'s.
  */
-typealias Logger = LoggerScope.(message: String) -> Unit
+typealias Logger = LoggerContext.(message: String) -> Unit
 
 /**
- * The scope of a [Logger]. Contains the [ControllerEvent] that is being logged.
+ * The context of a [Logger]. Contains the [ControllerEvent] that is being logged.
  */
-interface LoggerScope {
+interface LoggerContext {
     val event: ControllerEvent
 }
 
 /**
- * Configuration to define how [ControllerEvent]'s are logged by a [ControllerImplementation].
+ * Configuration to define how [ControllerEvent]'s are logged by a [Controller].
  */
 sealed class ControllerLog {
 
@@ -39,17 +39,17 @@ sealed class ControllerLog {
     companion object {
 
         /**
-         * The default [ControllerLog] that is used by a [ControllerImplementation].
-         * Set this to change the logger for all [ControllerImplementation]'s that do not specify one.
+         * The default [ControllerLog] that is used by all [Controller] builders.
+         * Set this to change the default logger for all builders that do not specify one.
          */
         var default: ControllerLog = None
     }
 }
 
-internal fun ControllerLog.log(event: ControllerEvent) {
-    logger?.invoke(loggerScope(event), event.toString())
+internal fun createLoggerContext(event: ControllerEvent) = object : LoggerContext {
+    override val event: ControllerEvent = event
 }
 
-internal fun loggerScope(event: ControllerEvent) = object : LoggerScope {
-    override val event: ControllerEvent = event
+internal fun ControllerLog.log(event: ControllerEvent) {
+    logger?.invoke(createLoggerContext(event), event.toString())
 }

@@ -1,7 +1,7 @@
 package at.florianschuster.control
 
 /**
- * All events that are logged in a [ControllerImplementation].
+ * All events that are logged in the internal state machine within a [Controller].
  */
 sealed class ControllerEvent(
     private val tag: String,
@@ -9,62 +9,60 @@ sealed class ControllerEvent(
 ) {
 
     /**
-     * When the [ControllerImplementation] is created.
+     * When the implementation is created.
      */
     class Created internal constructor(
-        tag: String
-    ) : ControllerEvent(tag, "created")
+        tag: String, controllerStart: String
+    ) : ControllerEvent(tag, "created with controllerStart: $controllerStart")
 
     /**
-     * When the [ControllerImplementation.state] stream is started.
+     * When the state machine is started.
      */
     class Started internal constructor(
         tag: String
     ) : ControllerEvent(tag, "state stream started")
 
     /**
-     * When the [ControllerImplementation] receives an [Action].
+     * When the state machine receives an [Action].
      */
     class Action internal constructor(
         tag: String, action: String
     ) : ControllerEvent(tag, "action: $action")
 
     /**
-     * When the [ControllerImplementation] mutator produces a new [Mutation].
+     * When the [Mutator] produces a new [Mutation].
      */
     class Mutation internal constructor(
         tag: String, mutation: String
     ) : ControllerEvent(tag, "mutation: $mutation")
 
     /**
-     * When the [ControllerImplementation] reduces a new [State].
+     * When the [Reducer] reduces a new [State].
      */
     class State internal constructor(
         tag: String, state: String
     ) : ControllerEvent(tag, "state: $state")
 
     /**
-     * When an error happens in [ControllerImplementation] stream.
+     * When an error happens during the execution of the internal state machine.
      */
     class Error internal constructor(
         tag: String, cause: ControllerError
     ) : ControllerEvent(tag, "error: $cause")
 
     /**
-     * When the [ControllerImplementation.stub] is set to enabled.
+     * When the [ControllerStub] is enabled.
      */
     class Stub internal constructor(
         tag: String
     ) : ControllerEvent(tag, "is now stubbed")
 
     /**
-     * When the [ControllerImplementation] stream is completed.
+     * When the internal state machine completes.
      */
     class Completed internal constructor(
         tag: String
     ) : ControllerEvent(tag, "completed")
 
-    override fun toString(): String {
-        return "||| <control> ||| $tag -> $message |||"
-    }
+    override fun toString(): String = "||| <control> ||| $tag -> $message |||"
 }
