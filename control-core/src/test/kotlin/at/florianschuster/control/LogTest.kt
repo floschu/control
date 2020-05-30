@@ -62,10 +62,9 @@ internal class LogTest {
     }
 
     @Test
-    fun `LoggerScope factory function`() {
-        val scope = loggerScope(CreatedEvent)
-
-        assertEquals(CreatedEvent, scope.event)
+    fun `LoggerContext factory function`() {
+        val sut = createLoggerContext(CreatedEvent)
+        assertEquals(CreatedEvent, sut.event)
     }
 
     companion object {

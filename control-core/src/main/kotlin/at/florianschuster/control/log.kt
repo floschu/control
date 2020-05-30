@@ -3,12 +3,12 @@ package at.florianschuster.control
 /**
  * A logger used by [ControllerLog] to log [ControllerEvent]'s.
  */
-typealias Logger = LoggerScope.(message: String) -> Unit
+typealias Logger = LoggerContext.(message: String) -> Unit
 
 /**
- * The scope of a [Logger]. Contains the [ControllerEvent] that is being logged.
+ * The context of a [Logger]. Contains the [ControllerEvent] that is being logged.
  */
-interface LoggerScope {
+interface LoggerContext {
     val event: ControllerEvent
 }
 
@@ -46,10 +46,10 @@ sealed class ControllerLog {
     }
 }
 
-internal fun loggerScope(event: ControllerEvent) = object : LoggerScope {
+internal fun createLoggerContext(event: ControllerEvent) = object : LoggerContext {
     override val event: ControllerEvent = event
 }
 
 internal fun ControllerLog.log(event: ControllerEvent) {
-    logger?.invoke(loggerScope(event), event.toString())
+    logger?.invoke(createLoggerContext(event), event.toString())
 }

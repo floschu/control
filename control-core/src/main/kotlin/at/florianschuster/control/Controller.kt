@@ -262,14 +262,12 @@ fun <Action, State> CoroutineScope.createSynchronousController(
  * }
  * ```
  */
-typealias Mutator<Action, Mutation, State> = MutatorScope<Action, State>.(
-    action: Action
-) -> Flow<Mutation>
+typealias Mutator<Action, Mutation, State> = MutatorContext<Action, State>.(action: Action) -> Flow<Mutation>
 
 /**
- * The [MutatorScope] provides access to the [currentState] and the [actions] [Flow] in a [Mutator].
+ * The [MutatorContext] provides access to the [currentState] and the [actions] [Flow] in a [Mutator].
  */
-interface MutatorScope<Action, State> {
+interface MutatorContext<Action, State> {
 
     /**
      * A generated property, thus always providing the current [State] when accessed.

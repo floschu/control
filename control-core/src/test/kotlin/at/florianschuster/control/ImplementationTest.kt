@@ -181,10 +181,10 @@ internal class ImplementationTest {
     }
 
     @Test
-    fun `MutatorScope is built correctly`() {
+    fun `MutatorContext is built correctly`() {
         val stateAccessor = { 1 }
         val actions = flowOf(1)
-        val sut = ControllerImplementation.mutatorScope(stateAccessor, actions)
+        val sut = ControllerImplementation.createMutatorContext(stateAccessor, actions)
 
         assertEquals(stateAccessor(), sut.currentState)
         assertEquals(actions, sut.actions)

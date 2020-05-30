@@ -27,20 +27,20 @@ import kotlinx.coroutines.launch
 @ExperimentalCoroutinesApi
 @FlowPreview
 internal class ControllerImplementation<Action, Mutation, State>(
-    internal val scope: CoroutineScope,
-    internal val dispatcher: CoroutineDispatcher,
-    internal val controllerStart: ControllerStart,
+    val scope: CoroutineScope,
+    val dispatcher: CoroutineDispatcher,
+    val controllerStart: ControllerStart,
 
-    internal val initialState: State,
-    internal val mutator: Mutator<Action, Mutation, State>,
-    internal val reducer: Reducer<Mutation, State>,
+    val initialState: State,
+    val mutator: Mutator<Action, Mutation, State>,
+    val reducer: Reducer<Mutation, State>,
 
-    internal val actionsTransformer: Transformer<Action>,
-    internal val mutationsTransformer: Transformer<Mutation>,
-    internal val statesTransformer: Transformer<State>,
+    val actionsTransformer: Transformer<Action>,
+    val mutationsTransformer: Transformer<Mutation>,
+    val statesTransformer: Transformer<State>,
 
-    internal val tag: String,
-    internal val controllerLog: ControllerLog
+    val tag: String,
+    val controllerLog: ControllerLog
 ) : ManagedController<Action, Mutation, State> {
 
     // region state machine
@@ -54,10 +54,10 @@ internal class ControllerImplementation<Action, Mutation, State>(
     ) {
         val actionFlow: Flow<Action> = actionsTransformer(actionChannel.asFlow())
 
-        val mutatorScope = mutatorScope({ currentState }, actionFlow)
+        val mutatorContext = createMutatorContext({ currentState }, actionFlow)
         val mutationFlow: Flow<Mutation> = actionFlow.flatMapMerge { action ->
             controllerLog.log(ControllerEvent.Action(tag, action.toString()))
-            mutatorScope.mutator(action).catch { cause ->
+            mutatorContext.mutator(action).catch { cause ->
                 val error = ControllerError.Mutate(tag, "$action", cause)
                 controllerLog.log(ControllerEvent.Error(tag, error))
                 throw error
@@ -141,11 +141,11 @@ internal class ControllerImplementation<Action, Mutation, State>(
     }
 
     companion object {
-        fun <Action, State> mutatorScope(
+        fun <Action, State> createMutatorContext(
             stateAccessor: () -> State,
             actionFlow: Flow<Action>
-        ): MutatorScope<Action, State> = object :
-            MutatorScope<Action, State> {
+        ): MutatorContext<Action, State> = object :
+            MutatorContext<Action, State> {
             override val currentState: State get() = stateAccessor()
             override val actions: Flow<Action> = actionFlow
         }

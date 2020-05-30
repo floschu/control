@@ -85,7 +85,7 @@ public final class at/florianschuster/control/ExtensionsKt {
 	public static synthetic fun takeUntil$default (Lkotlinx/coroutines/flow/Flow;ZLkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
 }
 
-public abstract interface class at/florianschuster/control/LoggerScope {
+public abstract interface class at/florianschuster/control/LoggerContext {
 	public abstract fun getEvent ()Lat/florianschuster/control/ControllerEvent;
 }
 
@@ -99,7 +99,7 @@ public final class at/florianschuster/control/ManagedControllerKt {
 	public static synthetic fun ManagedController$default (Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Ljava/lang/String;Lat/florianschuster/control/ControllerLog;Lkotlinx/coroutines/CoroutineDispatcher;ILjava/lang/Object;)Lat/florianschuster/control/ManagedController;
 }
 
-public abstract interface class at/florianschuster/control/MutatorScope {
+public abstract interface class at/florianschuster/control/MutatorContext {
 	public abstract fun getActions ()Lkotlinx/coroutines/flow/Flow;
 	public abstract fun getCurrentState ()Ljava/lang/Object;
 }
