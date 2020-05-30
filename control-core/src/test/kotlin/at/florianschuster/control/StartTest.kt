@@ -23,7 +23,6 @@ internal class StartTest {
     fun `default start mode`() {
         val scope = TestCoroutineScope(Job())
         val sut = scope.createSimpleCounterController(controllerStart = ControllerStart.Immediately)
-
         assertTrue(sut.stateJob.isActive)
 
         scope.cancel()
@@ -34,9 +33,48 @@ internal class StartTest {
     fun `lazy start mode`() {
         val scope = TestCoroutineScope(Job())
         val sut = scope.createSimpleCounterController(controllerStart = ControllerStart.Lazy)
-
         assertFalse(sut.stateJob.isActive)
+
         sut.currentState
+        assertTrue(sut.stateJob.isActive)
+
+        scope.cancel()
+        assertFalse(sut.stateJob.isActive)
+    }
+
+    @Test
+    fun `lazy start mode with currentState`() {
+        val scope = TestCoroutineScope(Job())
+        val sut = scope.createSimpleCounterController(controllerStart = ControllerStart.Lazy)
+        assertFalse(sut.stateJob.isActive)
+
+        sut.currentState
+        assertTrue(sut.stateJob.isActive)
+
+        scope.cancel()
+        assertFalse(sut.stateJob.isActive)
+    }
+
+    @Test
+    fun `lazy start mode with state`() {
+        val scope = TestCoroutineScope(Job())
+        val sut = scope.createSimpleCounterController(controllerStart = ControllerStart.Lazy)
+        assertFalse(sut.stateJob.isActive)
+
+        sut.state
+        assertTrue(sut.stateJob.isActive)
+
+        scope.cancel()
+        assertFalse(sut.stateJob.isActive)
+    }
+
+    @Test
+    fun `lazy start mode with dispatch`() {
+        val scope = TestCoroutineScope(Job())
+        val sut = scope.createSimpleCounterController(controllerStart = ControllerStart.Lazy)
+        assertFalse(sut.stateJob.isActive)
+
+        sut.dispatch(1)
         assertTrue(sut.stateJob.isActive)
 
         scope.cancel()
@@ -47,8 +85,8 @@ internal class StartTest {
     fun `managed start mode`() {
         val scope = TestCoroutineScope(Job())
         val sut = scope.createSimpleCounterController(controllerStart = ControllerStart.Managed)
-
         assertFalse(sut.stateJob.isActive)
+
         sut.currentState
         sut.state
         sut.dispatch(1)
@@ -67,8 +105,8 @@ internal class StartTest {
         val sut = TestCoroutineScope().createSimpleCounterController(
             controllerStart = ControllerStart.Managed
         )
-
         assertFalse(sut.stateJob.isActive)
+
         sut.start()
         val started = sut.start()
         assertFalse(started)
@@ -80,15 +118,16 @@ internal class StartTest {
         val sut = TestCoroutineScope().createSimpleCounterController(
             controllerStart = ControllerStart.Managed
         )
+        assertFalse(sut.stateJob.isActive)
 
         val started = sut.start()
         assertTrue(sut.stateJob.isActive)
         assertTrue(started)
 
         sut.dispatch(42)
-
-        sut.cancel()
+        val lastState = sut.cancel()
         assertFalse(sut.stateJob.isActive)
+        assertEquals(42, lastState)
     }
 
     private fun CoroutineScope.createSimpleCounterController(
@@ -99,7 +138,7 @@ internal class StartTest {
         controllerStart = controllerStart,
         initialState = 0,
         mutator = { flowOf(it) },
-        reducer = { _, previousState -> previousState },
+        reducer = { mutation, previousState -> previousState + mutation },
         actionsTransformer = { it },
         mutationsTransformer = { it },
         statesTransformer = { it },
