@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.emptyFlow
  * [androidx.compose.State].
  *
  * Every time a new [Controller.state] is emitted, the returned [androidx.compose.State]
- * will be updated causing re-composition.
+ * will be updated causing re-composition of every [androidx.compose.State.value] usage.
  */
 @Composable
 internal fun <S> Controller<*, *, S>.collectState(): State<S> {
@@ -31,9 +31,9 @@ internal fun <S> Controller<*, *, S>.collectState(): State<S> {
 /**
  * Creates a [Controller] that can be used inside a composition.
  *
- * Internally, it implements [CompositionLifecycleObserver] and starts its state machine
- * when [CompositionLifecycleObserver.onEnter] is called and cancels it when
- * [CompositionLifecycleObserver.onLeave] is called.
+ * Internally, a [ManagedController] is created that uses [CompositionLifecycleObserver]
+ * to start its state machine when [CompositionLifecycleObserver.onEnter] is called and
+ * cancels it when [CompositionLifecycleObserver.onLeave] is called.
  */
 @Suppress("FunctionName")
 @ExperimentalCoroutinesApi
