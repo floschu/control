@@ -2,14 +2,14 @@
 
 ## `[1.0.0]` - Unreleased
 
-- binary compatibility will now be verified on every release.
+- binary compatibility will now be verified and held up on every release.
 
 ## `[0.11.0]` - 2020-05-30
 
 - `CoroutineScope.createController` and `CoroutineScope.createSynchronousController` now accept a custom `ControllerStart` parameter instead of `CoroutineStart`.
 - Add `ManagedController`.
 - `Controller.stub` is now marked as `@TestOnly`.
-- binary compatibility is now verified on each `[build]` & `[publish]`.
+- binary compatibility is now checked on each `[build]` & `[publish]`.
 
 ## `[0.10.0]` - 2020-05-11
 
