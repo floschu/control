@@ -44,8 +44,7 @@ private fun CounterComponent(
             Text(
                 text = "${counterState.value}",
                 color = MaterialTheme.colors.secondary,
-                style = MaterialTheme.typography.h3,
-                modifier = Modifier.tag("valueText")
+                style = MaterialTheme.typography.h3
             )
             TextButton(onClick = { dispatch(CounterAction.Increment) }) {
                 Text(text = "+", style = MaterialTheme.typography.h4)
