@@ -24,6 +24,8 @@ dependencies {
 }
 ```
 
+see [changelog](https://github.com/floschu/control/blob/develop/CHANGELOG.md)  for versions
+
 ## controller
 
 <p align="center"><img alt="flow" width="500" src=".media/udf.png"></p>
@@ -38,8 +40,6 @@ A [Controller](control-core/src/main/kotlin/at/florianschuster/control/Controlle
 4. [controller testing](https://github.com/floschu/control/wiki/controller-testing)
 5. [view testing](https://github.com/floschu/control/wiki/view-testing)
 6. [logging](https://github.com/floschu/control/wiki/logging)
-
-the changelog can be found [here](https://github.com/floschu/control/blob/develop/CHANGELOG.md)
 
 ## examples
 
