@@ -1,7 +1,7 @@
 <p align="center"><img alt="flow" width="600" src=".media/control.png"></p>
 
 <p align=center>
-    <a href="https://bintray.com/flosch/control/control-core"><img alt="version" src="https://img.shields.io/bintray/v/flosch/control/control-core?label=core-version&logoColor=f88909" /></a> 
+    <a href="https://bintray.com/flosch/control/control-core"><img alt="version" src="https://img.shields.io/bintray/v/flosch/control/control-core?label=core-version&logoColor=f88909" /></a>
     <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-Apache%202.0-blue.svg?color=7b6fe2" /></a>
 </p>
 
@@ -57,8 +57,12 @@ test coverage is automatically run by github actions on `[push]`
 | instruction/branch | 90% | `./gradlew test jacocoTestReport` | `./control-core/build/reports/jacoco/` |
 | mutation | 100% | `./gradlew pitest` | `./control-core/build/reports/pitest/` |
 
-
-
 ## author
 
 visit my [website](https://florianschuster.at/).
+
+<p align="center">
+    <b>support me via</b></br>
+    bitcoin:3GVFmCEa4sgXXu531LAxdJEbGgCji6Ycp4</br>
+    <img alt="flow" width="180" src=".media/btc.png">
+</p>
