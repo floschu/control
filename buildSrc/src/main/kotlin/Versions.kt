@@ -15,23 +15,23 @@ object Versions {
     const val org_jetbrains_kotlinx_kotlinx_serialization: String = "0.20.0"
              // available: "0.20.0-1.4-M1-release-99"
 
-    const val org_jetbrains_kotlinx_kotlinx_coroutines: String = "1.3.7"
+    const val org_jetbrains_kotlinx_kotlinx_coroutines: String = "1.3.8"
 
-    const val io_github_reactivecircus_flowbinding: String = "0.11.1"
+    const val io_github_reactivecircus_flowbinding: String = "0.12.0"
 
     const val org_jetbrains_kotlin: String = "1.3.72"
 
-    const val androidx_fragment: String = "1.2.4"
+    const val androidx_fragment: String = "1.2.5"
 
     const val androidx_test: String = "1.2.0"
 
-    const val androidx_ui: String = "0.1.0-dev12"
+    const val androidx_ui: String = "0.1.0-dev13"
 
     const val io_ktor: String = "1.3.2" // available: "1.3.2-1.4-M1-release-99"
 
-    const val com_android_tools_build_gradle: String = "4.1.0-alpha10"
+    const val com_android_tools_build_gradle: String = "4.2.0-alpha04"
 
-    const val org_jlleitschuh_gradle_ktlint_gradle_plugin: String = "9.2.1"
+    const val org_jlleitschuh_gradle_ktlint_gradle_plugin: String = "9.3.0"
 
     const val de_fayard_buildsrcversions_gradle_plugin: String = "0.7.0"
 
@@ -47,13 +47,13 @@ object Versions {
 
     const val gradle_pitest_plugin: String = "1.5.1"
 
-    const val compose_compiler: String = "0.1.0-dev12"
+    const val compose_compiler: String = "0.1.0-dev13"
 
     const val constraintlayout: String = "2.0.0-beta4"
 
     const val espresso_core: String = "3.2.0"
 
-    const val lint_gradle: String = "27.1.0-alpha10"
+    const val lint_gradle: String = "27.2.0-alpha04"
 
     const val appcompat: String = "1.1.0"
 
@@ -63,18 +63,16 @@ object Versions {
 
     const val material: String = "1.1.0"
 
-    const val ktlint: String = "0.36.0"
-
-    const val aapt2: String = "4.1.0-alpha10-6481518"
+    const val ktlint: String = "0.37.2"
 
     const val mockk: String = "1.10.0"
 
     /**
-     * Current version: "6.5-milestone-1"
+     * Current version: "6.6-rc-1"
      * See issue 19: How to update Gradle itself?
      * https://github.com/jmfayard/buildSrcVersions/issues/19
      */
-    const val gradleLatestVersion: String = "6.4.1"
+    const val gradleLatestVersion: String = "6.5.1"
 }
 
 /**

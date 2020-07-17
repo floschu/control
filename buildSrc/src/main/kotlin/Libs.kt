@@ -23,14 +23,14 @@ object Libs {
     /**
      * https://github.com/reactivecircus/FlowBinding
      */
-    const val flowbinding_core: String = "io.github.reactivecircus.flowbinding:flowbinding-core:" +
+    const val flowbinding_android: String =
+            "io.github.reactivecircus.flowbinding:flowbinding-android:" +
             Versions.io_github_reactivecircus_flowbinding
 
     /**
      * https://github.com/reactivecircus/FlowBinding
      */
-    const val flowbinding_android: String =
-            "io.github.reactivecircus.flowbinding:flowbinding-android:" +
+    const val flowbinding_core: String = "io.github.reactivecircus.flowbinding:flowbinding-core:" +
             Versions.io_github_reactivecircus_flowbinding
 
     /**
@@ -234,11 +234,6 @@ object Libs {
      * https://github.com/pinterest/ktlint
      */
     const val ktlint: String = "com.pinterest:ktlint:" + Versions.ktlint
-
-    /**
-     * https://developer.android.com/studio
-     */
-    const val aapt2: String = "com.android.tools.build:aapt2:" + Versions.aapt2
 
     /**
      * http://mockk.io
