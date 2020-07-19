@@ -46,7 +46,7 @@ internal class GithubViewTest {
 
         // when
         onView(withId(R.id.searchEditText)).perform(replaceText(testQuery))
-        onView(isRoot()).perform(idleFor(500)) // wait for debounce
+        onView(isRoot()).perform(idleFor(GithubView.SearchDebounceMilliseconds))
 
         // then
         assertEquals(
@@ -71,6 +71,7 @@ internal class GithubViewTest {
     }
 }
 
+@Suppress("SameParameterValue")
 private fun idleFor(millis: Long): ViewAction = object : ViewAction {
     override fun getConstraints(): Matcher<View> = isRoot()
     override fun getDescription(): String = "idle for $millis ms"

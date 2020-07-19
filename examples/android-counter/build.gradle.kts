@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    id("kotlin-android-extensions")
 }
 
 android {
@@ -29,6 +28,9 @@ android {
     sourceSets["test"].java.srcDir("src/test/kotlin")
     sourceSets["androidTest"].java.srcDir("src/androidTest/kotlin")
     sourceSets["debug"].java.srcDir("src/debug/kotlin")
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {

@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    id("kotlin-android-extensions")
     id("kotlinx-serialization")
 }
 
@@ -35,6 +34,9 @@ android {
     sourceSets["debug"].java.srcDir("src/debug/kotlin")
     packagingOptions {
         exclude("META-INF/*.kotlin_module")
+    }
+    buildFeatures {
+        viewBinding = true
     }
 }
 
