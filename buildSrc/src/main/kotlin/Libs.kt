@@ -43,19 +43,6 @@ object Libs {
     /**
      * https://kotlinlang.org/
      */
-    const val kotlin_android_extensions: String =
-            "org.jetbrains.kotlin:kotlin-android-extensions:" + Versions.org_jetbrains_kotlin
-
-    /**
-     * https://kotlinlang.org/
-     */
-    const val kotlin_android_extensions_runtime: String =
-            "org.jetbrains.kotlin:kotlin-android-extensions-runtime:" +
-            Versions.org_jetbrains_kotlin
-
-    /**
-     * https://kotlinlang.org/
-     */
     const val kotlin_gradle_plugin: String = "org.jetbrains.kotlin:kotlin-gradle-plugin:" +
             Versions.org_jetbrains_kotlin
 
@@ -109,14 +96,6 @@ object Libs {
      * https://developer.android.com/testing
      */
     const val androidx_test_runner: String = "androidx.test:runner:" + Versions.androidx_test
-
-    const val ui_layout: String = "androidx.ui:ui-layout:" + Versions.androidx_ui
-
-    const val ui_material: String = "androidx.ui:ui-material:" + Versions.androidx_ui
-
-    const val ui_test: String = "androidx.ui:ui-test:" + Versions.androidx_ui
-
-    const val ui_tooling: String = "androidx.ui:ui-tooling:" + Versions.androidx_ui
 
     /**
      * https://github.com/ktorio/ktor
@@ -190,9 +169,6 @@ object Libs {
     const val gradle_pitest_plugin: String = "info.solidsoft.gradle.pitest:gradle-pitest-plugin:" +
             Versions.gradle_pitest_plugin
 
-    const val compose_compiler: String = "androidx.compose:compose-compiler:" +
-            Versions.compose_compiler
-
     /**
      * http://tools.android.com
      */
@@ -209,6 +185,8 @@ object Libs {
      * https://developer.android.com/studio
      */
     const val lint_gradle: String = "com.android.tools.lint:lint-gradle:" + Versions.lint_gradle
+
+    const val viewbinding: String = "androidx.databinding:viewbinding:" + Versions.viewbinding
 
     /**
      * https://developer.android.com/jetpack/androidx
@@ -234,6 +212,11 @@ object Libs {
      * https://github.com/pinterest/ktlint
      */
     const val ktlint: String = "com.pinterest:ktlint:" + Versions.ktlint
+
+    /**
+     * https://developer.android.com/studio
+     */
+    const val aapt2: String = "com.android.tools.build:aapt2:" + Versions.aapt2
 
     /**
      * http://mockk.io

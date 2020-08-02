@@ -46,7 +46,6 @@ A [Controller](control-core/src/main/kotlin/at/florianschuster/control/Controlle
 *   [kotlin-counter](examples/kotlin-counter): most basic kotlin example. uses `Controller`.
 *   [android-counter](examples/android-counter): most basic android example. uses `Controller` from kotlin-counter.
 *   [android-github-search](examples/android-github): android github repository search. uses `Controller` combined with _Android Jetpack AAC_ `ViewModel`.
-*   [android-counter-compose](examples/android-counter-compose): like the android counter example, but uses _Jetpack Compose_.
 
 ## coverage
 
