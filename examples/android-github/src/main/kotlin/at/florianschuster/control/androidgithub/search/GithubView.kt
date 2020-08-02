@@ -28,7 +28,9 @@ internal class GithubView : Fragment(R.layout.view_github) {
 
     private var binding: ViewGithubBinding? = null
     private val requireBinding: ViewGithubBinding get() = requireNotNull(binding)
+
     private val viewModel: GithubViewModel by viewModels { GithubViewModelFactory }
+
     private val repoAdapter = RepoAdapter { repo ->
         startActivity(Intent(Intent.ACTION_VIEW, repo.webUri))
     }

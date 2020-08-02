@@ -51,6 +51,11 @@ internal class CounterView : Fragment(R.layout.view_counter) {
             .launchIn(scope = viewLifecycleOwner.lifecycleScope)
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
+    }
+
     companion object {
         internal var CounterControllerProvider: (
             scope: CoroutineScope
