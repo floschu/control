@@ -49,7 +49,7 @@ dependencies {
     implementation(Libs.flowbinding_core)
     implementation(Libs.flowbinding_recyclerview)
     implementation(Libs.fragment_ktx)
-    implementation(Libs.kotlinx_serialization_runtime)
+    implementation(Libs.kotlinx_serialization_core)
     implementation(Libs.ktor_client_cio)
     implementation(Libs.ktor_client_json_jvm)
     implementation(Libs.ktor_client_logging_jvm)
