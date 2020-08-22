@@ -1,5 +1,7 @@
 package at.florianschuster.control
 
+import java.lang.IllegalStateException
+
 /**
  * Errors that can happen in a [Controller].
  */
@@ -15,7 +17,7 @@ internal sealed class ControllerError(
         tag: String,
         action: String,
         cause: Throwable
-    ) : ControllerError("Mutator error in $tag, action = $action", cause)
+    ) : ControllerError(message = "Mutator error in $tag, action = $action", cause = cause)
 
     /**
      * Error during [Reducer].
@@ -28,5 +30,19 @@ internal sealed class ControllerError(
     ) : ControllerError(
         message = "Reducer error in $tag, previousState = $previousState, mutation = $mutation",
         cause = cause
+    )
+
+    /**
+     * Error during [EffectProvider.effect].
+     */
+    class Effect(
+        tag: String,
+        effect: String
+    ) : ControllerError(
+        message = "Effect error in $tag, effect = $effect",
+        cause = IllegalStateException(
+            "Capacity for effects has been reached. Either too many effects have been triggered " +
+                "or they might not be consumed."
+        )
     )
 }

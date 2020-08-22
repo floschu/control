@@ -3,18 +3,17 @@ package at.florianschuster.control.androidgithub.search
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import at.florianschuster.control.Controller
 import at.florianschuster.control.ControllerEvent
 import at.florianschuster.control.ControllerLog
-import at.florianschuster.control.createController
 import at.florianschuster.control.androidgithub.GithubApi
 import at.florianschuster.control.androidgithub.Repo
+import at.florianschuster.control.createEffectController
 import at.florianschuster.control.takeUntil
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -44,7 +43,11 @@ internal class GithubViewModel(
         val loadingNextPage: Boolean = false
     )
 
-    val controller: Controller<Action, Mutation, State> = viewModelScope.createController(
+    sealed class Effect {
+        object SearchError : Effect()
+    }
+
+    val controller = viewModelScope.createEffectController<Action, Mutation, State, Effect>(
         initialState = initialState,
 
         mutator = { action ->
@@ -55,7 +58,10 @@ internal class GithubViewModel(
                         emit(Mutation.SetLoadingNextPage(true))
                         emitAll(
                             flow { emit(api.search(currentState.query, 1)) }
-                                .filter { it.isNotEmpty() }
+                                .catch { error ->
+                                    Log.w("GithubViewModel.Query", error)
+                                    emitEffect(Effect.SearchError)
+                                }
                                 .map { Mutation.SetRepos(it) }
                                 .takeUntil(actions.filterIsInstance<Action.UpdateQuery>())
                         )
@@ -69,6 +75,10 @@ internal class GithubViewModel(
                         emit(Mutation.SetLoadingNextPage(true))
                         emitAll(
                             flow { emit(api.search(state.query, state.page + 1)) }
+                                .catch { error ->
+                                    Log.w("GithubViewModel.Query", error)
+                                    emitEffect(Effect.SearchError)
+                                }
                                 .map { Mutation.AppendRepos(it) }
                                 .takeUntil(actions.filterIsInstance<Action.UpdateQuery>())
                         )

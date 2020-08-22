@@ -37,12 +37,13 @@
                         android:id="@+id/searchImageView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:contentDescription="@string/content_description_search"
                         android:padding="12dp"
                         android:src="@drawable/ic_search"
-                        android:tint="?colorPrimary"
                         app:layout_constraintBottom_toBottomOf="@id/searchEditText"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/searchEditText" />
+                        app:layout_constraintTop_toTopOf="@id/searchEditText"
+                        app:tint="?colorPrimary" />
 
                     <ProgressBar
                         android:id="@+id/loadingProgressBar"
@@ -58,13 +59,14 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:background="@null"
+                        android:hint="@string/hint_search"
+                        android:imeOptions="actionSearch"
+                        android:inputType="textCapWords"
                         android:lines="1"
-                        android:maxLines="1"
                         android:padding="12dp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/searchImageView"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:text="Test" />
+                        app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
@@ -75,7 +77,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:overScrollMode="never"
         android:padding="6dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"

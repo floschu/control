@@ -4,6 +4,11 @@
 
 - binary compatibility will now be verified and held up on every release.
 
+## `[0.12.0]` - 2020-XX-XX
+
+- Add `EffectController`.
+- Remove `CoroutineScope.createSynchronousController` to lessen public API.
+
 ## `[0.11.0]` - 2020-05-30
 
 - `CoroutineScope.createController` and `CoroutineScope.createSynchronousController` now accept a custom `ControllerStart` parameter instead of `CoroutineStart`.

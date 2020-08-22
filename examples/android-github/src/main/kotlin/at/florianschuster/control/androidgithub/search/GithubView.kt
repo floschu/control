@@ -3,7 +3,7 @@ package at.florianschuster.control.androidgithub.search
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.EditText
+import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -16,11 +16,16 @@ import at.florianschuster.control.bind
 import at.florianschuster.control.distinctMap
 import at.florianschuster.control.androidgithub.R
 import at.florianschuster.control.androidgithub.databinding.ViewGithubBinding
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.sample
+import reactivecircus.flowbinding.android.widget.editorActionEvents
 import reactivecircus.flowbinding.android.widget.textChanges
 import reactivecircus.flowbinding.recyclerview.scrollEvents
 
@@ -67,6 +72,13 @@ internal class GithubView : Fragment(R.layout.view_github) {
         viewModel.controller.state.distinctMap(by = GithubViewModel.State::loadingNextPage)
             .bind(to = requireBinding.loadingProgressBar::isVisible::set)
             .launchIn(scope = viewLifecycleOwner.lifecycleScope)
+
+        // effects
+        viewModel.controller.effects
+            .filterIsInstance<GithubViewModel.Effect.SearchError>()
+            .map { R.string.error_network }
+            .bind(to = ::showSnackbar)
+            .launchIn(scope = viewLifecycleOwner.lifecycleScope)
     }
 
     override fun onDestroyView() {
@@ -74,9 +86,13 @@ internal class GithubView : Fragment(R.layout.view_github) {
         binding = null
     }
 
-    private fun RecyclerView.shouldLoadMore(threshold: Int = 8): Boolean {
+    private fun RecyclerView.shouldLoadMore(threshold: Int = 12): Boolean {
         val layoutManager = layoutManager as? LinearLayoutManager ?: return false
         return layoutManager.findLastVisibleItemPosition() + threshold > layoutManager.itemCount
+    }
+
+    private fun showSnackbar(@StringRes messageResource: Int) {
+        Snackbar.make(requireView(), messageResource, Snackbar.LENGTH_SHORT).show()
     }
 
     companion object {

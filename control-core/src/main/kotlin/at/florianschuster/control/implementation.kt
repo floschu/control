@@ -8,16 +8,19 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
 
@@ -26,22 +29,22 @@ import kotlinx.coroutines.launch
  */
 @ExperimentalCoroutinesApi
 @FlowPreview
-internal class ControllerImplementation<Action, Mutation, State>(
+internal class ControllerImplementation<Action, Mutation, State, Effect>(
     val scope: CoroutineScope,
     val dispatcher: CoroutineDispatcher,
     val controllerStart: ControllerStart,
 
     val initialState: State,
-    val mutator: Mutator<Action, Mutation, State>,
-    val reducer: Reducer<Mutation, State>,
+    val mutator: EffectMutator<Action, Mutation, State, Effect>,
+    val reducer: EffectReducer<Mutation, State, Effect>,
 
-    val actionsTransformer: Transformer<Action>,
-    val mutationsTransformer: Transformer<Mutation>,
-    val statesTransformer: Transformer<State>,
+    val actionsTransformer: EffectTransformer<Action, Effect>,
+    val mutationsTransformer: EffectTransformer<Mutation, Effect>,
+    val statesTransformer: EffectTransformer<State, Effect>,
 
     val tag: String,
     val controllerLog: ControllerLog
-) : ManagedController<Action, Mutation, State> {
+) : ManagedController<Action, Mutation, State, Effect> {
 
     // region state machine
 
@@ -52,9 +55,12 @@ internal class ControllerImplementation<Action, Mutation, State>(
         context = dispatcher + CoroutineName(tag),
         start = CoroutineStart.LAZY
     ) {
-        val actionFlow: Flow<Action> = actionsTransformer(actionChannel.asFlow())
+        val transFormerContext = createTransformerContext(effectProducer)
 
-        val mutatorContext = createMutatorContext({ currentState }, actionFlow)
+        val actionFlow: Flow<Action> = transFormerContext.actionsTransformer(actionChannel.asFlow())
+
+        val mutatorContext = createMutatorContext({ currentState }, effectProducer, actionFlow)
+
         val mutationFlow: Flow<Mutation> = actionFlow.flatMapMerge { action ->
             controllerLog.log(ControllerEvent.Action(tag, action.toString()))
             mutatorContext.mutator(action).catch { cause ->
@@ -64,10 +70,12 @@ internal class ControllerImplementation<Action, Mutation, State>(
             }
         }
 
-        val stateFlow: Flow<State> = mutationsTransformer(mutationFlow)
+        val reducerContext = createReducerContext(effectProducer)
+
+        val stateFlow: Flow<State> = transFormerContext.mutationsTransformer(mutationFlow)
             .onEach { controllerLog.log(ControllerEvent.Mutation(tag, it.toString())) }
             .scan(initialState) { previousState, mutation ->
-                runCatching { reducer(mutation, previousState) }.getOrElse { cause ->
+                runCatching { reducerContext.reducer(mutation, previousState) }.getOrElse { cause ->
                     val error = ControllerError.Reduce(
                         tag, "$previousState", "$mutation", cause
                     )
@@ -76,7 +84,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
                 }
             }
 
-        statesTransformer(stateFlow)
+        transFormerContext.statesTransformer(stateFlow)
             .onStart { controllerLog.log(ControllerEvent.Started(tag)) }
             .onEach { state ->
                 controllerLog.log(ControllerEvent.State(tag, state.toString()))
@@ -85,6 +93,23 @@ internal class ControllerImplementation<Action, Mutation, State>(
             .onCompletion { controllerLog.log(ControllerEvent.Completed(tag)) }
             .collect()
     }
+
+    // endregion
+
+    // region effects
+
+    private val effectProducer: (Effect) -> Unit = { effect ->
+        controllerLog.log(ControllerEvent.Effect(tag, effect.toString()))
+        val canBeOffered = effectsChannel.offer(effect)
+        if (!canBeOffered) {
+            val error = ControllerError.Effect(tag, effect.toString())
+            controllerLog.log(ControllerEvent.Error(tag, error))
+            throw error
+        }
+    }
+
+    private val effectsChannel = Channel<Effect>(BUFFERED)
+    override val effects: Flow<Effect> = effectsChannel.receiveAsFlow().cancellable()
 
     // endregion
 
@@ -141,13 +166,27 @@ internal class ControllerImplementation<Action, Mutation, State>(
     }
 
     companion object {
-        fun <Action, State> createMutatorContext(
+        internal fun <Action, State, Effect> createMutatorContext(
             stateAccessor: () -> State,
+            effectProducer: (Effect) -> Unit,
             actionFlow: Flow<Action>
-        ): MutatorContext<Action, State> = object :
-            MutatorContext<Action, State> {
-            override val currentState: State get() = stateAccessor()
-            override val actions: Flow<Action> = actionFlow
+        ): EffectMutatorContext<Action, State, Effect> =
+            object : EffectMutatorContext<Action, State, Effect> {
+                override val currentState: State get() = stateAccessor()
+                override val actions: Flow<Action> = actionFlow
+                override fun emitEffect(effect: Effect) = effectProducer(effect)
+            }
+
+        internal fun <Effect> createReducerContext(
+            effectProducer: (Effect) -> Unit
+        ): EffectReducerContext<Effect> = object : EffectReducerContext<Effect> {
+            override fun emitEffect(effect: Effect) = effectProducer(effect)
+        }
+
+        internal fun <Effect> createTransformerContext(
+            effectProducer: (Effect) -> Unit
+        ): EffectTransformerContext<Effect> = object : EffectTransformerContext<Effect> {
+            override fun emitEffect(effect: Effect) = effectProducer(effect)
         }
     }
 }

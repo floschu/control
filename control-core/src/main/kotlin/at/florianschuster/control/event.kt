@@ -44,6 +44,13 @@ sealed class ControllerEvent(
     ) : ControllerEvent(tag, "state: $state")
 
     /**
+     * When an [Effect] is produced by the [EffectController].
+     */
+    class Effect internal constructor(
+        tag: String, effect: String
+    ) : ControllerEvent(tag, "effect: $effect")
+
+    /**
      * When an error happens during the execution of the internal state machine.
      */
     class Error internal constructor(

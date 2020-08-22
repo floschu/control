@@ -15,7 +15,7 @@ import org.jetbrains.annotations.TestOnly
 @FlowPreview
 @TestOnly
 fun <Action, State> Controller<Action, *, State>.stub(): ControllerStub<Action, State> {
-    require(this is ControllerImplementation<Action, *, State>) {
+    require(this is ControllerImplementation<Action, *, State, *>) {
         "Cannot stub a custom implementation of a Controller."
     }
     if (!stubInitialized) {

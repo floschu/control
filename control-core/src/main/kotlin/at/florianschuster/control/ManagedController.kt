@@ -9,12 +9,13 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.emptyFlow
 
 /**
- * A [ManagedController] is a [Controller] that additionally provides the ability to [start]
+ * A [ManagedController] is an [EffectController] that additionally provides the ability to [start]
  * the internal state machine, but also requires to [cancel] the state machine to prevent leaks.
  *
- * Before using this, make sure to look into the [Controller] documentation.
+ * Before using this, make sure to look into the [EffectController] documentation.
  */
-interface ManagedController<Action, Mutation, State> : Controller<Action, Mutation, State> {
+interface ManagedController<Action, Mutation, State, Effect> :
+    EffectController<Action, Mutation, State, Effect> {
 
     /**
      * Starts the internal state machine of this [ManagedController].
@@ -41,27 +42,27 @@ interface ManagedController<Action, Mutation, State> : Controller<Action, Mutati
 @Suppress("FunctionName")
 @ExperimentalCoroutinesApi
 @FlowPreview
-fun <Action, Mutation, State> ManagedController(
+fun <Action, Mutation, State, Effect> ManagedController(
 
     /**
      * The initial [State] for the internal state machine.
      */
     initialState: State,
     /**
-     * See [Mutator].
+     * See [EffectMutator].
      */
-    mutator: Mutator<Action, Mutation, State> = { _ -> emptyFlow() },
+    mutator: EffectMutator<Action, Mutation, State, Effect> = { _ -> emptyFlow() },
     /**
-     * See [Reducer].
+     * See [EffectReducer].
      */
-    reducer: Reducer<Mutation, State> = { _, previousState -> previousState },
+    reducer: EffectReducer<Mutation, State, Effect> = { _, previousState -> previousState },
 
     /**
-     * See [Transformer].
+     * See [EffectTransformer].
      */
-    actionsTransformer: Transformer<Action> = { it },
-    mutationsTransformer: Transformer<Mutation> = { it },
-    statesTransformer: Transformer<State> = { it },
+    actionsTransformer: EffectTransformer<Action, Effect> = { it },
+    mutationsTransformer: EffectTransformer<Mutation, Effect> = { it },
+    statesTransformer: EffectTransformer<State, Effect> = { it },
 
     /**
      * Used for [ControllerLog] and as [CoroutineName] for the internal state machine.
@@ -78,7 +79,7 @@ fun <Action, Mutation, State> ManagedController(
      * [Mutator] and [Reducer] will run on this [CoroutineDispatcher].
      */
     dispatcher: CoroutineDispatcher = Dispatchers.Default
-): ManagedController<Action, Mutation, State> = ControllerImplementation(
+): ManagedController<Action, Mutation, State, Effect> = ControllerImplementation(
     scope = CoroutineScope(dispatcher),
     dispatcher = dispatcher,
     controllerStart = ControllerStart.Managed,
