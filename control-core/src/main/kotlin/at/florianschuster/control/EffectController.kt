@@ -31,7 +31,7 @@ interface EffectProvider<Effect> {
 interface EffectEmitter<Effect> {
 
     /**
-     * Produces an [Effect].
+     * Emits an [Effect].
      */
     fun emitEffect(effect: Effect)
 }
@@ -51,7 +51,7 @@ interface EffectController<Action, Mutation, State, Effect> :
  * The principle of the created state machine is the same as with
  * [CoroutineScope.createController].
  *
- * An [Effect] can be produced either in [mutator], [reducer], [actionsTransformer],
+ * An [Effect] can be emitted either in [mutator], [reducer], [actionsTransformer],
  * [mutationsTransformer] or [statesTransformer].
  */
 @ExperimentalCoroutinesApi
@@ -111,7 +111,7 @@ fun <Action, Mutation, State, Effect> CoroutineScope.createEffectController(
 )
 
 /**
- * A [Mutator] used in a [EffectController] that is able to produce effects.
+ * A [Mutator] used in a [EffectController] that is able to emit effects.
  */
 typealias EffectMutator<Action, Mutation, State, Effect> =
     EffectMutatorContext<Action, State, Effect>.(action: Action) -> Flow<Mutation>
@@ -124,7 +124,7 @@ interface EffectMutatorContext<Action, State, Effect> :
     MutatorContext<Action, State>, EffectEmitter<Effect>
 
 /**
- * A [Reducer] used in a [EffectController]  that is able to produce effects.
+ * A [Reducer] used in a [EffectController]  that is able to emit effects.
  */
 typealias EffectReducer<Mutation, State, Effect> =
     EffectReducerContext<Effect>.(mutation: Mutation, previousState: State) -> State
@@ -135,7 +135,7 @@ typealias EffectReducer<Mutation, State, Effect> =
 interface EffectReducerContext<Effect> : ReducerContext, EffectEmitter<Effect>
 
 /**
- * A [Transformer] used in a [EffectController]  that is able to produce effects.
+ * A [Transformer] used in a [EffectController]  that is able to emit effects.
  */
 typealias EffectTransformer<Emission, Effect> =
     EffectTransformerContext<Effect>.(emissions: Flow<Emission>) -> Flow<Emission>

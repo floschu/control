@@ -28,7 +28,7 @@ interface ManagedController<Action, Mutation, State, Effect> :
      * Cancels the internal state machine of this [ManagedController].
      * Once cancelled, the [ManagedController] cannot be re-started.
      *
-     * Returns the last [State] produced by the internal state machine.
+     * Returns the last [State] emitted by the internal state machine.
      */
     fun cancel(): State
 }

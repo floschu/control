@@ -30,7 +30,7 @@ sealed class ControllerEvent(
     ) : ControllerEvent(tag, "action: $action")
 
     /**
-     * When the [Mutator] produces a new [Mutation].
+     * When the [Mutator] emits a new [Mutation].
      */
     class Mutation internal constructor(
         tag: String, mutation: String
@@ -44,7 +44,7 @@ sealed class ControllerEvent(
     ) : ControllerEvent(tag, "state: $state")
 
     /**
-     * When an [Effect] is produced by the [EffectController].
+     * When an [Effect] is emitted by the [EffectController].
      */
     class Effect internal constructor(
         tag: String, effect: String
