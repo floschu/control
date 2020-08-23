@@ -199,7 +199,7 @@ internal class ImplementationTest {
         sut.dispatch(0)
         sut.dispatch(1)
 
-        assertEquals(1, sut.cancel())
+        sut.cancel()
 
         sut.dispatch(2)
 

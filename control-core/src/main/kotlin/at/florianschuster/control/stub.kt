@@ -14,12 +14,12 @@ import org.jetbrains.annotations.TestOnly
 @ExperimentalCoroutinesApi
 @FlowPreview
 @TestOnly
-fun <Action, State> Controller<Action, *, State>.stub(): ControllerStub<Action, State> {
+fun <Action, State> Controller<Action, State>.stub(): ControllerStub<Action, State> {
     require(this is ControllerImplementation<Action, *, State>) {
         "Cannot stub a custom implementation of a Controller."
     }
     if (!stubInitialized) {
-        controllerLog.log(ControllerEvent.Stub(tag))
+        controllerLog.log { ControllerEvent.Stub(tag) }
         stub = ControllerStubImplementation(initialState)
     }
     return stub

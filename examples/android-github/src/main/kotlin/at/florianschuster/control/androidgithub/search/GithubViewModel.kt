@@ -3,7 +3,6 @@ package at.florianschuster.control.androidgithub.search
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import at.florianschuster.control.Controller
 import at.florianschuster.control.ControllerEvent
 import at.florianschuster.control.ControllerLog
 import at.florianschuster.control.createController
@@ -44,7 +43,7 @@ internal class GithubViewModel(
         val loadingNextPage: Boolean = false
     )
 
-    val controller: Controller<Action, Mutation, State> = viewModelScope.createController(
+    val controller = viewModelScope.createController<Action, Mutation, State>(
         initialState = initialState,
 
         mutator = { action ->

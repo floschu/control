@@ -10,8 +10,10 @@ import io.mockk.verify
 import org.junit.Test
 import java.io.PrintStream
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 internal class LogTest {
 
@@ -40,9 +42,9 @@ internal class LogTest {
         val sut = ControllerLog.Println
         assertNotNull(sut.logger)
 
-        sut.log(CreatedEvent)
+        sut.log { CreatedEvent }
         assertEquals(CreatedEvent.toString(), capturedLogMessage.captured)
-        sut.log(CompletedEvent)
+        sut.log { CompletedEvent }
         assertEquals(CompletedEvent.toString(), capturedLogMessage.captured)
         verify(exactly = 2) { out.println(any<Any>()) }
     }
@@ -55,9 +57,9 @@ internal class LogTest {
         val capturedLogMessage = slot<String>()
         every { sut.logger.invoke(any(), capture(capturedLogMessage)) } just Runs
 
-        sut.log(CreatedEvent)
+        sut.log { CreatedEvent }
         assertEquals(CreatedEvent.toString(), capturedLogMessage.captured)
-        sut.log(CompletedEvent)
+        sut.log { CompletedEvent }
         assertEquals(CompletedEvent.toString(), capturedLogMessage.captured)
     }
 
@@ -65,6 +67,22 @@ internal class LogTest {
     fun `LoggerContext factory function`() {
         val sut = createLoggerContext(CreatedEvent)
         assertEquals(CreatedEvent, sut.event)
+    }
+
+    @Test
+    fun `log event is only created if logger exists`() {
+        var logged = false
+        ControllerLog.None.log {
+            logged = true
+            ControllerEvent.Action("", "")
+        }
+        assertFalse(logged)
+
+        ControllerLog.Println.log {
+            logged = true
+            ControllerEvent.Action("", "")
+        }
+        assertTrue(logged)
     }
 
     companion object {
