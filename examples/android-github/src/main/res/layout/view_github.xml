@@ -39,10 +39,10 @@
                         android:layout_height="wrap_content"
                         android:padding="12dp"
                         android:src="@drawable/ic_search"
-                        android:tint="?colorPrimary"
                         app:layout_constraintBottom_toBottomOf="@id/searchEditText"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/searchEditText" />
+                        app:layout_constraintTop_toTopOf="@id/searchEditText"
+                        app:tint="?colorPrimary" />
 
                     <ProgressBar
                         android:id="@+id/loadingProgressBar"
