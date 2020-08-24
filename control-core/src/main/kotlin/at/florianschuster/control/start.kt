@@ -29,6 +29,6 @@ sealed class ControllerStart {
      * The state machine is started once [ControllerImplementation.start] is called.
      */
     internal object Manual : ControllerStart() {
-        override val logName: String = "Managed"
+        override val logName: String = "Manual"
     }
 }

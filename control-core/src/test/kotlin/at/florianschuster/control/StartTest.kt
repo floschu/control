@@ -16,7 +16,7 @@ internal class StartTest {
     fun `start mode logName`() {
         assertEquals("Lazy", ControllerStart.Lazy.logName)
         assertEquals("Immediately", ControllerStart.Immediately.logName)
-        assertEquals("Managed", ControllerStart.Manual.logName)
+        assertEquals("Manual", ControllerStart.Manual.logName)
     }
 
     @Test
@@ -92,7 +92,7 @@ internal class StartTest {
     }
 
     @Test
-    fun `managed start mode`() {
+    fun `manual start mode`() {
         val scope = TestCoroutineScope(Job())
         val sut = scope.createSimpleCounterController(
             controllerStart = ControllerStart.Manual
@@ -113,7 +113,7 @@ internal class StartTest {
     }
 
     @Test
-    fun `managed start mode, start when already started`() {
+    fun `manual start mode, start when already started`() {
         val sut = TestCoroutineScope().createSimpleCounterController(
             controllerStart = ControllerStart.Manual
         )
@@ -126,7 +126,7 @@ internal class StartTest {
     }
 
     @Test
-    fun `managed start mode, cancel implementation`() {
+    fun `manual start mode, cancel implementation`() {
         val sut = TestCoroutineScope().createSimpleCounterController(
             controllerStart = ControllerStart.Manual
         )
