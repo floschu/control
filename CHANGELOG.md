@@ -4,6 +4,13 @@
 
 - binary compatibility will now be verified and held up on every release.
 
+## `[0.12.0]` - 2020-08-24
+
+- Remove `Mutation` generic type from `Controller` interface.
+- Remove `CoroutineScope.createSynchronousController`.
+- Remove `ManagedController`.
+- Make `ControllerLog` log creation lazy.
+
 ## `[0.11.0]` - 2020-05-30
 
 - `CoroutineScope.createController` and `CoroutineScope.createSynchronousController` now accept a custom `ControllerStart` parameter instead of `CoroutineStart`.

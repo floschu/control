@@ -7,11 +7,8 @@ import kotlin.String
  *   `$ ./gradlew buildSrcVersions`
  */
 object Libs {
-    /**
-     * https://github.com/Kotlin/kotlinx.serialization
-     */
-    const val kotlinx_serialization_runtime: String =
-            "org.jetbrains.kotlinx:kotlinx-serialization-runtime:" +
+    const val kotlinx_serialization_core: String =
+            "org.jetbrains.kotlinx:kotlinx-serialization-core:" +
             Versions.org_jetbrains_kotlinx_kotlinx_serialization
 
     /**
@@ -182,6 +179,11 @@ object Libs {
             Versions.espresso_core
 
     /**
+     * https://github.com/Kotlin/atomicfu
+     */
+    const val atomicfu_jvm: String = "org.jetbrains.kotlinx:atomicfu-jvm:" + Versions.atomicfu_jvm
+
+    /**
      * https://developer.android.com/studio
      */
     const val lint_gradle: String = "com.android.tools.lint:lint-gradle:" + Versions.lint_gradle
@@ -199,12 +201,7 @@ object Libs {
     const val junit_ktx: String = "androidx.test.ext:junit-ktx:" + Versions.junit_ktx
 
     /**
-     * 0.14.3
-     */
-    const val atomicfu: String = "org.jetbrains.kotlinx:atomicfu:" + Versions.atomicfu
-
-    /**
-     * http://developer.android.com/tools/extras/support-library.html
+     * https://github.com/material-components/material-components-android
      */
     const val material: String = "com.google.android.material:material:" + Versions.material
 

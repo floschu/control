@@ -16,13 +16,15 @@ internal class StartTest {
     fun `start mode logName`() {
         assertEquals("Lazy", ControllerStart.Lazy.logName)
         assertEquals("Immediately", ControllerStart.Immediately.logName)
-        assertEquals("Managed", ControllerStart.Managed.logName)
+        assertEquals("Manual", ControllerStart.Manual.logName)
     }
 
     @Test
     fun `default start mode`() {
         val scope = TestCoroutineScope(Job())
-        val sut = scope.createSimpleCounterController(controllerStart = ControllerStart.Immediately)
+        val sut = scope.createSimpleCounterController(
+            controllerStart = ControllerStart.Immediately
+        )
         assertTrue(sut.stateJob.isActive)
 
         scope.cancel()
@@ -32,7 +34,9 @@ internal class StartTest {
     @Test
     fun `lazy start mode`() {
         val scope = TestCoroutineScope(Job())
-        val sut = scope.createSimpleCounterController(controllerStart = ControllerStart.Lazy)
+        val sut = scope.createSimpleCounterController(
+            controllerStart = ControllerStart.Lazy
+        )
         assertFalse(sut.stateJob.isActive)
 
         sut.currentState
@@ -45,7 +49,9 @@ internal class StartTest {
     @Test
     fun `lazy start mode with currentState`() {
         val scope = TestCoroutineScope(Job())
-        val sut = scope.createSimpleCounterController(controllerStart = ControllerStart.Lazy)
+        val sut = scope.createSimpleCounterController(
+            controllerStart = ControllerStart.Lazy
+        )
         assertFalse(sut.stateJob.isActive)
 
         sut.currentState
@@ -58,7 +64,9 @@ internal class StartTest {
     @Test
     fun `lazy start mode with state`() {
         val scope = TestCoroutineScope(Job())
-        val sut = scope.createSimpleCounterController(controllerStart = ControllerStart.Lazy)
+        val sut = scope.createSimpleCounterController(
+            controllerStart = ControllerStart.Lazy
+        )
         assertFalse(sut.stateJob.isActive)
 
         sut.state
@@ -71,7 +79,9 @@ internal class StartTest {
     @Test
     fun `lazy start mode with dispatch`() {
         val scope = TestCoroutineScope(Job())
-        val sut = scope.createSimpleCounterController(controllerStart = ControllerStart.Lazy)
+        val sut = scope.createSimpleCounterController(
+            controllerStart = ControllerStart.Lazy
+        )
         assertFalse(sut.stateJob.isActive)
 
         sut.dispatch(1)
@@ -82,9 +92,11 @@ internal class StartTest {
     }
 
     @Test
-    fun `managed start mode`() {
+    fun `manual start mode`() {
         val scope = TestCoroutineScope(Job())
-        val sut = scope.createSimpleCounterController(controllerStart = ControllerStart.Managed)
+        val sut = scope.createSimpleCounterController(
+            controllerStart = ControllerStart.Manual
+        )
         assertFalse(sut.stateJob.isActive)
 
         sut.currentState
@@ -101,9 +113,9 @@ internal class StartTest {
     }
 
     @Test
-    fun `managed start mode, start when already started`() {
+    fun `manual start mode, start when already started`() {
         val sut = TestCoroutineScope().createSimpleCounterController(
-            controllerStart = ControllerStart.Managed
+            controllerStart = ControllerStart.Manual
         )
         assertFalse(sut.stateJob.isActive)
 
@@ -114,9 +126,9 @@ internal class StartTest {
     }
 
     @Test
-    fun `managed start mode, cancel implementation`() {
+    fun `manual start mode, cancel implementation`() {
         val sut = TestCoroutineScope().createSimpleCounterController(
-            controllerStart = ControllerStart.Managed
+            controllerStart = ControllerStart.Manual
         )
         assertFalse(sut.stateJob.isActive)
 
@@ -125,16 +137,15 @@ internal class StartTest {
         assertTrue(started)
 
         sut.dispatch(42)
-        val lastState = sut.cancel()
+        sut.cancel()
         assertFalse(sut.stateJob.isActive)
-        assertEquals(42, lastState)
     }
 
     private fun CoroutineScope.createSimpleCounterController(
         controllerStart: ControllerStart
     ) = ControllerImplementation<Int, Int, Int>(
         scope = this,
-        dispatcher = scopeDispatcher,
+        dispatcher = defaultScopeDispatcher(),
         controllerStart = controllerStart,
         initialState = 0,
         mutator = { flowOf(it) },

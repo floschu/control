@@ -7,7 +7,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlin.coroutines.ContinuationInterceptor
 
 /**
@@ -32,11 +31,11 @@ import kotlin.coroutines.ContinuationInterceptor
  *                          state
  * ```
  *
- * The [Controller] creates an uni-directional stream of data as shown in the diagram above, by
- * handling incoming [Action]'s via [Controller.dispatch] and creating new [State]'s that
+ * The [Controller] creates an uni-directional stream of data as shown in the diagram above,
+ * by handling incoming [Action]'s via [Controller.dispatch] and creating new [State]'s that
  * can be collected via [Controller.state].
  */
-interface Controller<Action, Mutation, State> {
+interface Controller<Action, State> {
 
     /**
      * Dispatches an [Action] to be processed by this [Controller].
@@ -56,7 +55,8 @@ interface Controller<Action, Mutation, State> {
 
 /**
  * Creates a [Controller] bound to the [CoroutineScope] via [ControllerImplementation].
- * If the [CoroutineScope] is cancelled, the internal state machine of the [Controller] completes.
+ * If the [CoroutineScope] is cancelled, the internal state machine of the [Controller]
+ * completes.
  *
  * The principle of the created state machine is:
  *
@@ -68,9 +68,9 @@ interface Controller<Action, Mutation, State> {
  *          ┃                     │                 ┃
  *          ┃                     │                 ┃
  *          ┃                     │                 ┃
- *          ┃               ┏━━━━━▼━━━━━┓           ┃   side effect   ┏━━━━━━━━━━━━━━━━━━━━┓
- *          ┃               ┃  mutator ◀───────────────────────────────▶  service/usecase  ┃
- *          ┃               ┗━━━━━━━━━━━┛           ┃                 ┗━━━━━━━━━━━━━━━━━━━━┛
+ *          ┃               ┏━━━━━▼━━━━━┓           ┃  side effect ┏━━━━━━━━━━━━━━━━━━━━┓
+ *          ┃               ┃  mutator ◀────────────────────────────▶  service/usecase  ┃
+ *          ┃               ┗━━━━━━━━━━━┛           ┃              ┗━━━━━━━━━━━━━━━━━━━━┛
  *          ┃                     │                 ┃
  *          ┃                     │ 0..n mutations  ┃
  *          ┃                     │                 ┃
@@ -94,8 +94,6 @@ interface Controller<Action, Mutation, State> {
  * 2. [Reducer]: This corresponds to [Mutation] -> [State]
  * 3. [Transformer]
  * 4. [ControllerImplementation]
- *
- * To create a [Controller] that is not bound to a [CoroutineScope] look into [ManagedController].
  */
 @ExperimentalCoroutinesApi
 @FlowPreview
@@ -141,93 +139,13 @@ fun <Action, Mutation, State> CoroutineScope.createController(
      *
      * [Mutator] and [Reducer] will run on this [CoroutineDispatcher].
      */
-    dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher
-): Controller<Action, Mutation, State> = ControllerImplementation(
+    dispatcher: CoroutineDispatcher = defaultScopeDispatcher()
+): Controller<Action, State> = ControllerImplementation(
     scope = this, dispatcher = dispatcher, controllerStart = controllerStart,
 
     initialState = initialState, mutator = mutator, reducer = reducer,
     actionsTransformer = actionsTransformer,
     mutationsTransformer = mutationsTransformer,
-    statesTransformer = statesTransformer,
-
-    tag = tag, controllerLog = controllerLog
-)
-
-/**
- * Creates a [Controller] bound to a [CoroutineScope] where [Action] == [Mutation].
- * This means that the [Controller] can only deal with synchronous state reductions without
- * any asynchronous side-effects.
- *
- * Internally - for the state machine - that means that each [Action] is simply pushed through
- * the [Mutator] as it is and thus directly reaches the [Reducer].
- *
- * ```
- *                              Action
- *          ┏━━━━━━━━━━━━━━━━━━━━━│━━━━━━━━━━━━━━━━━┓
- *          ┃                     │                 ┃
- *          ┃               ┏━━━━━▼━━━━━┓           ┃
- *          ┃  ┌───────────▶┃  reducer  ┃           ┃
- *          ┃  │            ┗━━━━━━━━━━━┛           ┃
- *          ┃  │ previous         │                 ┃
- *          ┃  │ state            │ new state       ┃
- *          ┃  │                  │                 ┃
- *          ┃  │            ┏━━━━━▼━━━━━┓           ┃
- *          ┃  └────────────┃   state   ┃           ┃
- *          ┃               ┗━━━━━━━━━━━┛           ┃
- *          ┃                     │                 ┃
- *          ┗━━━━━━━━━━━━━━━━━━━━━│━━━━━━━━━━━━━━━━━┛
- *                                ▼
- *                              state
- * ```
- *
- * If the [CoroutineScope] is cancelled, the internal state machine of the [Controller] completes.
- */
-@ExperimentalCoroutinesApi
-@FlowPreview
-fun <Action, State> CoroutineScope.createSynchronousController(
-
-    /**
-     * The initial [State] for the internal state machine.
-     */
-    initialState: State,
-    /**
-     * See [Reducer].
-     */
-    reducer: Reducer<Action, State> = { _, previousState -> previousState },
-
-    /**
-     * See [Transformer].
-     */
-    actionsTransformer: Transformer<Action> = { it },
-    statesTransformer: Transformer<State> = { it },
-
-    /**
-     * Used for [ControllerLog] and as [CoroutineName] for the internal state machine.
-     */
-    tag: String = defaultTag(),
-    /**
-     * Log configuration for [ControllerEvent]s. See [ControllerLog].
-     */
-    controllerLog: ControllerLog = ControllerLog.default,
-
-    /**
-     * When the internal state machine [Flow] should be started. See [ControllerStart].
-     */
-    controllerStart: ControllerStart = ControllerStart.Lazy,
-
-    /**
-     * Override to launch the internal state machine [Flow] in a different [CoroutineDispatcher]
-     * than the one used in the [CoroutineScope.coroutineContext].
-     *
-     * [Reducer] will run on this [CoroutineDispatcher].
-     */
-    dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher
-): Controller<Action, Action, State> = ControllerImplementation(
-    scope = this, dispatcher = dispatcher, controllerStart = controllerStart,
-
-    initialState = initialState, mutator = { flowOf(it) }, reducer = reducer,
-    actionsTransformer = actionsTransformer,
-    mutationsTransformer = { it },
     statesTransformer = statesTransformer,
 
     tag = tag, controllerLog = controllerLog
@@ -265,7 +183,8 @@ fun <Action, State> CoroutineScope.createSynchronousController(
 typealias Mutator<Action, Mutation, State> = MutatorContext<Action, State>.(action: Action) -> Flow<Mutation>
 
 /**
- * The [MutatorContext] provides access to the [currentState] and the [actions] [Flow] in a [Mutator].
+ * The [MutatorContext] provides access to the [currentState] and the [actions] [Flow] in
+ * a [Mutator].
  */
 interface MutatorContext<Action, State> {
 
@@ -302,7 +221,12 @@ interface MutatorContext<Action, State> {
  * }
  * ```
  */
-typealias Reducer<Mutation, State> = (mutation: Mutation, previousState: State) -> State
+typealias Reducer<Mutation, State> = ReducerContext.(mutation: Mutation, previousState: State) -> State
+
+/**
+ * A context used for a [Reducer]. Does not provide any additional functionality.
+ */
+interface ReducerContext
 
 /**
  * A [Transformer] transforms a [Flow] of a type - such as action, mutation or state.
@@ -336,4 +260,10 @@ typealias Reducer<Mutation, State> = (mutation: Mutation, previousState: State) 
  * }
  * ```
  */
-typealias Transformer<Emission> = (emissions: Flow<Emission>) -> Flow<Emission>
+typealias Transformer<Emission> = TransformerContext.(emissions: Flow<Emission>) -> Flow<Emission>
+
+
+/**
+ * A context used for a [Transformer]. Does not provide any additional functionality.
+ */
+interface TransformerContext

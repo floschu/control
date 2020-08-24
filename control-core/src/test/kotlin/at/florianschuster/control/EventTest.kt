@@ -22,11 +22,11 @@ internal class EventTest {
         val events = mutableListOf<ControllerEvent>()
         val sut = TestCoroutineScope().eventsController(
             events,
-            controllerStart = ControllerStart.Managed
+            controllerStart = ControllerStart.Manual
         )
 
         assertTrue(events.last() is ControllerEvent.Created)
-        assertTrue(events.last().toString().contains(ControllerStart.Managed.logName))
+        assertTrue(events.last().toString().contains(ControllerStart.Manual.logName))
 
         sut.start()
         events.takeLast(2).let { lastEvents ->
@@ -77,7 +77,7 @@ internal class EventTest {
         controllerStart: ControllerStart = ControllerStart.Lazy
     ) = ControllerImplementation<Int, Int, Int>(
         scope = this,
-        dispatcher = scopeDispatcher,
+        dispatcher = defaultScopeDispatcher(),
         controllerStart = controllerStart,
         initialState = 0,
         mutator = { action ->

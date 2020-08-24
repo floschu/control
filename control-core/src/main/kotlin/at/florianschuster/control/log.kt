@@ -50,6 +50,8 @@ internal fun createLoggerContext(event: ControllerEvent) = object : LoggerContex
     override val event: ControllerEvent = event
 }
 
-internal fun ControllerLog.log(event: ControllerEvent) {
-    logger?.invoke(createLoggerContext(event), event.toString())
+internal fun ControllerLog.log(eventCreator: () -> ControllerEvent) {
+    val logger = logger ?: return
+    val eventToLog = eventCreator()
+    createLoggerContext(eventToLog).logger(eventToLog.toString())
 }

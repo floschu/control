@@ -3,8 +3,8 @@ package at.florianschuster.control
 import kotlinx.coroutines.CoroutineScope
 
 /**
- * Options for [Controller] builder such as [CoroutineScope.createController] or
- * [ManagedController] to define when the internal state machine should be started.
+ * Options for [Controller] builder such as [CoroutineScope.createController]
+ * to define when the internal state machine should be started.
  */
 sealed class ControllerStart {
 
@@ -26,9 +26,9 @@ sealed class ControllerStart {
     }
 
     /**
-     * The state machine is started once [ManagedController.start] is called.
+     * The state machine is started once [ControllerImplementation.start] is called.
      */
-    internal object Managed : ControllerStart() {
-        override val logName: String = "Managed"
+    internal object Manual : ControllerStart() {
+        override val logName: String = "Manual"
     }
 }

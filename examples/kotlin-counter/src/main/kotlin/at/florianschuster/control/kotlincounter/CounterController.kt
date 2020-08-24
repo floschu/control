@@ -7,7 +7,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 
-typealias CounterController = Controller<CounterAction, CounterMutation, CounterState>
+typealias CounterController = Controller<CounterAction, CounterState>
 
 /**
  * actions triggered by the view.
