@@ -1,10 +1,8 @@
 package at.florianschuster.control.androidgithub
 
 import android.net.Uri
-import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
-import io.ktor.client.features.defaultRequest
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.client.features.logging.LogLevel
@@ -34,25 +32,22 @@ internal class GithubApi(
 ) {
 
     @Serializable
-    private data class Result(val items: List<Repo>)
+    private data class Response(val items: List<Repo>)
 
-    /**
-     * Returns either a [List] of [Repo] or an empty [List] if an error occurs.
-     */
-    suspend fun search(query: String, page: Int): List<Repo> = runCatching {
-        httpClient.get<Result>("https://api.github.com/search/repositories") {
+    suspend fun search(
+        query: String,
+        page: Int
+    ): List<Repo> {
+        val response = httpClient.get<Response>(
+            "https://api.github.com/search/repositories"
+        ) {
             url {
                 parameter("q", query)
                 parameter("page", page)
             }
         }
-    }.fold(
-        onSuccess = Result::items,
-        onFailure = { error ->
-            Log.e("GithubApi.repos", "with query = $query, page = $page", error)
-            emptyList()
-        }
-    )
+        return response.items
+    }
 }
 
 @Serializable

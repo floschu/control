@@ -11,6 +11,7 @@ import at.florianschuster.control.androidgithub.Repo
 import at.florianschuster.control.takeUntil
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filter
@@ -52,12 +53,19 @@ internal class GithubViewModel(
                     emit(Mutation.SetQuery(action.text))
                     if (action.text.isNotEmpty()) {
                         emit(Mutation.SetLoadingNextPage(true))
+
+                        // flow search
                         emitAll(
                             flow { emit(api.search(currentState.query, 1)) }
+                                .catch { error ->
+                                    Log.w("GithubViewModel", error)
+                                    emit(emptyList())
+                                }
                                 .filter { it.isNotEmpty() }
                                 .map { Mutation.SetRepos(it) }
                                 .takeUntil(actions.filterIsInstance<Action.UpdateQuery>())
                         )
+
                         emit(Mutation.SetLoadingNextPage(false))
                     }
                 }
@@ -66,11 +74,16 @@ internal class GithubViewModel(
                     else -> flow {
                         val state = currentState
                         emit(Mutation.SetLoadingNextPage(true))
-                        emitAll(
-                            flow { emit(api.search(state.query, state.page + 1)) }
-                                .map { Mutation.AppendRepos(it) }
-                                .takeUntil(actions.filterIsInstance<Action.UpdateQuery>())
-                        )
+
+                        // suspending search
+                        val repos = kotlin.runCatching {
+                            api.search(state.query, state.page + 1)
+                        }.getOrElse { error ->
+                            Log.w("GithubViewModel", error)
+                            emptyList()
+                        }
+                        emit(Mutation.AppendRepos(repos))
+
                         emit(Mutation.SetLoadingNextPage(false))
                     }
                 }
