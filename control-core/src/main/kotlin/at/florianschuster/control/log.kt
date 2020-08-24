@@ -51,7 +51,7 @@ internal fun createLoggerContext(event: ControllerEvent) = object : LoggerContex
 }
 
 internal fun ControllerLog.log(eventCreator: () -> ControllerEvent) {
-    if (logger == null) return
+    val logger = logger ?: return
     val eventToLog = eventCreator()
-    logger?.invoke(createLoggerContext(eventToLog), eventToLog.toString())
+    createLoggerContext(eventToLog).logger(eventToLog.toString())
 }
