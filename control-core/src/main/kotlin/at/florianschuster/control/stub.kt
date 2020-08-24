@@ -2,6 +2,8 @@ package at.florianschuster.control
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.annotations.TestOnly
 
@@ -15,12 +17,12 @@ import org.jetbrains.annotations.TestOnly
 @FlowPreview
 @TestOnly
 fun <Action, State> Controller<Action, State>.stub(): ControllerStub<Action, State> {
-    require(this is ControllerImplementation<Action, *, State>) {
+    require(this is ControllerImplementation<Action, *, State, *>) {
         "Cannot stub a custom implementation of a Controller."
     }
     if (!stubInitialized) {
         controllerLog.log { ControllerEvent.Stub(tag) }
-        stub = ControllerStubImplementation(initialState)
+        stub = ControllerStubImplementation<Action, State>(initialState)
     }
     return stub
 }
@@ -44,19 +46,56 @@ interface ControllerStub<Action, State> {
 }
 
 /**
+ * Retrieves a [ControllerStub] for this [Controller] used for view testing.
+ * Once accessed, the [Controller] is stubbed and cannot be un-stubbed.
+ *
+ * Custom implementations of [Controller] cannot be stubbed.
+ */
+@ExperimentalCoroutinesApi
+@FlowPreview
+@TestOnly
+fun <Action, State, Effect> EffectController<Action, State, Effect>.effectStub(): EffectControllerStub<Action, State, Effect> {
+    require(this is ControllerImplementation<Action, *, State, Effect>) {
+        "Cannot stub a custom implementation of a Controller."
+    }
+    if (!stubInitialized) {
+        controllerLog.log { ControllerEvent.Stub(tag) }
+        stub = ControllerStubImplementation(initialState)
+    }
+    return stub
+}
+
+/**
+ * A stub of a [EffectController] for view testing.
+ */
+interface EffectControllerStub<Action, State, Effect> : ControllerStub<Action, State> {
+
+    /**
+     * Emits a new [Effect] for [EffectController.effects].
+     * Use this to verify if [Effect] is correctly bound to a view.
+     */
+    fun emitEffect(effect: Effect)
+}
+
+/**
  * An implementation of [ControllerStub].
  */
 @ExperimentalCoroutinesApi
-internal class ControllerStubImplementation<Action, State>(
+internal class ControllerStubImplementation<Action, State, Effect>(
     initialState: State
-) : ControllerStub<Action, State> {
+) : EffectControllerStub<Action, State, Effect> {
 
     internal val mutableDispatchedActions = mutableListOf<Action>()
     internal val stateFlow = MutableStateFlow(initialState)
+    internal val effectChannel = BroadcastChannel<Effect>(BUFFERED)
 
     override val dispatchedActions: List<Action> get() = mutableDispatchedActions
 
     override fun emitState(state: State) {
         stateFlow.value = state
+    }
+
+    override fun emitEffect(effect: Effect) {
+        effectChannel.offer(effect)
     }
 }

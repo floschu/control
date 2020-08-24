@@ -4,6 +4,10 @@
 
 - binary compatibility will now be verified and held up on every release.
 
+## `[0.13.0]` - 2020-08-XX
+
+- Add `EffectController` and `CoroutineScope.createEffectController`.
+
 ## `[0.12.0]` - 2020-08-24
 
 - Remove `Mutation` generic type from `Controller` interface.

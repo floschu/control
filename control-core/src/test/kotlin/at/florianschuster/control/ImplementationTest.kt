@@ -184,10 +184,32 @@ internal class ImplementationTest {
     fun `MutatorContext is built correctly`() {
         val stateAccessor = { 1 }
         val actions = flowOf(1)
-        val sut = ControllerImplementation.createMutatorContext(stateAccessor, actions)
+        val effectEmitter: (Int) -> Unit = { _ -> }
+        val sut = ControllerImplementation.createMutatorContext(
+            stateAccessor,
+            actions,
+            effectEmitter
+        )
 
         assertEquals(stateAccessor(), sut.currentState)
         assertEquals(actions, sut.actions)
+        assertEquals(effectEmitter, sut::offerEffect)
+    }
+
+    @Test
+    fun `ReducerContext is built correctly`() {
+        val effectEmitter: (Int) -> Unit = { _ -> }
+        val sut = ControllerImplementation.createReducerContext(effectEmitter)
+
+        assertEquals(effectEmitter, sut::offerEffect)
+    }
+
+    @Test
+    fun `TransformerContext is built correctly`() {
+        val effectEmitter: (Int) -> Unit = { _ -> }
+        val sut = ControllerImplementation.createTransformerContext(effectEmitter)
+
+        assertEquals(effectEmitter, sut::offerEffect)
     }
 
     @Test
@@ -207,7 +229,7 @@ internal class ImplementationTest {
     }
 
     private fun CoroutineScope.createAlwaysSameStateController() =
-        ControllerImplementation<Unit, Unit, Int>(
+        ControllerImplementation<Unit, Unit, Int, Nothing>(
             scope = this,
             dispatcher = defaultScopeDispatcher(),
             controllerStart = ControllerStart.Lazy,
@@ -222,7 +244,7 @@ internal class ImplementationTest {
         )
 
     private fun CoroutineScope.createOperationController() =
-        ControllerImplementation<List<String>, List<String>, List<String>>(
+        ControllerImplementation<List<String>, List<String>, List<String>, Nothing>(
             scope = this,
             dispatcher = defaultScopeDispatcher(),
             controllerStart = ControllerStart.Lazy,
@@ -258,7 +280,7 @@ internal class ImplementationTest {
     private fun CoroutineScope.createCounterController(
         mutatorErrorIndex: Int? = null,
         reducerErrorIndex: Int? = null
-    ) = ControllerImplementation<Unit, Unit, Int>(
+    ) = ControllerImplementation<Unit, Unit, Int, Nothing>(
         scope = this,
         dispatcher = defaultScopeDispatcher(),
         controllerStart = ControllerStart.Lazy,
@@ -286,7 +308,7 @@ internal class ImplementationTest {
     }
 
     private fun CoroutineScope.createStopWatchController() =
-        ControllerImplementation<StopWatchAction, Int, Int>(
+        ControllerImplementation<StopWatchAction, Int, Int, Nothing>(
             scope = this,
             dispatcher = defaultScopeDispatcher(),
             controllerStart = ControllerStart.Lazy,
@@ -314,7 +336,7 @@ internal class ImplementationTest {
 
     private fun CoroutineScope.createGlobalStateMergeController(
         globalState: Flow<Int>
-    ) = ControllerImplementation<Int, Int, Int>(
+    ) = ControllerImplementation<Int, Int, Int, Nothing>(
         scope = this,
         dispatcher = defaultScopeDispatcher(),
         controllerStart = ControllerStart.Lazy,

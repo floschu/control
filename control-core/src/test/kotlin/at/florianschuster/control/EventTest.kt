@@ -41,6 +41,14 @@ internal class EventTest {
             assertTrue(lastEvents[2] is ControllerEvent.State)
         }
 
+        sut.dispatch(effectValue)
+        events.takeLast(4).let { lastEvents ->
+            assertTrue(lastEvents[0] is ControllerEvent.Action)
+            assertTrue(lastEvents[1] is ControllerEvent.Effect)
+            assertTrue(lastEvents[2] is ControllerEvent.Mutation)
+            assertTrue(lastEvents[3] is ControllerEvent.State)
+        }
+
         sut.stub()
         assertTrue(events.last() is ControllerEvent.Stub)
 
@@ -75,13 +83,14 @@ internal class EventTest {
     private fun CoroutineScope.eventsController(
         events: MutableList<ControllerEvent>,
         controllerStart: ControllerStart = ControllerStart.Lazy
-    ) = ControllerImplementation<Int, Int, Int>(
+    ) = ControllerImplementation<Int, Int, Int, Int>(
         scope = this,
         dispatcher = defaultScopeDispatcher(),
         controllerStart = controllerStart,
         initialState = 0,
         mutator = { action ->
             flow {
+                if (action == effectValue) offerEffect(effectValue)
                 check(action != mutatorErrorValue)
                 emit(action)
             }
@@ -100,5 +109,6 @@ internal class EventTest {
     companion object {
         private const val mutatorErrorValue = 42
         private const val reducerErrorValue = 69
+        private const val effectValue = 420
     }
 }

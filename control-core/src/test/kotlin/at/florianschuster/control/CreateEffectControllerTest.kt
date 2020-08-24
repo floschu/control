@@ -8,14 +8,14 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import kotlin.test.assertEquals
 
-internal class CreateControllerTest {
+internal class CreateEffectControllerTest {
 
     @Test
     fun `default parameters of controller builder`() = runBlockingTest {
         val expectedInitialState = 42
-        val sut = createController<Int, Int, Int>(
+        val sut = createEffectController<Int, Int, Int, Int>(
             initialState = expectedInitialState
-        ) as ControllerImplementation<Int, Int, Int, Nothing>
+        ) as ControllerImplementation<Int, Int, Int, Int>
 
         assertEquals(this, sut.scope)
         assertEquals(expectedInitialState, sut.initialState)

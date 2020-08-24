@@ -101,7 +101,7 @@ internal class StubTest {
     }
 
     private fun CoroutineScope.createStringController() =
-        ControllerImplementation<List<String>, List<String>, List<String>>(
+        ControllerImplementation<List<String>, List<String>, List<String>, Nothing>(
             scope = this,
             dispatcher = defaultScopeDispatcher(),
             controllerStart = ControllerStart.Lazy,
