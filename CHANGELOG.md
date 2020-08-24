@@ -4,7 +4,7 @@
 
 - binary compatibility will now be verified and held up on every release.
 
-## `[0.12.0]` - 2020-08-XX
+## `[0.12.0]` - 2020-08-24
 
 - Remove `Mutation` generic type from `Controller` interface.
 - Remove `CoroutineScope.createSynchronousController`.
