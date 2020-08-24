@@ -77,7 +77,7 @@ internal class EventTest {
         controllerStart: ControllerStart = ControllerStart.Lazy
     ) = ControllerImplementation<Int, Int, Int>(
         scope = this,
-        dispatcher = scopeDispatcher,
+        dispatcher = defaultScopeDispatcher(),
         controllerStart = controllerStart,
         initialState = 0,
         mutator = { action ->

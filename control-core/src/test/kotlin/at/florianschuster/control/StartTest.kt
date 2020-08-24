@@ -145,7 +145,7 @@ internal class StartTest {
         controllerStart: ControllerStart
     ) = ControllerImplementation<Int, Int, Int>(
         scope = this,
-        dispatcher = scopeDispatcher,
+        dispatcher = defaultScopeDispatcher(),
         controllerStart = controllerStart,
         initialState = 0,
         mutator = { flowOf(it) },

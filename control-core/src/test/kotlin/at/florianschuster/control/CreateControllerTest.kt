@@ -8,7 +8,7 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import kotlin.test.assertEquals
 
-internal class ControllerTest {
+internal class CreateControllerTest {
 
     @Test
     fun `default parameters of controller builder`() = runBlockingTest {
@@ -31,6 +31,6 @@ internal class ControllerTest {
         assertEquals(ControllerLog.default, sut.controllerLog)
 
         assertEquals(ControllerStart.Lazy, sut.controllerStart)
-        assertEquals(scopeDispatcher, sut.dispatcher)
+        assertEquals(defaultScopeDispatcher(), sut.dispatcher)
     }
 }

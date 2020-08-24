@@ -209,7 +209,7 @@ internal class ImplementationTest {
     private fun CoroutineScope.createAlwaysSameStateController() =
         ControllerImplementation<Unit, Unit, Int>(
             scope = this,
-            dispatcher = scopeDispatcher,
+            dispatcher = defaultScopeDispatcher(),
             controllerStart = ControllerStart.Lazy,
             initialState = 0,
             mutator = { flowOf(it) },
@@ -224,7 +224,7 @@ internal class ImplementationTest {
     private fun CoroutineScope.createOperationController() =
         ControllerImplementation<List<String>, List<String>, List<String>>(
             scope = this,
-            dispatcher = scopeDispatcher,
+            dispatcher = defaultScopeDispatcher(),
             controllerStart = ControllerStart.Lazy,
 
             // 1. ["initialState"]
@@ -260,7 +260,7 @@ internal class ImplementationTest {
         reducerErrorIndex: Int? = null
     ) = ControllerImplementation<Unit, Unit, Int>(
         scope = this,
-        dispatcher = scopeDispatcher,
+        dispatcher = defaultScopeDispatcher(),
         controllerStart = ControllerStart.Lazy,
         initialState = 0,
         mutator = { action ->
@@ -288,7 +288,7 @@ internal class ImplementationTest {
     private fun CoroutineScope.createStopWatchController() =
         ControllerImplementation<StopWatchAction, Int, Int>(
             scope = this,
-            dispatcher = scopeDispatcher,
+            dispatcher = defaultScopeDispatcher(),
             controllerStart = ControllerStart.Lazy,
             initialState = 0,
             mutator = { action ->
@@ -316,7 +316,7 @@ internal class ImplementationTest {
         globalState: Flow<Int>
     ) = ControllerImplementation<Int, Int, Int>(
         scope = this,
-        dispatcher = scopeDispatcher,
+        dispatcher = defaultScopeDispatcher(),
         controllerStart = ControllerStart.Lazy,
         initialState = 0,
         mutator = { flowOf(it) },

@@ -103,7 +103,7 @@ internal class StubTest {
     private fun CoroutineScope.createStringController() =
         ControllerImplementation<List<String>, List<String>, List<String>>(
             scope = this,
-            dispatcher = scopeDispatcher,
+            dispatcher = defaultScopeDispatcher(),
             controllerStart = ControllerStart.Lazy,
             initialState = initialState,
             mutator = { flowOf(it) },

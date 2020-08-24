@@ -139,7 +139,7 @@ fun <Action, Mutation, State> CoroutineScope.createController(
      *
      * [Mutator] and [Reducer] will run on this [CoroutineDispatcher].
      */
-    dispatcher: CoroutineDispatcher = coroutineContext[ContinuationInterceptor] as CoroutineDispatcher
+    dispatcher: CoroutineDispatcher = defaultScopeDispatcher()
 ): Controller<Action, State> = ControllerImplementation(
     scope = this, dispatcher = dispatcher, controllerStart = controllerStart,
 
