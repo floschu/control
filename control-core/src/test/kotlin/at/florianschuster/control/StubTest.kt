@@ -32,11 +32,32 @@ internal class StubTest {
     }
 
     @Test
-    fun `stub is enabled only after conversion()`() {
+    fun `custom EffectController implementation cannot be stubbed`() {
+        val sut = object : EffectController<Int, Int, Int> {
+            override fun dispatch(action: Int) = Unit
+            override val currentState: Int get() = error("")
+            override val state: Flow<Int> get() = error("")
+            override val effects: Flow<Int> get() = error("")
+        }
+
+        assertFailsWith<IllegalArgumentException> { sut.toStub() }
+    }
+
+    @Test
+    fun `Controller stub is enabled only after conversion()`() {
         val sut = testCoroutineScope.createStringController()
         assertFalse(sut.stubEnabled)
 
-        sut.toStub().dispatchedActions
+        (sut as Controller<List<String>, List<String>>).toStub()
+        assertTrue(sut.stubEnabled)
+    }
+
+    @Test
+    fun `EffectController stub is enabled only after conversion()`() {
+        val sut = testCoroutineScope.createStringController()
+        assertFalse(sut.stubEnabled)
+
+        (sut as EffectController<List<String>, List<String>, Nothing>).toStub()
         assertTrue(sut.stubEnabled)
     }
 
@@ -97,8 +118,19 @@ internal class StubTest {
         assertEquals(initialState, sut.currentState)
     }
 
+    @Test
+    fun `stub emits effects`() {
+        val sut = testCoroutineScope.createStringController().apply { toStub() }
+        val testFlow = sut.effects.testIn(testCoroutineScope)
+
+        sut.emitEffect("effect1")
+        sut.emitEffect("effect2")
+
+        testFlow expect emissions("effect1", "effect2")
+    }
+
     private fun CoroutineScope.createStringController() =
-        ControllerImplementation<List<String>, List<String>, List<String>, Nothing>(
+        ControllerImplementation<List<String>, List<String>, List<String>, String>(
             scope = this,
             dispatcher = defaultScopeDispatcher(),
             controllerStart = ControllerStart.Lazy,

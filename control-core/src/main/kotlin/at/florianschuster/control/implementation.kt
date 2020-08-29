@@ -103,16 +103,15 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
     // region effects
 
     private val effectEmitter: (Effect) -> Unit = { effect ->
-        controllerLog.log { ControllerEvent.Effect(tag, effect.toString()) }
         val canBeOffered = effectsChannel.offer(effect)
-        if (!canBeOffered) {
-            val error = ControllerError.Effect(tag, effect.toString())
-            controllerLog.log { ControllerEvent.Error(tag, error) }
-            throw error
+        if (canBeOffered) {
+            controllerLog.log { ControllerEvent.Effect(tag, effect.toString()) }
+        } else {
+            throw ControllerError.Effect(tag, effect.toString())
         }
     }
 
-    private val effectsChannel = Channel<Effect>(BUFFERED)
+    private val effectsChannel = Channel<Effect>(EFFECTS_CAPACITY)
     override val effects: Flow<Effect>
         get() = if (stubEnabled) stubbedEffectFlow else {
             effectsChannel.receiveAsFlow().cancellable()
@@ -136,7 +135,7 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
 
     override fun dispatch(action: Action) {
         if (stubEnabled) {
-            stubActions.add(action)
+            stubbedActions.add(action)
         } else {
             if (controllerStart is ControllerStart.Lazy) start()
             actionChannel.offer(action)
@@ -161,13 +160,13 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
 
     internal var stubEnabled = false
 
-    private val stubActions = mutableListOf<Action>()
+    private val stubbedActions = mutableListOf<Action>()
     private val stubbedStateFlow = MutableStateFlow(initialState)
     private val _stubbedEffectFlow = MutableStateFlow<Effect?>(null)
     private val stubbedEffectFlow = _stubbedEffectFlow.filterNotNullCast()
 
     override val dispatchedActions: List<Action>
-        get() = stubActions
+        get() = stubbedActions
 
     override fun emitState(state: State) {
         stubbedStateFlow.value = state
@@ -187,6 +186,8 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
     }
 
     companion object {
+        internal const val EFFECTS_CAPACITY = 64
+
         internal fun <Action, State, Effect> createMutatorContext(
             stateAccessor: () -> State,
             actionFlow: Flow<Action>,

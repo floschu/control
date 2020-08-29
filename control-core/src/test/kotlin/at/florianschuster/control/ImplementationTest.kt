@@ -22,6 +22,7 @@ import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 internal class ImplementationTest {
@@ -271,6 +272,21 @@ internal class ImplementationTest {
         testEmissions.map(TestEffect::ordinal).forEach(sut::dispatch)
 
         assertEquals(testEmissions, effects)
+    }
+
+    @Test
+    fun `effects overflow throws error`() {
+        val scope = TestCoroutineScope()
+        val sut = scope.createEffectController()
+
+        repeat(ControllerImplementation.EFFECTS_CAPACITY) { sut.dispatch(1) }
+        assertTrue(scope.uncaughtExceptions.isEmpty())
+
+        sut.dispatch(1)
+
+        assertEquals(1, scope.uncaughtExceptions.size)
+        val error = scope.uncaughtExceptions.first()
+        assertEquals(ControllerError.Effect::class, assertNotNull(error.cause)::class)
     }
 
     private fun CoroutineScope.createAlwaysSameStateController() =
