@@ -98,10 +98,6 @@ public abstract interface class at/florianschuster/control/EffectEmitter {
 public abstract interface class at/florianschuster/control/EffectMutatorContext : at/florianschuster/control/EffectEmitter, at/florianschuster/control/MutatorContext {
 }
 
-public abstract interface class at/florianschuster/control/EffectProvider {
-	public abstract fun getEffects ()Lkotlinx/coroutines/flow/Flow;
-}
-
 public abstract interface class at/florianschuster/control/EffectReducerContext : at/florianschuster/control/EffectEmitter, at/florianschuster/control/ReducerContext {
 }
 
@@ -131,9 +127,6 @@ public abstract interface class at/florianschuster/control/ReducerContext {
 public final class at/florianschuster/control/StubKt {
 	public static final fun toStub (Lat/florianschuster/control/Controller;)Lat/florianschuster/control/ControllerStub;
 	public static final fun toStub (Lat/florianschuster/control/EffectController;)Lat/florianschuster/control/EffectControllerStub;
-}
-
-public abstract interface class at/florianschuster/control/StubbedController : at/florianschuster/control/Controller, at/florianschuster/control/ControllerStub {
 }
 
 public abstract interface class at/florianschuster/control/TransformerContext {
