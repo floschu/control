@@ -12,7 +12,7 @@ import at.florianschuster.control.ControllerStub
 import at.florianschuster.control.kotlincounter.CounterAction
 import at.florianschuster.control.kotlincounter.CounterState
 import at.florianschuster.control.kotlincounter.createCounterController
-import at.florianschuster.control.stub
+import at.florianschuster.control.toStub
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -26,9 +26,8 @@ internal class CounterViewTest {
     @Before
     fun setup() {
         CounterView.CounterControllerProvider = { scope ->
-            val controller = scope.createCounterController()
-            stub = controller.stub()
-            controller
+            stub = scope.createCounterController().toStub()
+            stub
         }
         launchFragmentInContainer<CounterView>()
     }

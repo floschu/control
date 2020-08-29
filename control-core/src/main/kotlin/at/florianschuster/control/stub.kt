@@ -2,35 +2,12 @@ package at.florianschuster.control
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.jetbrains.annotations.TestOnly
-
-/**
- * Retrieves a [ControllerStub] for this [Controller] used for view testing.
- * Once accessed, the [Controller] is stubbed and cannot be un-stubbed.
- *
- * Custom implementations of [Controller] cannot be stubbed.
- */
-@ExperimentalCoroutinesApi
-@FlowPreview
-@TestOnly
-fun <Action, State> Controller<Action, State>.stub(): ControllerStub<Action, State> {
-    require(this is ControllerImplementation<Action, *, State, *>) {
-        "Cannot stub a custom implementation of a Controller."
-    }
-    if (!stubInitialized) {
-        controllerLog.log { ControllerEvent.Stub(tag) }
-        stub = ControllerStubImplementation<Action, State>(initialState)
-    }
-    return stub
-}
 
 /**
  * A stub of a [Controller] for view testing.
  */
-interface ControllerStub<Action, State> {
+interface ControllerStub<Action, State> : Controller<Action, State> {
 
     /**
      * The [Action]'s dispatched to the [Controller] as ordered [List].
@@ -46,23 +23,23 @@ interface ControllerStub<Action, State> {
 }
 
 /**
- * Retrieves a [ControllerStub] for this [Controller] used for view testing.
- * Once accessed, the [Controller] is stubbed and cannot be un-stubbed.
+ * Converts an [Controller] to an [ControllerStub] for view testing.
+ * Once converted, the [Controller] is stubbed and cannot be un-stubbed.
  *
  * Custom implementations of [Controller] cannot be stubbed.
  */
 @ExperimentalCoroutinesApi
 @FlowPreview
 @TestOnly
-fun <Action, State, Effect> EffectController<Action, State, Effect>.effectStub(): EffectControllerStub<Action, State, Effect> {
-    require(this is ControllerImplementation<Action, *, State, Effect>) {
+fun <Action, State> Controller<Action, State>.toStub(): ControllerStub<Action, State> {
+    require(this is ControllerImplementation<Action, *, State, *>) {
         "Cannot stub a custom implementation of a Controller."
     }
-    if (!stubInitialized) {
+    if (!stubEnabled) {
         controllerLog.log { ControllerEvent.Stub(tag) }
-        stub = ControllerStubImplementation(initialState)
+        stubEnabled = true
     }
-    return stub
+    return this
 }
 
 /**
@@ -78,24 +55,21 @@ interface EffectControllerStub<Action, State, Effect> : ControllerStub<Action, S
 }
 
 /**
- * An implementation of [ControllerStub].
+ * Converts an [EffectController] to an [EffectControllerStub] for view testing.
+ * Once converted, the [EffectController] is stubbed and cannot be un-stubbed.
+ *
+ * Custom implementations of [EffectController] cannot be stubbed.
  */
 @ExperimentalCoroutinesApi
-internal class ControllerStubImplementation<Action, State, Effect>(
-    initialState: State
-) : EffectControllerStub<Action, State, Effect> {
-
-    internal val mutableDispatchedActions = mutableListOf<Action>()
-    internal val stateFlow = MutableStateFlow(initialState)
-    internal val effectChannel = BroadcastChannel<Effect>(BUFFERED)
-
-    override val dispatchedActions: List<Action> get() = mutableDispatchedActions
-
-    override fun emitState(state: State) {
-        stateFlow.value = state
+@FlowPreview
+@TestOnly
+fun <Action, State, Effect> EffectController<Action, State, Effect>.toStub(): EffectControllerStub<Action, State, Effect> {
+    require(this is ControllerImplementation<Action, *, State, Effect>) {
+        "Cannot stub a custom implementation of a EffectController."
     }
-
-    override fun emitEffect(effect: Effect) {
-        effectChannel.offer(effect)
+    if (!stubEnabled) {
+        controllerLog.log { ControllerEvent.Stub(tag) }
+        stubEnabled = true
     }
+    return this
 }

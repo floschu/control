@@ -44,10 +44,7 @@ pitest {
 
         // inlined invokeSuspend
         "at.florianschuster.control.ControllerImplementation\$stateJob\$1",
-        "at.florianschuster.control.ControllerImplementation\$stateJob\$1\$2",
-
-        // lateinit var isInitialized
-        "at.florianschuster.control.ControllerImplementation\$stubInitialized\$1"
+        "at.florianschuster.control.ControllerImplementation\$stateJob\$1\$2"
     )
     threads.set(4)
     jvmArgs.add("-ea")

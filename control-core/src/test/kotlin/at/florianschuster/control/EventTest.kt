@@ -49,7 +49,7 @@ internal class EventTest {
             assertTrue(lastEvents[3] is ControllerEvent.State)
         }
 
-        sut.stub()
+        sut.toStub()
         assertTrue(events.last() is ControllerEvent.Stub)
 
         sut.cancel()

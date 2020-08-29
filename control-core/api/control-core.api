@@ -18,6 +18,9 @@ public final class at/florianschuster/control/ControllerEvent$Completed : at/flo
 public final class at/florianschuster/control/ControllerEvent$Created : at/florianschuster/control/ControllerEvent {
 }
 
+public final class at/florianschuster/control/ControllerEvent$Effect : at/florianschuster/control/ControllerEvent {
+}
+
 public final class at/florianschuster/control/ControllerEvent$Error : at/florianschuster/control/ControllerEvent {
 }
 
@@ -70,9 +73,39 @@ public final class at/florianschuster/control/ControllerStart$Lazy : at/florians
 	public static final field INSTANCE Lat/florianschuster/control/ControllerStart$Lazy;
 }
 
-public abstract interface class at/florianschuster/control/ControllerStub {
+public abstract interface class at/florianschuster/control/ControllerStub : at/florianschuster/control/Controller {
 	public abstract fun emitState (Ljava/lang/Object;)V
 	public abstract fun getDispatchedActions ()Ljava/util/List;
+}
+
+public abstract interface class at/florianschuster/control/EffectController : at/florianschuster/control/Controller {
+	public abstract fun getEffects ()Lkotlinx/coroutines/flow/Flow;
+}
+
+public final class at/florianschuster/control/EffectControllerKt {
+	public static final fun createEffectController (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Ljava/lang/String;Lat/florianschuster/control/ControllerLog;Lat/florianschuster/control/ControllerStart;Lkotlinx/coroutines/CoroutineDispatcher;)Lat/florianschuster/control/EffectController;
+	public static synthetic fun createEffectController$default (Lkotlinx/coroutines/CoroutineScope;Ljava/lang/Object;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Ljava/lang/String;Lat/florianschuster/control/ControllerLog;Lat/florianschuster/control/ControllerStart;Lkotlinx/coroutines/CoroutineDispatcher;ILjava/lang/Object;)Lat/florianschuster/control/EffectController;
+}
+
+public abstract interface class at/florianschuster/control/EffectControllerStub : at/florianschuster/control/ControllerStub {
+	public abstract fun emitEffect (Ljava/lang/Object;)V
+}
+
+public abstract interface class at/florianschuster/control/EffectEmitter {
+	public abstract fun offerEffect (Ljava/lang/Object;)V
+}
+
+public abstract interface class at/florianschuster/control/EffectMutatorContext : at/florianschuster/control/EffectEmitter, at/florianschuster/control/MutatorContext {
+}
+
+public abstract interface class at/florianschuster/control/EffectProvider {
+	public abstract fun getEffects ()Lkotlinx/coroutines/flow/Flow;
+}
+
+public abstract interface class at/florianschuster/control/EffectReducerContext : at/florianschuster/control/EffectEmitter, at/florianschuster/control/ReducerContext {
+}
+
+public abstract interface class at/florianschuster/control/EffectTransformerContext : at/florianschuster/control/EffectEmitter, at/florianschuster/control/TransformerContext {
 }
 
 public final class at/florianschuster/control/ExtensionsKt {
@@ -96,7 +129,11 @@ public abstract interface class at/florianschuster/control/ReducerContext {
 }
 
 public final class at/florianschuster/control/StubKt {
-	public static final fun stub (Lat/florianschuster/control/Controller;)Lat/florianschuster/control/ControllerStub;
+	public static final fun toStub (Lat/florianschuster/control/Controller;)Lat/florianschuster/control/ControllerStub;
+	public static final fun toStub (Lat/florianschuster/control/EffectController;)Lat/florianschuster/control/EffectControllerStub;
+}
+
+public abstract interface class at/florianschuster/control/StubbedController : at/florianschuster/control/Controller, at/florianschuster/control/ControllerStub {
 }
 
 public abstract interface class at/florianschuster/control/TransformerContext {

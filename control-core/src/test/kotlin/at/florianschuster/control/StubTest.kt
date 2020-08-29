@@ -28,19 +28,16 @@ internal class StubTest {
             override val state: Flow<Int> get() = error("")
         }
 
-        assertFailsWith<IllegalArgumentException> { sut.stub() }
+        assertFailsWith<IllegalArgumentException> { sut.toStub() }
     }
 
     @Test
-    fun `stub is initialized only after accessing stub()`() {
+    fun `stub is enabled only after conversion()`() {
         val sut = testCoroutineScope.createStringController()
-        assertFalse(sut.stubInitialized)
+        assertFalse(sut.stubEnabled)
 
-        assertFailsWith<UninitializedPropertyAccessException> { sut.stub.dispatchedActions }
-        assertFalse(sut.stubInitialized)
-
-        sut.stub().dispatchedActions
-        assertTrue(sut.stubInitialized)
+        sut.toStub().dispatchedActions
+        assertTrue(sut.stubEnabled)
     }
 
     @Test
@@ -50,11 +47,11 @@ internal class StubTest {
             listOf("two"),
             listOf("three")
         )
-        val sut = testCoroutineScope.createStringController().apply { stub() }
+        val sut = testCoroutineScope.createStringController().apply { toStub() }
 
         expectedActions.forEach(sut::dispatch)
 
-        assertEquals(expectedActions, sut.stub().dispatchedActions)
+        assertEquals(expectedActions, sut.toStub().dispatchedActions)
     }
 
     @Test
@@ -64,10 +61,10 @@ internal class StubTest {
             listOf("two"),
             listOf("three")
         )
-        val sut = testCoroutineScope.createStringController().apply { stub() }
+        val sut = testCoroutineScope.createStringController().apply { toStub() }
         val testFlow = sut.state.testIn(testCoroutineScope)
 
-        expectedStates.forEach(sut.stub()::emitState)
+        expectedStates.forEach(sut.toStub()::emitState)
 
         testFlow expect emissions(listOf(initialState) + expectedStates)
     }
@@ -79,21 +76,21 @@ internal class StubTest {
             listOf("two"),
             listOf("three")
         )
-        val sut = testCoroutineScope.createStringController().apply { stub() }
+        val sut = testCoroutineScope.createStringController().apply { toStub() }
 
-        sut.stub().emitState(listOf("something 1"))
-        sut.stub().emitState(listOf("something 2"))
+        sut.toStub().emitState(listOf("something 1"))
+        sut.toStub().emitState(listOf("something 2"))
 
         val testFlow = sut.state.testIn(testCoroutineScope)
 
-        expectedStates.forEach(sut.stub()::emitState)
+        expectedStates.forEach(sut.toStub()::emitState)
 
         testFlow expect emissions(listOf(listOf("something 2")) + expectedStates)
     }
 
     @Test
     fun `stub action does not trigger state machine`() {
-        val sut = testCoroutineScope.createStringController().apply { stub() }
+        val sut = testCoroutineScope.createStringController().apply { toStub() }
 
         sut.dispatch(listOf("test"))
 

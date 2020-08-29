@@ -9,39 +9,24 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
 /**
- * An [EffectProvider] provides a [Flow] of (side-)effects that can happen during a
- * mutation in [Mutator] or a state reduction in [Reducer].
- */
-interface EffectProvider<Effect> {
-
-    /**
-     * [Flow] of [Effect]s. Use this to collect [Effect] emissions.
-     * The [Flow] is received in a fan-out fashion: one emission is just collected once.
-     */
-    val effects: Flow<Effect>
-}
-
-/**
- * An [EffectEmitter] emits side-effects.
+ * A [Controller] that provides a [Flow] of [Effect]'s that can happen during a
+ * mutation in [EffectMutator], a state reduction in [EffectReducer] or a
+ * transformation in [EffectTransformer].
  *
- * This is implemented by the respective context's of [EffectMutator], [EffectReducer]
- * and [EffectTransformer].
- */
-interface EffectEmitter<Effect> {
-
-    /**
-     * Emits an [Effect].
-     */
-    fun offerEffect(effect: Effect)
-}
-
-/**
- * A [Controller] that provides a [Flow] of [Effect]'s via [EffectProvider].
+ * An [Effect] could be a one-of UI notification such as a Toast or a Snackbar
+ * on Android.
  *
  * Before using this, make sure to look into the [Controller] documentation.
  */
-interface EffectController<Action, State, Effect> : Controller<Action, State>,
-    EffectProvider<Effect>
+interface EffectController<Action, State, Effect> : Controller<Action, State> {
+
+    /**
+     * [Flow] of [Effect]s. Use this to collect [Effect] emissions.
+     * The [Flow] is received in a fan-out fashion. One emission will be
+     * emitted to one collector only.
+     */
+    val effects: Flow<Effect>
+}
 
 /**
  * Creates an [EffectController] bound to the [CoroutineScope] via [ControllerImplementation].
@@ -107,6 +92,20 @@ fun <Action, Mutation, State, Effect> CoroutineScope.createEffectController(
 
     tag = tag, controllerLog = controllerLog
 )
+
+/**
+ * An [EffectEmitter] can emit side-effects.
+ *
+ * This is implemented by the respective context's of [EffectMutator], [EffectReducer]
+ * and [EffectTransformer].
+ */
+interface EffectEmitter<Effect> {
+
+    /**
+     * Emits an [Effect].
+     */
+    fun offerEffect(effect: Effect)
+}
 
 /**
  * A [Mutator] used in a [EffectController] that is able to emit effects.

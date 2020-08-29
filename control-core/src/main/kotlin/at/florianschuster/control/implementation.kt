@@ -44,7 +44,7 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
 
     val tag: String,
     val controllerLog: ControllerLog
-) : EffectController<Action, State, Effect> {
+) : EffectController<Action, State, Effect>, EffectControllerStub<Action, State, Effect> {
 
     // region state machine
 
@@ -114,36 +114,29 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
 
     private val effectsChannel = Channel<Effect>(BUFFERED)
     override val effects: Flow<Effect>
-        get() = if (stubInitialized) stub.effectChannel.asFlow() else {
+        get() = if (stubEnabled) stubbedEffectFlow else {
             effectsChannel.receiveAsFlow().cancellable()
         }
-
-    // endregion
-
-    // region stub
-
-    internal lateinit var stub: ControllerStubImplementation<Action, State, Effect>
-    internal val stubInitialized: Boolean get() = this::stub.isInitialized
 
     // endregion
 
     // region controller
 
     override val state: Flow<State>
-        get() = if (stubInitialized) stub.stateFlow else {
+        get() = if (stubEnabled) stubbedStateFlow else {
             if (controllerStart is ControllerStart.Lazy) start()
             mutableStateFlow
         }
 
     override val currentState: State
-        get() = if (stubInitialized) stub.stateFlow.value else {
+        get() = if (stubEnabled) stubbedStateFlow.value else {
             if (controllerStart is ControllerStart.Lazy) start()
             mutableStateFlow.value
         }
 
     override fun dispatch(action: Action) {
-        if (stubInitialized) {
-            stub.mutableDispatchedActions.add(action)
+        if (stubEnabled) {
+            stubActions.add(action)
         } else {
             if (controllerStart is ControllerStart.Lazy) start()
             actionChannel.offer(action)
@@ -160,6 +153,28 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
 
     internal fun cancel() {
         stateJob.cancel()
+    }
+
+    // endregion
+
+    // region stub
+
+    internal var stubEnabled = false
+
+    private val stubActions = mutableListOf<Action>()
+    private val stubbedStateFlow = MutableStateFlow(initialState)
+    private val _stubbedEffectFlow = MutableStateFlow<Effect?>(null)
+    private val stubbedEffectFlow = _stubbedEffectFlow.filterNotNullCast()
+
+    override val dispatchedActions: List<Action>
+        get() = stubActions
+
+    override fun emitState(state: State) {
+        stubbedStateFlow.value = state
+    }
+
+    override fun emitEffect(effect: Effect) {
+        _stubbedEffectFlow.value = effect
     }
 
     // endregion

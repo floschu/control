@@ -6,6 +6,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -89,3 +90,10 @@ fun <T, U> Flow<T>.takeUntil(other: Flow<U>): Flow<T> = flow {
 }
 
 private class TakeUntilException : CancellationException()
+
+/**
+ * Regular filterNotNull requires T : Any?
+ */
+internal fun <T> Flow<T?>.filterNotNullCast(): Flow<T> {
+    return filter { it != null }.map { checkNotNull(it) { "oh shi-" } }
+}

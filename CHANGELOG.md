@@ -7,6 +7,7 @@
 ## `[0.13.0]` - 2020-08-XX
 
 - Add `EffectController` and `CoroutineScope.createEffectController`.
+- Rename `Controller.stub()` to `Controller.toStub()` to better reflect what it is doing.
 
 ## `[0.12.0]` - 2020-08-24
 
