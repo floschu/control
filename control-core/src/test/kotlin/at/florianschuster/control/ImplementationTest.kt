@@ -6,7 +6,6 @@ import at.florianschuster.test.flow.emissionCount
 import at.florianschuster.test.flow.emissions
 import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.lastEmission
-import at.florianschuster.test.flow.noEmissions
 import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
