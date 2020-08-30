@@ -24,7 +24,7 @@ internal class CounterView : Fragment(R.layout.view_counter) {
         super.onViewCreated(view, savedInstanceState)
         binding = ViewCounterBinding.bind(view)
 
-        val controller = CounterControllerProvider(viewLifecycleOwner.lifecycleScope)
+        val controller = ControllerFactory(viewLifecycleOwner.lifecycleScope)
 
         // action
         requireBinding.increaseButton.clicks()
@@ -57,8 +57,8 @@ internal class CounterView : Fragment(R.layout.view_counter) {
     }
 
     companion object {
-        internal var CounterControllerProvider: (
-            scope: CoroutineScope
-        ) -> CounterController = { it.createCounterController() }
+        internal var ControllerFactory: (scope: CoroutineScope) -> CounterController = { scope ->
+            scope.createCounterController()
+        }
     }
 }

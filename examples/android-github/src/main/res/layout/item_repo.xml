@@ -1,33 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Widget.MaterialComponents.CardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="6dp"
-    android:background="?selectableItemBackground"
-    android:minHeight="?listPreferredItemHeight">
+    android:background="?selectableItemBackground">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp">
+
+        <ImageView
+            android:id="@+id/ownerIconImageView"
+            android:layout_width="44dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@mipmap/ic_launcher" />
 
         <TextView
             android:id="@+id/repoNameTextView"
             style="@style/TextAppearance.MaterialComponents.Headline5"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
+            android:layout_marginStart="@dimen/dimen_16"
+            app:layout_constraintBottom_toTopOf="@id/repoDescriptionTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ownerIconImageView"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1"
+            app:layout_constraintVertical_chainStyle="packed"
             tools:text="Repo/Name" />
 
         <TextView
             android:id="@+id/repoDescriptionTextView"
             style="@style/TextAppearance.MaterialComponents.Body1"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_16"
+            app:layout_constraintBottom_toTopOf="@id/repoLastUpdatedTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ownerIconImageView"
+            app:layout_constraintTop_toBottomOf="@id/repoNameTextView"
             tools:text="The description..." />
-    </LinearLayout>
-</com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/repoLastUpdatedTextView"
+            style="@style/TextAppearance.MaterialComponents.Caption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_16"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ownerIconImageView"
+            app:layout_constraintTop_toBottomOf="@id/repoDescriptionTextView"
+            tools:text="last updated: 28.08.2020" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

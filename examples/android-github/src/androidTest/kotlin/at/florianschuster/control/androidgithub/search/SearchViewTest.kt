@@ -12,61 +12,72 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import at.florianschuster.control.EffectControllerStub
 import at.florianschuster.control.androidgithub.R
 import at.florianschuster.control.toStub
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers.not
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import kotlin.test.assertEquals
 
-@RunWith(AndroidJUnit4::class)
-internal class GithubViewTest {
+internal class SearchViewTest {
 
-    private lateinit var viewModel: GithubViewModel
+    private lateinit var stub: EffectControllerStub<SearchViewModel.Action, SearchViewModel.State, SearchViewModel.Effect>
 
     @Before
     fun setup() {
-        GithubView.GithubViewModelFactory = object : ViewModelProvider.Factory {
+        SearchViewModel.Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return GithubViewModel().apply { controller.toStub() } as T
+                val viewModel = SearchViewModel()
+                stub = viewModel.controller.toStub()
+                return viewModel as T
             }
         }
-        launchFragmentInContainer<GithubView>(themeResId = R.style.Theme_MaterialComponents)
+        launchFragmentInContainer<SearchView>(themeResId = R.style.Theme_MaterialComponents)
     }
 
     @Test
-    fun whenSearchEditTextInputThenCorrectControllerAction() {
+    fun whenSearchEditTextInput_ThenCorrectControllerAction() {
         // given
         val testQuery = "test"
 
         // when
         onView(withId(R.id.searchEditText)).perform(replaceText(testQuery))
-        onView(isRoot()).perform(idleFor(GithubView.SearchDebounceMilliseconds))
+        onView(isRoot()).perform(idleFor(SearchView.SearchDebounceMilliseconds))
 
         // then
         assertEquals(
-            GithubViewModel.Action.UpdateQuery(testQuery),
-            viewModel.controller.toStub().dispatchedActions.last()
+            SearchViewModel.Action.UpdateQuery(testQuery),
+            stub.dispatchedActions.last()
         )
     }
 
     @Test
-    fun whenStateOffersLoadingNextPageThenProgressBarIsShown() {
+    fun whenStateOffersLoadingNextPage_ThenProgressBarIsShown() {
         // when
-        viewModel.controller.toStub().emitState(GithubViewModel.State(loadingNextPage = true))
+        stub.emitState(SearchViewModel.State(loadingNextPage = true))
 
         // then
         onView(withId(R.id.loadingProgressBar)).check(matches(isDisplayed()))
 
         // when
-        viewModel.controller.toStub().emitState(GithubViewModel.State(loadingNextPage = false))
+        stub.emitState(SearchViewModel.State(loadingNextPage = false))
 
         // then
         onView(withId(R.id.loadingProgressBar)).check(matches(not(isDisplayed())))
+    }
+
+    @Test
+    fun whenNetworkErrorEffect_ThenSnackbarIsShown() {
+        // when
+        stub.emitEffect(SearchViewModel.Effect.NetworkError)
+
+        // then
+        onView(withId(com.google.android.material.R.id.snackbar_text))
+            .check(matches(withText(R.string.info_network_error)))
     }
 }
 

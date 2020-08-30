@@ -1,6 +1,6 @@
 package at.florianschuster.control.androidgithub
 
-import android.net.Uri
+import at.florianschuster.control.androidgithub.model.Repository
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.features.json.JsonFeature
@@ -11,7 +11,6 @@ import io.ktor.client.features.logging.Logging
 import io.ktor.client.features.logging.SIMPLE
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -30,15 +29,14 @@ internal class GithubApi(
         }
     }
 ) {
-
     @Serializable
-    private data class Response(val items: List<Repo>)
+    private data class SearchResponse(val items: List<Repository>)
 
     suspend fun search(
         query: String,
         page: Int
-    ): List<Repo> {
-        val response = httpClient.get<Response>(
+    ): List<Repository> {
+        val response = httpClient.get<SearchResponse>(
             "https://api.github.com/search/repositories"
         ) {
             url {
@@ -48,13 +46,4 @@ internal class GithubApi(
         }
         return response.items
     }
-}
-
-@Serializable
-internal data class Repo(
-    val id: Int,
-    @SerialName("full_name") val name: String,
-    val description: String? = null
-) {
-    val webUri: Uri get() = Uri.parse("https://github.com/$name")
 }

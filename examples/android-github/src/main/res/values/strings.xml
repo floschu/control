@@ -2,4 +2,7 @@
     <string name="app_name">github_control</string>
     <string name="hint_search">Search for repositories</string>
     <string name="content_description_search">Search Icon</string>
+    <string name="info_network_error">A network error occurred</string>
+    <string name="button_show_more">Show More</string>
+    <string name="label_last_updated">last updated: %s</string>
 </resources>

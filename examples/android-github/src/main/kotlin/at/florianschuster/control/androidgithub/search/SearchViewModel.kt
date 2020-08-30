@@ -2,12 +2,13 @@ package at.florianschuster.control.androidgithub.search
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import at.florianschuster.control.ControllerEvent
 import at.florianschuster.control.ControllerLog
-import at.florianschuster.control.createController
 import at.florianschuster.control.androidgithub.GithubApi
-import at.florianschuster.control.androidgithub.Repo
+import at.florianschuster.control.androidgithub.model.Repository
+import at.florianschuster.control.createEffectController
 import at.florianschuster.control.takeUntil
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +20,7 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
-internal class GithubViewModel(
+internal class SearchViewModel(
     initialState: State = State(),
     private val api: GithubApi = GithubApi(),
     controllerDispatcher: CoroutineDispatcher = Dispatchers.Default
@@ -32,19 +33,23 @@ internal class GithubViewModel(
 
     sealed class Mutation {
         data class SetQuery(val query: String) : Mutation()
-        data class SetRepos(val repos: List<Repo>) : Mutation()
-        data class AppendRepos(val repos: List<Repo>) : Mutation()
+        data class SetRepos(val repos: List<Repository>) : Mutation()
+        data class AppendRepos(val repos: List<Repository>) : Mutation()
         data class SetLoadingNextPage(val loading: Boolean) : Mutation()
     }
 
     data class State(
         val query: String = "",
-        val repos: List<Repo> = emptyList(),
+        val repos: List<Repository> = emptyList(),
         val page: Int = 1,
         val loadingNextPage: Boolean = false
     )
 
-    val controller = viewModelScope.createController<Action, Mutation, State>(
+    sealed class Effect {
+        object NetworkError : Effect()
+    }
+
+    val controller = viewModelScope.createEffectController<Action, Mutation, State, Effect>(
         initialState = initialState,
 
         mutator = { action ->
@@ -58,6 +63,7 @@ internal class GithubViewModel(
                         emitAll(
                             flow { emit(api.search(currentState.query, 1)) }
                                 .catch { error ->
+                                    offerEffect(Effect.NetworkError)
                                     Log.w("GithubViewModel", error)
                                     emit(emptyList())
                                 }
@@ -79,6 +85,7 @@ internal class GithubViewModel(
                         val repos = kotlin.runCatching {
                             api.search(state.query, state.page + 1)
                         }.getOrElse { error ->
+                            offerEffect(Effect.NetworkError)
                             Log.w("GithubViewModel", error)
                             emptyList()
                         }
@@ -109,4 +116,11 @@ internal class GithubViewModel(
             if (event is ControllerEvent.State) Log.d("GithubViewModel", message)
         }
     )
+
+    companion object {
+        internal var Factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T = SearchViewModel() as T
+        }
+    }
 }
