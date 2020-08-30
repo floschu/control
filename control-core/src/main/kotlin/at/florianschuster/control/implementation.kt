@@ -196,19 +196,19 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
             object : EffectMutatorContext<Action, State, Effect> {
                 override val currentState: State get() = stateAccessor()
                 override val actions: Flow<Action> = actionFlow
-                override fun offerEffect(effect: Effect) = effectEmitter(effect)
+                override fun emitEffect(effect: Effect) = effectEmitter(effect)
             }
 
         internal fun <Effect> createReducerContext(
             emitter: (Effect) -> Unit
         ): EffectReducerContext<Effect> = object : EffectReducerContext<Effect> {
-            override fun offerEffect(effect: Effect) = emitter(effect)
+            override fun emitEffect(effect: Effect) = emitter(effect)
         }
 
         internal fun <Effect> createTransformerContext(
             emitter: (Effect) -> Unit
         ): EffectTransformerContext<Effect> = object : EffectTransformerContext<Effect> {
-            override fun offerEffect(effect: Effect) = emitter(effect)
+            override fun emitEffect(effect: Effect) = emitter(effect)
         }
     }
 }

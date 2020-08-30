@@ -63,7 +63,7 @@ internal class SearchViewModel(
                         emitAll(
                             flow { emit(api.search(currentState.query, 1)) }
                                 .catch { error ->
-                                    offerEffect(Effect.NetworkError)
+                                    emitEffect(Effect.NetworkError)
                                     Log.w("GithubViewModel", error)
                                     emit(emptyList())
                                 }
@@ -85,7 +85,7 @@ internal class SearchViewModel(
                         val repos = kotlin.runCatching {
                             api.search(state.query, state.page + 1)
                         }.getOrElse { error ->
-                            offerEffect(Effect.NetworkError)
+                            emitEffect(Effect.NetworkError)
                             Log.w("GithubViewModel", error)
                             emptyList()
                         }

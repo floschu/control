@@ -123,7 +123,7 @@ internal class EventTest {
         initialState = 0,
         mutator = { action ->
             flow {
-                if (action == effectValue) offerEffect(effectValue)
+                if (action == effectValue) emitEffect(effectValue)
                 check(action != mutatorErrorValue)
                 emit(action)
             }

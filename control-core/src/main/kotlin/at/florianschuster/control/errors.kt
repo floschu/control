@@ -31,7 +31,7 @@ internal sealed class ControllerError(
     )
 
     /**
-     * Error during [EffectEmitter.offerEffect].
+     * Error during [EffectEmitter.emitEffect].
      */
     class Effect(
         tag: String,

@@ -104,7 +104,7 @@ interface EffectEmitter<Effect> {
     /**
      * Emits an [Effect].
      */
-    fun offerEffect(effect: Effect)
+    fun emitEffect(effect: Effect)
 }
 
 /**

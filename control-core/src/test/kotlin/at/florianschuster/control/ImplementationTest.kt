@@ -193,7 +193,7 @@ internal class ImplementationTest {
             actions
         ) { emittedEffect = it }
 
-        sut.offerEffect(1)
+        sut.emitEffect(1)
 
         assertEquals(stateAccessor(), sut.currentState)
         assertEquals(actions, sut.actions)
@@ -204,7 +204,7 @@ internal class ImplementationTest {
     fun `ReducerContext is built correctly`() {
         var emittedEffect: Int? = null
         val sut = ControllerImplementation.createReducerContext<Int> { emittedEffect = it }
-        sut.offerEffect(2)
+        sut.emitEffect(2)
         assertEquals(2, emittedEffect)
     }
 
@@ -212,7 +212,7 @@ internal class ImplementationTest {
     fun `TransformerContext is built correctly`() {
         var emittedEffect: Int? = null
         val sut = ControllerImplementation.createTransformerContext<Int> { emittedEffect = it }
-        sut.offerEffect(3)
+        sut.emitEffect(3)
         assertEquals(3, emittedEffect)
     }
 
@@ -422,31 +422,31 @@ internal class ImplementationTest {
             controllerStart = ControllerStart.Lazy,
             initialState = 0,
             mutator = { action ->
-                if (action == TestEffect.Mutator.ordinal) offerEffect(TestEffect.Mutator)
+                if (action == TestEffect.Mutator.ordinal) emitEffect(TestEffect.Mutator)
                 flowOf(action)
             },
             reducer = { mutation, _ ->
-                if (mutation == TestEffect.Reducer.ordinal) offerEffect(TestEffect.Reducer)
+                if (mutation == TestEffect.Reducer.ordinal) emitEffect(TestEffect.Reducer)
                 mutation
             },
             actionsTransformer = { actions ->
                 actions.onEach {
                     if (it == TestEffect.ActionTransformer.ordinal) {
-                        offerEffect(TestEffect.ActionTransformer)
+                        emitEffect(TestEffect.ActionTransformer)
                     }
                 }
             },
             mutationsTransformer = { mutations ->
                 mutations.onEach {
                     if (it == TestEffect.MutationTransformer.ordinal) {
-                        offerEffect(TestEffect.MutationTransformer)
+                        emitEffect(TestEffect.MutationTransformer)
                     }
                 }
             },
             statesTransformer = { states ->
                 states.onEach {
                     if (it == TestEffect.StateTransformer.ordinal) {
-                        offerEffect(TestEffect.StateTransformer)
+                        emitEffect(TestEffect.StateTransformer)
                     }
                 }
             },
