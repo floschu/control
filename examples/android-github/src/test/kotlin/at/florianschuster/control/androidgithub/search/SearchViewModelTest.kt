@@ -160,18 +160,10 @@ internal class SearchViewModelTest {
 
     companion object {
         private val mockReposPage1: List<Repository> = (0..2).map {
-            Repository(
-                it, "$it", "", "",
-                Repository.Owner("", ""),
-                "", ""
-            )
+            Repository(it, "$it", "", Repository.Owner(""), "", "")
         }
         private val mockReposPage2: List<Repository> = (3..4).map {
-            Repository(
-                it, "$it", "", "",
-                Repository.Owner("", ""),
-                "", ""
-            )
+            Repository(it, "$it", "", Repository.Owner(""), "", "")
         }
 
         private const val query = "control"
