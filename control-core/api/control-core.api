@@ -92,7 +92,7 @@ public abstract interface class at/florianschuster/control/EffectControllerStub 
 }
 
 public abstract interface class at/florianschuster/control/EffectEmitter {
-	public abstract fun offerEffect (Ljava/lang/Object;)V
+	public abstract fun emitEffect (Ljava/lang/Object;)V
 }
 
 public abstract interface class at/florianschuster/control/EffectMutatorContext : at/florianschuster/control/EffectEmitter, at/florianschuster/control/MutatorContext {
