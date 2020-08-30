@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 internal class EventTest {
@@ -62,6 +63,10 @@ internal class EventTest {
         )
         sut.toStub()
         assertTrue(events.last() is ControllerEvent.Stub)
+
+        events.clear()
+        sut.toStub()
+        assertEquals(0, events.count())
     }
 
     @Test
@@ -73,6 +78,10 @@ internal class EventTest {
         )
         sut.toStub()
         assertTrue(events.last() is ControllerEvent.Stub)
+
+        events.clear()
+        sut.toStub()
+        assertEquals(0, events.count())
     }
 
     @Test

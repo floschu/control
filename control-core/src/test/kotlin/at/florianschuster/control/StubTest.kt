@@ -57,7 +57,7 @@ internal class StubTest {
         val sut = testCoroutineScope.createStringController()
         assertFalse(sut.stubEnabled)
 
-        (sut as EffectController<List<String>, List<String>, Nothing>).toStub()
+        (sut as EffectController<List<String>, List<String>, String>).toStub()
         assertTrue(sut.stubEnabled)
     }
 
