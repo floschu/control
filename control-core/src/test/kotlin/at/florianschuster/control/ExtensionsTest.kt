@@ -6,7 +6,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
@@ -60,17 +59,5 @@ internal class ExtensionsTest {
 
         val emptyResult = emptyFlow<Int>().takeUntil(flow { delay(1101); emit(Unit) }).toList()
         assertEquals(emptyList(), emptyResult)
-    }
-
-    @Test
-    fun `filterNotNullCast with empty flow`() = runBlockingTest {
-        val result = emptyFlow<Int>().filterNotNullCast().toList()
-        assertEquals(emptyList(), result)
-    }
-
-    @Test
-    fun `filterNotNullCast with non-empty flow`() = runBlockingTest {
-        val result = flowOf(null, 1, 2, null).filterNotNullCast().toList()
-        assertEquals(listOf(1, 2), result)
     }
 }

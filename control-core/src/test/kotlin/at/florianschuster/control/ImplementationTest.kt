@@ -8,17 +8,22 @@ import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.lastEmission
 import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -234,7 +239,7 @@ internal class ImplementationTest {
 
     @Test
     fun `effects are received from mutator, reducer and transformer`() {
-        val sut = testCoroutineScope.createEffectController()
+        val sut = testCoroutineScope.createEffectTestController()
         val states = sut.state.testIn(testCoroutineScope)
         val effects = sut.effects.testIn(testCoroutineScope)
 
@@ -254,7 +259,7 @@ internal class ImplementationTest {
 
     @Test
     fun `effects are only received once collector`() {
-        val sut = testCoroutineScope.createEffectController()
+        val sut = testCoroutineScope.createEffectTestController()
         val effects = mutableListOf<TestEffect>()
         sut.effects.onEach { effects.add(it) }.launchIn(testCoroutineScope)
         sut.effects.onEach { effects.add(it) }.launchIn(testCoroutineScope)
@@ -277,7 +282,7 @@ internal class ImplementationTest {
     @Test
     fun `effects overflow throws error`() {
         val scope = TestCoroutineScope()
-        val sut = scope.createEffectController()
+        val sut = scope.createEffectTestController()
 
         repeat(ControllerImplementation.EFFECTS_CAPACITY) { sut.dispatch(1) }
         assertTrue(scope.uncaughtExceptions.isEmpty())
@@ -287,6 +292,40 @@ internal class ImplementationTest {
         assertEquals(1, scope.uncaughtExceptions.size)
         val error = scope.uncaughtExceptions.first()
         assertEquals(ControllerError.Effect::class, assertNotNull(error.cause)::class)
+    }
+
+    @Test
+    fun `state is cancellable`() = runBlockingTest {
+        val sut = createCounterController()
+
+        sut.dispatch(Unit)
+
+        var state: Int? = null
+        launch {
+            cancel()
+            state = -1
+            state = sut.state.first() // this should be cancelled and thus not return a value
+        }
+
+        assertEquals(-1, state)
+        sut.cancel()
+    }
+
+    @Test
+    fun `effects are cancellable`() = runBlockingTest {
+        val sut = createEffectTestController()
+
+        sut.dispatch(TestEffect.Mutator.ordinal)
+
+        var effect: TestEffect? = null
+        launch {
+            cancel()
+            effect = TestEffect.Reducer
+            effect = sut.effects.first() // this should be cancelled and thus not return a value
+        }
+
+        assertEquals(TestEffect.Reducer, effect)
+        sut.cancel()
     }
 
     private fun CoroutineScope.createAlwaysSameStateController() =
@@ -415,7 +454,7 @@ internal class ImplementationTest {
         Mutator, Reducer, ActionTransformer, MutationTransformer, StateTransformer
     }
 
-    private fun CoroutineScope.createEffectController() =
+    private fun CoroutineScope.createEffectTestController() =
         ControllerImplementation<Int, Int, Int, TestEffect>(
             scope = this,
             dispatcher = defaultScopeDispatcher(),
