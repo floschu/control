@@ -8,7 +8,6 @@ import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.lastEmission
 import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
