@@ -4,7 +4,7 @@
 
 - binary compatibility will now be verified and held up on every release.
 
-## `[0.13.0]` - 2020-08-XX
+## `[0.13.0]` - 2020-09-01
 
 - Add `EffectController` and `CoroutineScope.createEffectController`.
 - Rename `Controller.stub()` to `Controller.toStub()` to better reflect what it is doing.
