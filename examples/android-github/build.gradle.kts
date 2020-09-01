@@ -44,6 +44,7 @@ dependencies {
     implementation(project(":control-core"))
 
     implementation(Libs.appcompat)
+    implementation(Libs.coil)
     implementation(Libs.constraintlayout)
     implementation(Libs.flowbinding_android)
     implementation(Libs.flowbinding_core)

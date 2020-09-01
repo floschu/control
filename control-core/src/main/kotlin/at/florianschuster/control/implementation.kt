@@ -8,16 +8,19 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flatMapMerge
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
 
@@ -26,22 +29,22 @@ import kotlinx.coroutines.launch
  */
 @ExperimentalCoroutinesApi
 @FlowPreview
-internal class ControllerImplementation<Action, Mutation, State>(
+internal class ControllerImplementation<Action, Mutation, State, Effect>(
     val scope: CoroutineScope,
     val dispatcher: CoroutineDispatcher,
     val controllerStart: ControllerStart,
 
     val initialState: State,
-    val mutator: Mutator<Action, Mutation, State>,
-    val reducer: Reducer<Mutation, State>,
+    val mutator: EffectMutator<Action, Mutation, State, Effect>,
+    val reducer: EffectReducer<Mutation, State, Effect>,
 
-    val actionsTransformer: Transformer<Action>,
-    val mutationsTransformer: Transformer<Mutation>,
-    val statesTransformer: Transformer<State>,
+    val actionsTransformer: EffectTransformer<Action, Effect>,
+    val mutationsTransformer: EffectTransformer<Mutation, Effect>,
+    val statesTransformer: EffectTransformer<State, Effect>,
 
     val tag: String,
     val controllerLog: ControllerLog
-) : Controller<Action, State> {
+) : EffectController<Action, State, Effect>, EffectControllerStub<Action, State, Effect> {
 
     // region state machine
 
@@ -52,11 +55,15 @@ internal class ControllerImplementation<Action, Mutation, State>(
         context = dispatcher + CoroutineName(tag),
         start = CoroutineStart.LAZY
     ) {
-        val transformerContext = createTransformerContext()
+        val transformerContext = createTransformerContext(effectEmitter)
 
         val actionFlow: Flow<Action> = transformerContext.actionsTransformer(actionChannel.asFlow())
 
-        val mutatorContext = createMutatorContext({ currentState }, actionFlow)
+        val mutatorContext = createMutatorContext(
+            stateAccessor = { currentState },
+            actionFlow = actionFlow,
+            effectEmitter = effectEmitter
+        )
 
         val mutationFlow: Flow<Mutation> = actionFlow.flatMapMerge { action ->
             controllerLog.log { ControllerEvent.Action(tag, action.toString()) }
@@ -67,7 +74,7 @@ internal class ControllerImplementation<Action, Mutation, State>(
             }
         }
 
-        val reducerContext = createReducerContext()
+        val reducerContext = createReducerContext(effectEmitter)
 
         val stateFlow: Flow<State> = transformerContext.mutationsTransformer(mutationFlow)
             .onEach { controllerLog.log { ControllerEvent.Mutation(tag, it.toString()) } }
@@ -93,35 +100,49 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     // endregion
 
-    // region stub
-
-    internal lateinit var stub: ControllerStubImplementation<Action, State>
-    internal val stubInitialized: Boolean get() = this::stub.isInitialized
-
-    // endregion
-
     // region controller
 
     override val state: Flow<State>
-        get() = if (stubInitialized) stub.stateFlow else {
+        get() = if (stubEnabled) stubbedStateFlow.cancellable() else {
             if (controllerStart is ControllerStart.Lazy) start()
-            mutableStateFlow
+            mutableStateFlow.cancellable()
         }
 
     override val currentState: State
-        get() = if (stubInitialized) stub.stateFlow.value else {
+        get() = if (stubEnabled) stubbedStateFlow.value else {
             if (controllerStart is ControllerStart.Lazy) start()
             mutableStateFlow.value
         }
 
     override fun dispatch(action: Action) {
-        if (stubInitialized) {
-            stub.mutableDispatchedActions.add(action)
+        if (stubEnabled) {
+            stubbedActions.add(action)
         } else {
             if (controllerStart is ControllerStart.Lazy) start()
             actionChannel.offer(action)
         }
     }
+
+    // endregion
+
+    // region effects
+
+    private val effectEmitter: (Effect) -> Unit = { effect ->
+        val canBeOffered = effectsChannel.offer(effect)
+        if (canBeOffered) {
+            controllerLog.log { ControllerEvent.Effect(tag, effect.toString()) }
+        } else {
+            throw ControllerError.Effect(tag, effect.toString())
+        }
+    }
+
+    private val effectsChannel = Channel<Effect>(EFFECTS_CAPACITY)
+    override val effects: Flow<Effect>
+        get() = if (stubEnabled) {
+            stubbedEffectFlow.receiveAsFlow().cancellable()
+        } else {
+            effectsChannel.receiveAsFlow().cancellable()
+        }
 
     // endregion
 
@@ -137,6 +158,27 @@ internal class ControllerImplementation<Action, Mutation, State>(
 
     // endregion
 
+    // region stub
+
+    internal var stubEnabled = false
+
+    private val stubbedActions = mutableListOf<Action>()
+    private val stubbedStateFlow = MutableStateFlow(initialState)
+    private val stubbedEffectFlow = Channel<Effect>(EFFECTS_CAPACITY)
+
+    override val dispatchedActions: List<Action>
+        get() = stubbedActions
+
+    override fun emitState(state: State) {
+        stubbedStateFlow.value = state
+    }
+
+    override fun emitEffect(effect: Effect) {
+        stubbedEffectFlow.offer(effect)
+    }
+
+    // endregion
+
     init {
         controllerLog.log { ControllerEvent.Created(tag, controllerStart.logName) }
         if (controllerStart is ControllerStart.Immediately) {
@@ -145,16 +187,29 @@ internal class ControllerImplementation<Action, Mutation, State>(
     }
 
     companion object {
-        fun <Action, State> createMutatorContext(
+        internal const val EFFECTS_CAPACITY = 64
+
+        internal fun <Action, State, Effect> createMutatorContext(
             stateAccessor: () -> State,
-            actionFlow: Flow<Action>
-        ): MutatorContext<Action, State> = object : MutatorContext<Action, State> {
-            override val currentState: State get() = stateAccessor()
-            override val actions: Flow<Action> = actionFlow
+            actionFlow: Flow<Action>,
+            effectEmitter: (Effect) -> Unit
+        ): EffectMutatorContext<Action, State, Effect> =
+            object : EffectMutatorContext<Action, State, Effect> {
+                override val currentState: State get() = stateAccessor()
+                override val actions: Flow<Action> = actionFlow
+                override fun emitEffect(effect: Effect) = effectEmitter(effect)
+            }
+
+        internal fun <Effect> createReducerContext(
+            emitter: (Effect) -> Unit
+        ): EffectReducerContext<Effect> = object : EffectReducerContext<Effect> {
+            override fun emitEffect(effect: Effect) = emitter(effect)
         }
 
-        fun createReducerContext(): ReducerContext = object : ReducerContext {}
-
-        fun createTransformerContext(): TransformerContext = object : TransformerContext {}
+        internal fun <Effect> createTransformerContext(
+            emitter: (Effect) -> Unit
+        ): EffectTransformerContext<Effect> = object : EffectTransformerContext<Effect> {
+            override fun emitEffect(effect: Effect) = emitter(effect)
+        }
     }
 }

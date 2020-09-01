@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 internal class EventTest {
@@ -41,11 +42,46 @@ internal class EventTest {
             assertTrue(lastEvents[2] is ControllerEvent.State)
         }
 
-        sut.stub()
-        assertTrue(events.last() is ControllerEvent.Stub)
+        sut.dispatch(effectValue)
+        events.takeLast(4).let { lastEvents ->
+            assertTrue(lastEvents[0] is ControllerEvent.Action)
+            assertTrue(lastEvents[1] is ControllerEvent.Effect)
+            assertTrue(lastEvents[2] is ControllerEvent.Mutation)
+            assertTrue(lastEvents[3] is ControllerEvent.State)
+        }
 
         sut.cancel()
         assertTrue(events.last() is ControllerEvent.Completed)
+    }
+
+    @Test
+    fun `ControllerStub logs event correctly`() {
+        val events = mutableListOf<ControllerEvent>()
+        val sut: Controller<Int, Int> = TestCoroutineScope().eventsController(
+            events,
+            controllerStart = ControllerStart.Manual
+        )
+        sut.toStub()
+        assertTrue(events.last() is ControllerEvent.Stub)
+
+        events.clear()
+        sut.toStub()
+        assertEquals(0, events.count())
+    }
+
+    @Test
+    fun `EffectControllerStub logs event correctly`() {
+        val events = mutableListOf<ControllerEvent>()
+        val sut: EffectController<Int, Int, Int> = TestCoroutineScope().eventsController(
+            events,
+            controllerStart = ControllerStart.Manual
+        )
+        sut.toStub()
+        assertTrue(events.last() is ControllerEvent.Stub)
+
+        events.clear()
+        sut.toStub()
+        assertEquals(0, events.count())
     }
 
     @Test
@@ -72,16 +108,31 @@ internal class EventTest {
         }
     }
 
+    @Test
+    fun `ControllerImplementation logs effect error correctly`() {
+        val events = mutableListOf<ControllerEvent>()
+        val sut = TestCoroutineScope().eventsController(events)
+
+        repeat(ControllerImplementation.EFFECTS_CAPACITY) { sut.dispatch(effectValue) }
+        sut.dispatch(effectValue)
+
+        events.takeLast(2).let { lastEvents ->
+            assertTrue(lastEvents[0] is ControllerEvent.Error)
+            assertTrue(lastEvents[1] is ControllerEvent.Completed)
+        }
+    }
+
     private fun CoroutineScope.eventsController(
         events: MutableList<ControllerEvent>,
         controllerStart: ControllerStart = ControllerStart.Lazy
-    ) = ControllerImplementation<Int, Int, Int>(
+    ) = ControllerImplementation<Int, Int, Int, Int>(
         scope = this,
         dispatcher = defaultScopeDispatcher(),
         controllerStart = controllerStart,
         initialState = 0,
         mutator = { action ->
             flow {
+                if (action == effectValue) emitEffect(effectValue)
                 check(action != mutatorErrorValue)
                 emit(action)
             }
@@ -100,5 +151,6 @@ internal class EventTest {
     companion object {
         private const val mutatorErrorValue = 42
         private const val reducerErrorValue = 69
+        private const val effectValue = 420
     }
 }

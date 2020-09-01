@@ -8,18 +8,25 @@ import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.lastEmission
 import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 internal class ImplementationTest {
@@ -184,10 +191,33 @@ internal class ImplementationTest {
     fun `MutatorContext is built correctly`() {
         val stateAccessor = { 1 }
         val actions = flowOf(1)
-        val sut = ControllerImplementation.createMutatorContext(stateAccessor, actions)
+        var emittedEffect: Int? = null
+        val sut = ControllerImplementation.createMutatorContext<Int, Int, Int>(
+            stateAccessor,
+            actions
+        ) { emittedEffect = it }
+
+        sut.emitEffect(1)
 
         assertEquals(stateAccessor(), sut.currentState)
         assertEquals(actions, sut.actions)
+        assertEquals(1, emittedEffect)
+    }
+
+    @Test
+    fun `ReducerContext is built correctly`() {
+        var emittedEffect: Int? = null
+        val sut = ControllerImplementation.createReducerContext<Int> { emittedEffect = it }
+        sut.emitEffect(2)
+        assertEquals(2, emittedEffect)
+    }
+
+    @Test
+    fun `TransformerContext is built correctly`() {
+        var emittedEffect: Int? = null
+        val sut = ControllerImplementation.createTransformerContext<Int> { emittedEffect = it }
+        sut.emitEffect(3)
+        assertEquals(3, emittedEffect)
     }
 
     @Test
@@ -206,8 +236,99 @@ internal class ImplementationTest {
         states expect lastEmission(1)
     }
 
+    @Test
+    fun `effects are received from mutator, reducer and transformer`() {
+        val sut = testCoroutineScope.createEffectTestController()
+        val states = sut.state.testIn(testCoroutineScope)
+        val effects = sut.effects.testIn(testCoroutineScope)
+
+        val testEmissions = listOf(
+            TestEffect.Reducer,
+            TestEffect.ActionTransformer,
+            TestEffect.MutationTransformer,
+            TestEffect.Mutator,
+            TestEffect.StateTransformer
+        )
+
+        testEmissions.map(TestEffect::ordinal).forEach(sut::dispatch)
+
+        states expect emissions(listOf(0) + testEmissions.map(TestEffect::ordinal))
+        effects expect emissions(testEmissions)
+    }
+
+    @Test
+    fun `effects are only received once collector`() {
+        val sut = testCoroutineScope.createEffectTestController()
+        val effects = mutableListOf<TestEffect>()
+        sut.effects.onEach { effects.add(it) }.launchIn(testCoroutineScope)
+        sut.effects.onEach { effects.add(it) }.launchIn(testCoroutineScope)
+
+        val testEmissions = listOf(
+            TestEffect.Reducer,
+            TestEffect.ActionTransformer,
+            TestEffect.MutationTransformer,
+            TestEffect.Reducer,
+            TestEffect.Mutator,
+            TestEffect.StateTransformer,
+            TestEffect.Reducer
+        )
+
+        testEmissions.map(TestEffect::ordinal).forEach(sut::dispatch)
+
+        assertEquals(testEmissions, effects)
+    }
+
+    @Test
+    fun `effects overflow throws error`() {
+        val scope = TestCoroutineScope()
+        val sut = scope.createEffectTestController()
+
+        repeat(ControllerImplementation.EFFECTS_CAPACITY) { sut.dispatch(1) }
+        assertTrue(scope.uncaughtExceptions.isEmpty())
+
+        sut.dispatch(1)
+
+        assertEquals(1, scope.uncaughtExceptions.size)
+        val error = scope.uncaughtExceptions.first()
+        assertEquals(ControllerError.Effect::class, assertNotNull(error.cause)::class)
+    }
+
+    @Test
+    fun `state is cancellable`() = runBlockingTest {
+        val sut = createCounterController()
+
+        sut.dispatch(Unit)
+
+        var state: Int? = null
+        launch {
+            cancel()
+            state = -1
+            state = sut.state.first() // this should be cancelled and thus not return a value
+        }
+
+        assertEquals(-1, state)
+        sut.cancel()
+    }
+
+    @Test
+    fun `effects are cancellable`() = runBlockingTest {
+        val sut = createEffectTestController()
+
+        sut.dispatch(TestEffect.Mutator.ordinal)
+
+        var effect: TestEffect? = null
+        launch {
+            cancel()
+            effect = TestEffect.Reducer
+            effect = sut.effects.first() // this should be cancelled and thus not return a value
+        }
+
+        assertEquals(TestEffect.Reducer, effect)
+        sut.cancel()
+    }
+
     private fun CoroutineScope.createAlwaysSameStateController() =
-        ControllerImplementation<Unit, Unit, Int>(
+        ControllerImplementation<Unit, Unit, Int, Nothing>(
             scope = this,
             dispatcher = defaultScopeDispatcher(),
             controllerStart = ControllerStart.Lazy,
@@ -222,7 +343,7 @@ internal class ImplementationTest {
         )
 
     private fun CoroutineScope.createOperationController() =
-        ControllerImplementation<List<String>, List<String>, List<String>>(
+        ControllerImplementation<List<String>, List<String>, List<String>, Nothing>(
             scope = this,
             dispatcher = defaultScopeDispatcher(),
             controllerStart = ControllerStart.Lazy,
@@ -258,7 +379,7 @@ internal class ImplementationTest {
     private fun CoroutineScope.createCounterController(
         mutatorErrorIndex: Int? = null,
         reducerErrorIndex: Int? = null
-    ) = ControllerImplementation<Unit, Unit, Int>(
+    ) = ControllerImplementation<Unit, Unit, Int, Nothing>(
         scope = this,
         dispatcher = defaultScopeDispatcher(),
         controllerStart = ControllerStart.Lazy,
@@ -286,7 +407,7 @@ internal class ImplementationTest {
     }
 
     private fun CoroutineScope.createStopWatchController() =
-        ControllerImplementation<StopWatchAction, Int, Int>(
+        ControllerImplementation<StopWatchAction, Int, Int, Nothing>(
             scope = this,
             dispatcher = defaultScopeDispatcher(),
             controllerStart = ControllerStart.Lazy,
@@ -314,7 +435,7 @@ internal class ImplementationTest {
 
     private fun CoroutineScope.createGlobalStateMergeController(
         globalState: Flow<Int>
-    ) = ControllerImplementation<Int, Int, Int>(
+    ) = ControllerImplementation<Int, Int, Int, Nothing>(
         scope = this,
         dispatcher = defaultScopeDispatcher(),
         controllerStart = ControllerStart.Lazy,
@@ -327,4 +448,47 @@ internal class ImplementationTest {
         tag = "ImplementationTest.GlobalStateMergeController",
         controllerLog = ControllerLog.None
     )
+
+    enum class TestEffect {
+        Mutator, Reducer, ActionTransformer, MutationTransformer, StateTransformer
+    }
+
+    private fun CoroutineScope.createEffectTestController() =
+        ControllerImplementation<Int, Int, Int, TestEffect>(
+            scope = this,
+            dispatcher = defaultScopeDispatcher(),
+            controllerStart = ControllerStart.Lazy,
+            initialState = 0,
+            mutator = { action ->
+                if (action == TestEffect.Mutator.ordinal) emitEffect(TestEffect.Mutator)
+                flowOf(action)
+            },
+            reducer = { mutation, _ ->
+                if (mutation == TestEffect.Reducer.ordinal) emitEffect(TestEffect.Reducer)
+                mutation
+            },
+            actionsTransformer = { actions ->
+                actions.onEach {
+                    if (it == TestEffect.ActionTransformer.ordinal) {
+                        emitEffect(TestEffect.ActionTransformer)
+                    }
+                }
+            },
+            mutationsTransformer = { mutations ->
+                mutations.onEach {
+                    if (it == TestEffect.MutationTransformer.ordinal) {
+                        emitEffect(TestEffect.MutationTransformer)
+                    }
+                }
+            },
+            statesTransformer = { states ->
+                states.onEach {
+                    if (it == TestEffect.StateTransformer.ordinal) {
+                        emitEffect(TestEffect.StateTransformer)
+                    }
+                }
+            },
+            tag = "ImplementationTest.EffectController",
+            controllerLog = ControllerLog.None
+        )
 }

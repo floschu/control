@@ -143,7 +143,7 @@ internal class StartTest {
 
     private fun CoroutineScope.createSimpleCounterController(
         controllerStart: ControllerStart
-    ) = ControllerImplementation<Int, Int, Int>(
+    ) = ControllerImplementation<Int, Int, Int, Nothing>(
         scope = this,
         dispatcher = defaultScopeDispatcher(),
         controllerStart = controllerStart,

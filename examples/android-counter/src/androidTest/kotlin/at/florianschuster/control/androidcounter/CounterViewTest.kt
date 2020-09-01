@@ -7,28 +7,23 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import at.florianschuster.control.ControllerStub
 import at.florianschuster.control.kotlincounter.CounterAction
 import at.florianschuster.control.kotlincounter.CounterState
 import at.florianschuster.control.kotlincounter.createCounterController
-import at.florianschuster.control.stub
+import at.florianschuster.control.toStub
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import kotlin.test.assertEquals
 
-@RunWith(AndroidJUnit4::class)
 internal class CounterViewTest {
 
     private lateinit var stub: ControllerStub<CounterAction, CounterState>
 
     @Before
     fun setup() {
-        CounterView.CounterControllerProvider = { scope ->
-            val controller = scope.createCounterController()
-            stub = controller.stub()
-            controller
+        CounterView.ControllerFactory = { scope ->
+            scope.createCounterController().toStub().also { stub = it }
         }
         launchFragmentInContainer<CounterView>()
     }

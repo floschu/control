@@ -7,7 +7,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import kotlin.coroutines.ContinuationInterceptor
 
 /**
  * A [Controller] is an UI-independent class that controls the state of a view. The role of a
@@ -140,7 +139,7 @@ fun <Action, Mutation, State> CoroutineScope.createController(
      * [Mutator] and [Reducer] will run on this [CoroutineDispatcher].
      */
     dispatcher: CoroutineDispatcher = defaultScopeDispatcher()
-): Controller<Action, State> = ControllerImplementation(
+): Controller<Action, State> = ControllerImplementation<Action, Mutation, State, Nothing>(
     scope = this, dispatcher = dispatcher, controllerStart = controllerStart,
 
     initialState = initialState, mutator = mutator, reducer = reducer,
@@ -261,7 +260,6 @@ interface ReducerContext
  * ```
  */
 typealias Transformer<Emission> = TransformerContext.(emissions: Flow<Emission>) -> Flow<Emission>
-
 
 /**
  * A context used for a [Transformer]. Does not provide any additional functionality.

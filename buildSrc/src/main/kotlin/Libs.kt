@@ -219,4 +219,9 @@ object Libs {
      * http://mockk.io
      */
     const val mockk: String = "io.mockk:mockk:" + Versions.mockk
+
+    /**
+     * https://github.com/coil-kt/coil
+     */
+    const val coil: String = "io.coil-kt:coil:" + Versions.coil
 }

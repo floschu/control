@@ -1,7 +1,7 @@
 package at.florianschuster.control.androidgithub.search
 
 import at.florianschuster.control.androidgithub.GithubApi
-import at.florianschuster.control.androidgithub.Repo
+import at.florianschuster.control.androidgithub.model.Repository
 import at.florianschuster.test.coroutines.TestCoroutineScopeRule
 import at.florianschuster.test.flow.TestFlow
 import at.florianschuster.test.flow.emissionCount
@@ -16,9 +16,10 @@ import io.mockk.mockk
 import kotlinx.coroutines.delay
 import org.junit.Rule
 import org.junit.Test
+import java.io.IOException
 import kotlin.test.assertFalse
 
-internal class GithubViewModelTest {
+internal class SearchViewModelTest {
 
     @get:Rule
     val testCoroutineScope = TestCoroutineScopeRule()
@@ -27,32 +28,34 @@ internal class GithubViewModelTest {
         coEvery { search(any(), 1) } returns mockReposPage1
         coEvery { search(any(), 2) } returns mockReposPage2
     }
-    private lateinit var sut: GithubViewModel
-    private lateinit var states: TestFlow<GithubViewModel.State>
+    private lateinit var sut: SearchViewModel
+    private lateinit var states: TestFlow<SearchViewModel.State>
+    private lateinit var effects: TestFlow<SearchViewModel.Effect>
 
-    private fun `given github search controller`(
-        initialState: GithubViewModel.State = GithubViewModel.State()
+    private fun `given ViewModel is created`(
+        initialState: SearchViewModel.State = SearchViewModel.State()
     ) {
-        sut = GithubViewModel(initialState, githubApi, testCoroutineScope.dispatcher)
+        sut = SearchViewModel(initialState, githubApi, testCoroutineScope.dispatcher)
         states = sut.controller.state.testIn(testCoroutineScope)
+        effects = sut.controller.effects.testIn(testCoroutineScope)
     }
 
     @Test
     fun `update query with non-empty text`() {
         // given
-        `given github search controller`()
+        `given ViewModel is created`()
 
         // when
-        sut.controller.dispatch(GithubViewModel.Action.UpdateQuery(query))
+        sut.controller.dispatch(SearchViewModel.Action.UpdateQuery(query))
 
         // then
         coVerify(exactly = 1) { githubApi.search(query, 1) }
         states expect emissions(
-            GithubViewModel.State(),
-            GithubViewModel.State(query = query),
-            GithubViewModel.State(query = query, loadingNextPage = true),
-            GithubViewModel.State(query, mockReposPage1, 1, true),
-            GithubViewModel.State(query, mockReposPage1, 1, false)
+            SearchViewModel.State(),
+            SearchViewModel.State(query = query),
+            SearchViewModel.State(query = query, loadingNextPage = true),
+            SearchViewModel.State(query, mockReposPage1, 1, true),
+            SearchViewModel.State(query, mockReposPage1, 1, false)
         )
     }
 
@@ -60,44 +63,44 @@ internal class GithubViewModelTest {
     fun `update query with empty text`() {
         // given
         val emptyQuery = ""
-        `given github search controller`()
+        `given ViewModel is created`()
 
         // when
-        sut.controller.dispatch(GithubViewModel.Action.UpdateQuery(emptyQuery))
+        sut.controller.dispatch(SearchViewModel.Action.UpdateQuery(emptyQuery))
 
         // then
         coVerify(exactly = 0) { githubApi.search(any(), any()) }
-        states expect lastEmission(GithubViewModel.State(query = emptyQuery))
+        states expect lastEmission(SearchViewModel.State(query = emptyQuery))
     }
 
     @Test
     fun `load next page loads correct next page`() {
         // given
-        `given github search controller`(
-            GithubViewModel.State(query = query, repos = mockReposPage1)
+        `given ViewModel is created`(
+            SearchViewModel.State(query = query, repos = mockReposPage1)
         )
 
         // when
-        sut.controller.dispatch(GithubViewModel.Action.LoadNextPage)
+        sut.controller.dispatch(SearchViewModel.Action.LoadNextPage)
 
         // then
         coVerify(exactly = 1) { githubApi.search(any(), 2) }
         states expect emissions(
-            GithubViewModel.State(query = query, repos = mockReposPage1),
-            GithubViewModel.State(query, mockReposPage1, 1, true),
-            GithubViewModel.State(query, mockReposPage1 + mockReposPage2, 2, true),
-            GithubViewModel.State(query, mockReposPage1 + mockReposPage2, 2, false)
+            SearchViewModel.State(query = query, repos = mockReposPage1),
+            SearchViewModel.State(query, mockReposPage1, 1, true),
+            SearchViewModel.State(query, mockReposPage1 + mockReposPage2, 2, true),
+            SearchViewModel.State(query, mockReposPage1 + mockReposPage2, 2, false)
         )
     }
 
     @Test
     fun `load next page only when currently not loading`() {
         // given
-        val initialState = GithubViewModel.State(loadingNextPage = true)
-        `given github search controller`(initialState)
+        val initialState = SearchViewModel.State(loadingNextPage = true)
+        `given ViewModel is created`(initialState)
 
         // when
-        sut.controller.dispatch(GithubViewModel.Action.LoadNextPage)
+        sut.controller.dispatch(SearchViewModel.Action.LoadNextPage)
 
         // then
         coVerify(exactly = 0) { githubApi.search(any(), any()) }
@@ -108,20 +111,21 @@ internal class GithubViewModelTest {
     @Test
     fun `empty list from github api is correctly handled`() {
         // given
-        coEvery { githubApi.search(any(), any()) } returns emptyList()
-        `given github search controller`()
+        coEvery { githubApi.search(any(), any()) } throws IOException()
+        `given ViewModel is created`()
 
         // when
-        sut.controller.dispatch(GithubViewModel.Action.UpdateQuery(query))
+        sut.controller.dispatch(SearchViewModel.Action.UpdateQuery(query))
 
         // then
         coVerify(exactly = 1) { githubApi.search(query, 1) }
         states expect emissions(
-            GithubViewModel.State(),
-            GithubViewModel.State(query = query),
-            GithubViewModel.State(query = query, loadingNextPage = true),
-            GithubViewModel.State(query = query, loadingNextPage = false)
+            SearchViewModel.State(),
+            SearchViewModel.State(query = query),
+            SearchViewModel.State(query = query, loadingNextPage = true),
+            SearchViewModel.State(query = query, loadingNextPage = false)
         )
+        effects expect emissions(SearchViewModel.Effect.NetworkError)
     }
 
     @Test
@@ -135,12 +139,12 @@ internal class GithubViewModelTest {
             delay(1000)
             mockReposPage2
         }
-        `given github search controller`()
+        `given ViewModel is created`()
 
         // when
-        sut.controller.dispatch(GithubViewModel.Action.UpdateQuery(query))
+        sut.controller.dispatch(SearchViewModel.Action.UpdateQuery(query))
         testCoroutineScope.advanceTimeBy(500) // updated before last query can finish
-        sut.controller.dispatch(GithubViewModel.Action.UpdateQuery(secondQuery))
+        sut.controller.dispatch(SearchViewModel.Action.UpdateQuery(secondQuery))
         testCoroutineScope.advanceUntilIdle()
 
         // then
@@ -150,13 +154,17 @@ internal class GithubViewModelTest {
         }
         assertFalse(states.emissions.any { it.repos == mockReposPage1 })
         states expect lastEmission(
-            GithubViewModel.State(query = secondQuery, repos = mockReposPage2)
+            SearchViewModel.State(query = secondQuery, repos = mockReposPage2)
         )
     }
 
     companion object {
-        private val mockReposPage1: List<Repo> = (0..2).map { Repo(it, "$it", "") }
-        private val mockReposPage2: List<Repo> = (3..4).map { Repo(it, "$it", "") }
+        private val mockReposPage1: List<Repository> = (0..2).map {
+            Repository(it, "$it", "", Repository.Owner(""), "", "")
+        }
+        private val mockReposPage2: List<Repository> = (3..4).map {
+            Repository(it, "$it", "", Repository.Owner(""), "", "")
+        }
 
         private const val query = "control"
         private const val secondQuery = "controlAgain"

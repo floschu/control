@@ -3,7 +3,7 @@ package at.florianschuster.control.androidgithub
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
-import at.florianschuster.control.androidgithub.search.GithubView
+import at.florianschuster.control.androidgithub.search.SearchView
 
 internal class MainActivity : AppCompatActivity() {
 
@@ -11,7 +11,7 @@ internal class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         if (savedInstanceState == null) {
             supportFragmentManager.commit {
-                replace(android.R.id.content, GithubView())
+                replace(android.R.id.content, SearchView())
             }
         }
     }
