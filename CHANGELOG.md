@@ -4,6 +4,10 @@
 
 - binary compatibility will now be verified and held up on every release.
 
+## `[0.13.1]` - 2020-09-13
+
+- Remove `atomicfu`.
+
 ## `[0.13.0]` - 2020-09-01
 
 - Add `EffectController` and `CoroutineScope.createEffectController`.
