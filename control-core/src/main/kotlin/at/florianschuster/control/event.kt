@@ -71,5 +71,5 @@ sealed class ControllerEvent(
         tag: String
     ) : ControllerEvent(tag, "completed")
 
-    override fun toString(): String = "||| <control> ||| $tag -> $message |||"
+    override fun toString(): String = "🎛 ||| <control> ||| $tag -> $message |||"
 }
