@@ -40,20 +40,8 @@ object Libs {
     /**
      * https://kotlinlang.org/
      */
-    const val kotlin_gradle_plugin: String = "org.jetbrains.kotlin:kotlin-gradle-plugin:" +
-            Versions.org_jetbrains_kotlin
-
-    /**
-     * https://kotlinlang.org/
-     */
     const val kotlin_scripting_compiler_embeddable: String =
             "org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:" +
-            Versions.org_jetbrains_kotlin
-
-    /**
-     * https://kotlinlang.org/
-     */
-    const val kotlin_serialization: String = "org.jetbrains.kotlin:kotlin-serialization:" +
             Versions.org_jetbrains_kotlin
 
     /**
@@ -66,6 +54,18 @@ object Libs {
      * https://kotlinlang.org/
      */
     const val kotlin_stdlib: String = "org.jetbrains.kotlin:kotlin-stdlib:" +
+            Versions.org_jetbrains_kotlin
+
+    /**
+     * https://kotlinlang.org/
+     */
+    const val kotlin_gradle_plugin: String = "org.jetbrains.kotlin:kotlin-gradle-plugin:" +
+            Versions.org_jetbrains_kotlin
+
+    /**
+     * https://kotlinlang.org/
+     */
+    const val kotlin_serialization: String = "org.jetbrains.kotlin:kotlin-serialization:" +
             Versions.org_jetbrains_kotlin
 
     /**
@@ -149,12 +149,6 @@ object Libs {
             Versions.coroutines_test_extensions
 
     /**
-     * https://github.com/Kotlin/atomicfu
-     */
-    const val atomicfu_gradle_plugin: String = "org.jetbrains.kotlinx:atomicfu-gradle-plugin:" +
-            Versions.atomicfu_gradle_plugin
-
-    /**
      * https://developer.android.com/jetpack/androidx
      */
     const val lifecycle_runtime_ktx: String = "androidx.lifecycle:lifecycle-runtime-ktx:" +
@@ -177,11 +171,6 @@ object Libs {
      */
     const val espresso_core: String = "androidx.test.espresso:espresso-core:" +
             Versions.espresso_core
-
-    /**
-     * https://github.com/Kotlin/atomicfu
-     */
-    const val atomicfu_jvm: String = "org.jetbrains.kotlinx:atomicfu-jvm:" + Versions.atomicfu_jvm
 
     /**
      * https://developer.android.com/studio

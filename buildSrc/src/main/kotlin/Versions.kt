@@ -28,7 +28,7 @@ object Versions {
 
     const val com_android_tools_build_gradle: String = "4.0.1"
 
-    const val org_jlleitschuh_gradle_ktlint_gradle_plugin: String = "9.3.0"
+    const val org_jlleitschuh_gradle_ktlint_gradle_plugin: String = "9.3.0" // available: "9.4.0"
 
     const val de_fayard_buildsrcversions_gradle_plugin: String = "0.7.0"
 
@@ -38,8 +38,6 @@ object Versions {
 
     const val coroutines_test_extensions: String = "0.1.2"
 
-    const val atomicfu_gradle_plugin: String = "0.14.4"
-
     const val lifecycle_runtime_ktx: String = "2.2.0"
 
     const val gradle_pitest_plugin: String = "1.5.2"
@@ -47,8 +45,6 @@ object Versions {
     const val constraintlayout: String = "2.0.1"
 
     const val espresso_core: String = "3.3.0"
-
-    const val atomicfu_jvm: String = "0.14.4"
 
     const val lint_gradle: String = "27.0.1"
 
@@ -58,9 +54,9 @@ object Versions {
 
     const val junit_ktx: String = "1.1.2"
 
-    const val material: String = "1.2.0"
+    const val material: String = "1.2.1"
 
-    const val ktlint: String = "0.37.2"
+    const val ktlint: String = "0.37.2" // available: "0.38.1"
 
     const val aapt2: String = "4.0.1-6197926"
 

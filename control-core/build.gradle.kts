@@ -1,7 +1,6 @@
 plugins {
     id("kotlin")
     id("jacoco")
-    id("kotlinx-atomicfu")
     id("info.solidsoft.pitest")
 }
 
