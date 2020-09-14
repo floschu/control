@@ -1,11 +1,11 @@
 package at.florianschuster.control
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.TestCoroutineScope
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -21,7 +21,7 @@ internal class StartTest {
 
     @Test
     fun `default start mode`() {
-        val scope = TestCoroutineScope(Job())
+        val scope = CoroutineScope(Job())
         val sut = scope.createSimpleCounterController(
             controllerStart = ControllerStart.Immediately
         )
@@ -33,7 +33,7 @@ internal class StartTest {
 
     @Test
     fun `lazy start mode`() {
-        val scope = TestCoroutineScope(Job())
+        val scope = CoroutineScope(Job())
         val sut = scope.createSimpleCounterController(
             controllerStart = ControllerStart.Lazy
         )
@@ -48,7 +48,7 @@ internal class StartTest {
 
     @Test
     fun `lazy start mode with currentState`() {
-        val scope = TestCoroutineScope(Job())
+        val scope = CoroutineScope(Job())
         val sut = scope.createSimpleCounterController(
             controllerStart = ControllerStart.Lazy
         )
@@ -63,7 +63,7 @@ internal class StartTest {
 
     @Test
     fun `lazy start mode with state`() {
-        val scope = TestCoroutineScope(Job())
+        val scope = CoroutineScope(Job())
         val sut = scope.createSimpleCounterController(
             controllerStart = ControllerStart.Lazy
         )
@@ -78,7 +78,7 @@ internal class StartTest {
 
     @Test
     fun `lazy start mode with dispatch`() {
-        val scope = TestCoroutineScope(Job())
+        val scope = CoroutineScope(Job())
         val sut = scope.createSimpleCounterController(
             controllerStart = ControllerStart.Lazy
         )
@@ -93,7 +93,7 @@ internal class StartTest {
 
     @Test
     fun `manual start mode`() {
-        val scope = TestCoroutineScope(Job())
+        val scope = CoroutineScope(Job())
         val sut = scope.createSimpleCounterController(
             controllerStart = ControllerStart.Manual
         )
@@ -114,7 +114,7 @@ internal class StartTest {
 
     @Test
     fun `manual start mode, start when already started`() {
-        val sut = TestCoroutineScope().createSimpleCounterController(
+        val sut = CoroutineScope(Dispatchers.Unconfined).createSimpleCounterController(
             controllerStart = ControllerStart.Manual
         )
         assertFalse(sut.stateJob.isActive)
@@ -127,7 +127,7 @@ internal class StartTest {
 
     @Test
     fun `manual start mode, cancel implementation`() {
-        val sut = TestCoroutineScope().createSimpleCounterController(
+        val sut = CoroutineScope(Dispatchers.Unconfined).createSimpleCounterController(
             controllerStart = ControllerStart.Manual
         )
         assertFalse(sut.stateJob.isActive)

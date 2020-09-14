@@ -1,58 +1,80 @@
 plugins {
-    id("kotlin")
-    id("jacoco")
-    id("info.solidsoft.pitest")
+    java
+    kotlin("multiplatform")
+    // id("jacoco") TODO
+    // id("info.solidsoft.pitest") TODO
 }
 
-dependencies {
-    api(Libs.kotlin_stdlib)
-    api(Libs.kotlinx_coroutines_core)
-    testImplementation(Libs.mockk)
-    testImplementation(Libs.coroutines_test_extensions)
-}
+kotlin {
+    jvm()
 
-tasks.jacocoTestReport {
-    reports {
-        xml.isEnabled = true
-        html.isEnabled = true
-        csv.isEnabled = false
-    }
-    classDirectories.setFrom(
-        files(classDirectories.files.map {
-            fileTree(it) {
-                // jacoco cannot handle inline functions
-                exclude("at/florianschuster/control/DefaultTagKt.class")
+    sourceSets {
+        commonMain {
+            dependencies {
+                api(Libs.kotlin_stdlib)
+                api(Libs.kotlinx_coroutines_core)
             }
-        })
-    )
-}
+        }
 
-tasks.jacocoTestCoverageVerification {
-    violationRules {
-        rule { limit { minimum = "0.9".toBigDecimal() } }
+        commonTest {
+            dependencies {
+                implementation(kotlin("test-common"))
+                implementation(kotlin("test-annotations-common"))
+                implementation("io.mockk:mockk-common:1.10.0")
+            }
+        }
+
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(kotlin("test-junit"))
+            }
+        }
     }
 }
 
-pitest {
-    pitestVersion.set(Versions.gradle_pitest_plugin)
-    targetClasses.add("at.florianschuster.control.*")
-    mutationThreshold.set(100)
-    excludedClasses.addAll(
-        "at.florianschuster.control.DefaultTagKt**", // inline function
-        "at.florianschuster.control.ExtensionsKt**", // too many inline collects
+// tasks.jacocoTestReport {
+//     reports {
+//         xml.isEnabled = true
+//         html.isEnabled = true
+//         csv.isEnabled = false
+//     }
+//     classDirectories.setFrom(
+//         files(classDirectories.files.map {
+//             fileTree(it) {
+//                 // jacoco cannot handle inline functions
+//                 exclude("at/florianschuster/control/DefaultTagKt.class")
+//             }
+//         })
+//     )
+// }
+//
+// tasks.jacocoTestCoverageVerification {
+//     violationRules {
+//         rule { limit { minimum = "0.9".toBigDecimal() } }
+//     }
+// }
 
-        // inlined invokeSuspend
-        "at.florianschuster.control.ControllerImplementation\$stateJob\$1",
-        "at.florianschuster.control.ControllerImplementation\$stateJob\$1\$2"
-    )
-    threads.set(4)
-    jvmArgs.add("-ea")
-    avoidCallsTo.addAll(
-        "kotlin.jvm.internal",
-        "kotlin.ResultKt",
-        "kotlinx.coroutines"
-    )
-    verbose.set(true)
-}
+// pitest {
+//     pitestVersion.set(Versions.gradle_pitest_plugin)
+//     targetClasses.add("at.florianschuster.control.*")
+//     mutationThreshold.set(100)
+//     excludedClasses.addAll(
+//         "at.florianschuster.control.DefaultTagKt**", // inline function
+//         "at.florianschuster.control.ExtensionsKt**", // too many inline collects
+//
+//         // inlined invokeSuspend
+//         "at.florianschuster.control.ControllerImplementation\$stateJob\$1",
+//         "at.florianschuster.control.ControllerImplementation\$stateJob\$1\$2"
+//     )
+//     threads.set(4)
+//     jvmArgs.add("-ea")
+//     avoidCallsTo.addAll(
+//         "kotlin.jvm.internal",
+//         "kotlin.ResultKt",
+//         "kotlinx.coroutines"
+//     )
+//     verbose.set(true)
+// }
 
-apply(from = "$rootDir/gradle/deploy.gradle")
+// apply(from = "$rootDir/gradle/deploy.gradle")

@@ -3,12 +3,10 @@ package at.florianschuster.control
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
-import io.mockk.mockk
+import io.mockk.mockkStatic
 import io.mockk.slot
-import io.mockk.spyk
 import io.mockk.verify
-import org.junit.Test
-import java.io.PrintStream
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
@@ -28,16 +26,15 @@ internal class LogTest {
 
     @Test
     fun `none logger, methods are not called`() {
-        val sut = spyk<ControllerLog.None>()
-        assertNull(sut.logger)
+        assertNull(ControllerLog.None.logger)
     }
 
     @Test
     fun `println logger, methods are called`() {
-        val out = mockk<PrintStream>(relaxed = true)
-        System.setOut(out)
+        mockkStatic("kotlin.io.ioH.kt")
+
         val capturedLogMessage = slot<Any>()
-        every { out.println(capture(capturedLogMessage)) } just Runs
+        every { println(capture(capturedLogMessage)) } just Runs
 
         val sut = ControllerLog.Println
         assertNotNull(sut.logger)
@@ -46,21 +43,28 @@ internal class LogTest {
         assertEquals(CreatedEvent.toString(), capturedLogMessage.captured)
         sut.log { CompletedEvent }
         assertEquals(CompletedEvent.toString(), capturedLogMessage.captured)
-        verify(exactly = 2) { out.println(any<Any>()) }
+        verify(exactly = 2) { println(any()) }
     }
 
     @Test
     fun `custom logger, methods are called`() {
-        val sut = spyk(ControllerLog.Custom { })
+        val logs = mutableListOf<Pair<String, ControllerEvent>>()
+        val sut = ControllerLog.Custom { message -> logs.add(message to event) }
         assertNotNull(sut.logger)
 
-        val capturedLogMessage = slot<String>()
-        every { sut.logger.invoke(any(), capture(capturedLogMessage)) } just Runs
+        val firstLog = CreatedEvent
+        sut.log { firstLog }
+        with(logs.first()) {
+            assertEquals(firstLog.toString(), first)
+            assertEquals(firstLog, second)
+        }
 
-        sut.log { CreatedEvent }
-        assertEquals(CreatedEvent.toString(), capturedLogMessage.captured)
-        sut.log { CompletedEvent }
-        assertEquals(CompletedEvent.toString(), capturedLogMessage.captured)
+        val secondLog = CompletedEvent
+        sut.log { firstLog }
+        with(logs.last()) {
+            assertEquals(secondLog.toString(), first)
+            assertEquals(secondLog, second)
+        }
     }
 
     @Test

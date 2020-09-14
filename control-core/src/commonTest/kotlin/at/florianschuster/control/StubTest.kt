@@ -1,24 +1,15 @@
 package at.florianschuster.control
 
-import at.florianschuster.test.coroutines.TestCoroutineScopeRule
-import at.florianschuster.test.flow.emissions
-import at.florianschuster.test.flow.expect
-import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import org.junit.Rule
-import org.junit.Test
-import java.lang.IllegalArgumentException
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-internal class StubTest {
-
-    @get:Rule
-    val testCoroutineScope = TestCoroutineScopeRule()
+internal class StubTest : TestCoroutineScopeTest() {
 
     @Test
     fun `custom controller implementation cannot be stubbed`() {
@@ -83,11 +74,11 @@ internal class StubTest {
             listOf("three")
         )
         val sut = testCoroutineScope.createStringController().apply { toStub() }
-        val testFlow = sut.state.testIn(testCoroutineScope)
+        val testFlow = sut.state.test()
 
         expectedStates.forEach(sut.toStub()::emitState)
 
-        testFlow expect emissions(listOf(initialState) + expectedStates)
+        testFlow.assertEmissions(listOf(initialState) + expectedStates)
     }
 
     @Test
@@ -102,11 +93,11 @@ internal class StubTest {
         sut.toStub().emitState(listOf("something 1"))
         sut.toStub().emitState(listOf("something 2"))
 
-        val testFlow = sut.state.testIn(testCoroutineScope)
+        val testFlow = sut.state.test()
 
         expectedStates.forEach(sut.toStub()::emitState)
 
-        testFlow expect emissions(listOf(listOf("something 2")) + expectedStates)
+        testFlow.assertEmissions(listOf(listOf("something 2")) + expectedStates)
     }
 
     @Test
@@ -121,12 +112,12 @@ internal class StubTest {
     @Test
     fun `stub emits effects`() {
         val sut = testCoroutineScope.createStringController().apply { toStub() }
-        val testFlow = sut.effects.testIn(testCoroutineScope)
+        val testFlow = sut.effects.test()
 
         sut.emitEffect("effect1")
         sut.emitEffect("effect2")
 
-        testFlow expect emissions("effect1", "effect2")
+        testFlow.assertEmissions("effect1", "effect2")
     }
 
     private fun CoroutineScope.createStringController() =

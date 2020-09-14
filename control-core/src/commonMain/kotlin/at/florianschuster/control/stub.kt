@@ -2,7 +2,6 @@ package at.florianschuster.control
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import org.jetbrains.annotations.TestOnly
 
 /**
  * A stub of a [Controller] for view testing.
@@ -30,7 +29,6 @@ interface ControllerStub<Action, State> : Controller<Action, State> {
  */
 @ExperimentalCoroutinesApi
 @FlowPreview
-@TestOnly
 fun <Action, State> Controller<Action, State>.toStub(): ControllerStub<Action, State> {
     require(this is ControllerImplementation<Action, *, State, *>) {
         "Cannot stub a custom implementation of a Controller."
@@ -62,7 +60,6 @@ interface EffectControllerStub<Action, State, Effect> : ControllerStub<Action, S
  */
 @ExperimentalCoroutinesApi
 @FlowPreview
-@TestOnly
 fun <Action, State, Effect> EffectController<Action, State, Effect>.toStub(): EffectControllerStub<Action, State, Effect> {
     require(this is ControllerImplementation<Action, *, State, Effect>) {
         "Cannot stub a custom implementation of a EffectController."

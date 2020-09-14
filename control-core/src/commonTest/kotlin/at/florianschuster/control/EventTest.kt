@@ -2,12 +2,11 @@ package at.florianschuster.control
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.test.TestCoroutineScope
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-internal class EventTest {
+internal class EventTest : TestCoroutineScopeTest() {
 
     @Test
     fun `event message contains library name and tag`() {
@@ -21,7 +20,7 @@ internal class EventTest {
     @Test
     fun `ControllerImplementation logs events correctly`() {
         val events = mutableListOf<ControllerEvent>()
-        val sut = TestCoroutineScope().eventsController(
+        val sut = testCoroutineScope.eventsController(
             events,
             controllerStart = ControllerStart.Manual
         )
@@ -57,7 +56,7 @@ internal class EventTest {
     @Test
     fun `ControllerStub logs event correctly`() {
         val events = mutableListOf<ControllerEvent>()
-        val sut: Controller<Int, Int> = TestCoroutineScope().eventsController(
+        val sut: Controller<Int, Int> = testCoroutineScope.eventsController(
             events,
             controllerStart = ControllerStart.Manual
         )
@@ -72,7 +71,7 @@ internal class EventTest {
     @Test
     fun `EffectControllerStub logs event correctly`() {
         val events = mutableListOf<ControllerEvent>()
-        val sut: EffectController<Int, Int, Int> = TestCoroutineScope().eventsController(
+        val sut: EffectController<Int, Int, Int> = testCoroutineScope.eventsController(
             events,
             controllerStart = ControllerStart.Manual
         )
@@ -87,7 +86,7 @@ internal class EventTest {
     @Test
     fun `ControllerImplementation logs mutator error correctly`() {
         val events = mutableListOf<ControllerEvent>()
-        val sut = TestCoroutineScope().eventsController(events)
+        val sut = testCoroutineScope.eventsController(events)
 
         sut.dispatch(mutatorErrorValue)
         events.takeLast(2).let { lastEvents ->
@@ -99,7 +98,7 @@ internal class EventTest {
     @Test
     fun `ControllerImplementation logs reducer error correctly`() {
         val events = mutableListOf<ControllerEvent>()
-        val sut = TestCoroutineScope().eventsController(events)
+        val sut = testCoroutineScope.eventsController(events)
 
         sut.dispatch(reducerErrorValue)
         events.takeLast(2).let { lastEvents ->
@@ -111,7 +110,7 @@ internal class EventTest {
     @Test
     fun `ControllerImplementation logs effect error correctly`() {
         val events = mutableListOf<ControllerEvent>()
-        val sut = TestCoroutineScope().eventsController(events)
+        val sut = testCoroutineScope.eventsController(events)
 
         repeat(ControllerImplementation.EFFECTS_CAPACITY) { sut.dispatch(effectValue) }
         sut.dispatch(effectValue)
