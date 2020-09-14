@@ -20,7 +20,6 @@ kotlin {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
-                implementation("io.mockk:mockk-common:1.10.0")
             }
         }
 

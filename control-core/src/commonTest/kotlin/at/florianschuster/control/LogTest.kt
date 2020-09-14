@@ -1,11 +1,5 @@
 package at.florianschuster.control
 
-import io.mockk.Runs
-import io.mockk.every
-import io.mockk.just
-import io.mockk.mockkStatic
-import io.mockk.slot
-import io.mockk.verify
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -29,22 +23,22 @@ internal class LogTest {
         assertNull(ControllerLog.None.logger)
     }
 
-    @Test
-    fun `println logger, methods are called`() {
-        mockkStatic("kotlin.io.ioH.kt")
-
-        val capturedLogMessage = slot<Any>()
-        every { println(capture(capturedLogMessage)) } just Runs
-
-        val sut = ControllerLog.Println
-        assertNotNull(sut.logger)
-
-        sut.log { CreatedEvent }
-        assertEquals(CreatedEvent.toString(), capturedLogMessage.captured)
-        sut.log { CompletedEvent }
-        assertEquals(CompletedEvent.toString(), capturedLogMessage.captured)
-        verify(exactly = 2) { println(any()) }
-    }
+    // @Test
+    // fun `println logger, methods are called`() {
+    //     mockkStatic("kotlin.io.ioH.kt")
+    //
+    //     val capturedLogMessage = slot<Any>()
+    //     every { println(capture(capturedLogMessage)) } just Runs
+    //
+    //     val sut = ControllerLog.Println
+    //     assertNotNull(sut.logger)
+    //
+    //     sut.log { CreatedEvent }
+    //     assertEquals(CreatedEvent.toString(), capturedLogMessage.captured)
+    //     sut.log { CompletedEvent }
+    //     assertEquals(CompletedEvent.toString(), capturedLogMessage.captured)
+    //     verify(exactly = 2) { println(any()) }
+    // }
 
     @Test
     fun `custom logger, methods are called`() {
