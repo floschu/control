@@ -1,3 +1,5 @@
+@file:Suppress("EXPERIMENTAL_API_USAGE")
+
 package at.florianschuster.control
 
 import kotlinx.coroutines.CoroutineScope
@@ -9,7 +11,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-internal class StubTest : TestCoroutineScopeTest() {
+internal class StubTest {
 
     @Test
     fun `custom controller implementation cannot be stubbed`() {
@@ -35,8 +37,8 @@ internal class StubTest : TestCoroutineScopeTest() {
     }
 
     @Test
-    fun `Controller stub is enabled only after conversion()`() {
-        val sut = testCoroutineScope.createStringController()
+    fun `Controller stub is enabled only after conversion()`() = suspendTest {
+        val sut = createStringController()
         assertFalse(sut.stubEnabled)
 
         (sut as Controller<List<String>, List<String>>).toStub()
@@ -44,8 +46,8 @@ internal class StubTest : TestCoroutineScopeTest() {
     }
 
     @Test
-    fun `EffectController stub is enabled only after conversion()`() {
-        val sut = testCoroutineScope.createStringController()
+    fun `EffectController stub is enabled only after conversion()`() = suspendTest {
+        val sut = createStringController()
         assertFalse(sut.stubEnabled)
 
         (sut as EffectController<List<String>, List<String>, String>).toStub()
@@ -53,13 +55,13 @@ internal class StubTest : TestCoroutineScopeTest() {
     }
 
     @Test
-    fun `stub actions are recorded correctly`() {
+    fun `stub actions are recorded correctly`() = suspendTest {
         val expectedActions = listOf(
             listOf("one"),
             listOf("two"),
             listOf("three")
         )
-        val sut = testCoroutineScope.createStringController().apply { toStub() }
+        val sut = createStringController().apply { toStub() }
 
         expectedActions.forEach(sut::dispatch)
 
@@ -67,13 +69,13 @@ internal class StubTest : TestCoroutineScopeTest() {
     }
 
     @Test
-    fun `stub set state`() {
+    fun `stub set state`() = suspendTest {
         val expectedStates = listOf(
             listOf("one"),
             listOf("two"),
             listOf("three")
         )
-        val sut = testCoroutineScope.createStringController().apply { toStub() }
+        val sut = createStringController().apply { toStub() }
         val testFlow = sut.state.test()
 
         expectedStates.forEach(sut.toStub()::emitState)
@@ -82,13 +84,13 @@ internal class StubTest : TestCoroutineScopeTest() {
     }
 
     @Test
-    fun `stub state contains latest and following states`() {
+    fun `stub state contains latest and following states`() = suspendTest {
         val expectedStates = listOf(
             listOf("one"),
             listOf("two"),
             listOf("three")
         )
-        val sut = testCoroutineScope.createStringController().apply { toStub() }
+        val sut = createStringController().apply { toStub() }
 
         sut.toStub().emitState(listOf("something 1"))
         sut.toStub().emitState(listOf("something 2"))
@@ -101,8 +103,8 @@ internal class StubTest : TestCoroutineScopeTest() {
     }
 
     @Test
-    fun `stub action does not trigger state machine`() {
-        val sut = testCoroutineScope.createStringController().apply { toStub() }
+    fun `stub action does not trigger state machine`() = suspendTest {
+        val sut = createStringController().apply { toStub() }
 
         sut.dispatch(listOf("test"))
 
@@ -110,8 +112,8 @@ internal class StubTest : TestCoroutineScopeTest() {
     }
 
     @Test
-    fun `stub emits effects`() {
-        val sut = testCoroutineScope.createStringController().apply { toStub() }
+    fun `stub emits effects`() = suspendTest {
+        val sut = createStringController().apply { toStub() }
         val testFlow = sut.effects.test()
 
         sut.emitEffect("effect1")

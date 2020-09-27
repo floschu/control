@@ -1,34 +1,18 @@
 package at.florianschuster.control
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 
-internal expect fun suspendTest(block: suspend CoroutineScope.() -> Unit)
+internal expect fun suspendTest(block: suspend SuspendedTestScope.() -> Unit)
 
-internal abstract class TestCoroutineScopeTest {
-    protected lateinit var testCoroutineScope: CoroutineScope
-
-    @BeforeTest
-    fun setup() {
-        testCoroutineScope = CoroutineScope(Dispatchers.Unconfined)
-    }
-
-    @AfterTest
-    fun tearDown() {
-        testCoroutineScope.cancel()
-    }
-
-    protected fun <T> Flow<T>.test(): TestFlow<T> = testIn(testCoroutineScope)
+internal interface SuspendedTestScope : CoroutineScope {
+    fun <T> Flow<T>.test(): TestFlow<T> = testIn(this@SuspendedTestScope)
 }
 
-interface TestFlow<T> {
+internal interface TestFlow<T> {
     val items: List<T>
     fun assertEmissionCount(count: Int)
     fun assertEmissionAt(index: Int, expected: T)
@@ -37,7 +21,7 @@ interface TestFlow<T> {
     fun assertLastEmission(emission: T)
 }
 
-internal fun <T> Flow<T>.testIn(scope: CoroutineScope): TestFlow<T> {
+private fun <T> Flow<T>.testIn(scope: CoroutineScope): TestFlow<T> {
     val items = mutableListOf<T>()
     scope.launch { toList(items) }
     return object : TestFlow<T> {
@@ -52,7 +36,7 @@ internal fun <T> Flow<T>.testIn(scope: CoroutineScope): TestFlow<T> {
         }
 
         override fun assertEmissions(vararg emissions: T) {
-            assertEmissions(*emissions)
+            assertEmissions(emissions.toList())
         }
 
         override fun assertEmissions(emissions: List<T>) {

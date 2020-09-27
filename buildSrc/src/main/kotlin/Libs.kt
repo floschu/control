@@ -18,6 +18,12 @@ object Libs {
             Versions.org_jetbrains_kotlinx_kotlinx_coroutines
 
     /**
+     * https://github.com/Kotlin/kotlinx.coroutines
+     */
+    const val kotlinx_coroutines_test: String = "org.jetbrains.kotlinx:kotlinx-coroutines-test:" +
+            Versions.org_jetbrains_kotlinx_kotlinx_coroutines
+
+    /**
      * https://github.com/reactivecircus/FlowBinding
      */
     const val flowbinding_android: String =
@@ -40,8 +46,20 @@ object Libs {
     /**
      * https://kotlinlang.org/
      */
+    const val kotlin_gradle_plugin: String = "org.jetbrains.kotlin:kotlin-gradle-plugin:" +
+            Versions.org_jetbrains_kotlin
+
+    /**
+     * https://kotlinlang.org/
+     */
     const val kotlin_scripting_compiler_embeddable: String =
             "org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:" +
+            Versions.org_jetbrains_kotlin
+
+    /**
+     * https://kotlinlang.org/
+     */
+    const val kotlin_serialization: String = "org.jetbrains.kotlin:kotlin-serialization:" +
             Versions.org_jetbrains_kotlin
 
     /**
@@ -54,18 +72,6 @@ object Libs {
      * https://kotlinlang.org/
      */
     const val kotlin_stdlib: String = "org.jetbrains.kotlin:kotlin-stdlib:" +
-            Versions.org_jetbrains_kotlin
-
-    /**
-     * https://kotlinlang.org/
-     */
-    const val kotlin_gradle_plugin: String = "org.jetbrains.kotlin:kotlin-gradle-plugin:" +
-            Versions.org_jetbrains_kotlin
-
-    /**
-     * https://kotlinlang.org/
-     */
-    const val kotlin_serialization: String = "org.jetbrains.kotlin:kotlin-serialization:" +
             Versions.org_jetbrains_kotlin
 
     /**

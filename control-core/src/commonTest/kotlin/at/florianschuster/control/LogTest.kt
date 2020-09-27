@@ -23,6 +23,7 @@ internal class LogTest {
         assertNull(ControllerLog.None.logger)
     }
 
+    // TODO needs mockk
     // @Test
     // fun `println logger, methods are called`() {
     //     mockkStatic("kotlin.io.ioH.kt")
@@ -54,7 +55,7 @@ internal class LogTest {
         }
 
         val secondLog = CompletedEvent
-        sut.log { firstLog }
+        sut.log { secondLog }
         with(logs.last()) {
             assertEquals(secondLog.toString(), first)
             assertEquals(secondLog, second)

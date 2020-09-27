@@ -13,7 +13,7 @@ sealed class ControllerEvent(
      */
     class Created internal constructor(
         tag: String, controllerStart: String
-    ) : ControllerEvent(tag, "created with controllerStart: $controllerStart")
+    ) : ControllerEvent(tag, "created with controller-start: $controllerStart")
 
     /**
      * When the state machine is started.

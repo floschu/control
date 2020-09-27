@@ -18,15 +18,13 @@ kotlin {
 
         commonTest {
             dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
+                implementation("org.jetbrains.kotlin:kotlin-test-multiplatform")
             }
         }
 
         val jvmTest by getting {
             dependencies {
-                implementation(kotlin("test"))
-                implementation(kotlin("test-junit"))
+                implementation(Libs.kotlinx_coroutines_test)
             }
         }
     }

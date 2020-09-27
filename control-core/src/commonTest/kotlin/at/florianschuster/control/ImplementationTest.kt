@@ -1,3 +1,5 @@
+@file:Suppress("EXPERIMENTAL_API_USAGE")
+
 package at.florianschuster.control
 
 import kotlinx.coroutines.CoroutineScope
@@ -14,16 +16,17 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertTrue
+import kotlin.test.assertNotNull
 
-internal class ImplementationTest : TestCoroutineScopeTest() {
+internal class ImplementationTest {
 
     @Test
-    fun `initial state only emitted once`() {
-        val sut = testCoroutineScope.createOperationController()
+    fun `initial state only emitted once`() = suspendTest {
+        val sut = createOperationController()
         val testFlow = sut.state.test()
 
         testFlow.assertEmissionCount(1)
@@ -31,15 +34,15 @@ internal class ImplementationTest : TestCoroutineScopeTest() {
     }
 
     @Test
-    fun `state is created when accessing current state`() {
-        val sut = testCoroutineScope.createOperationController()
+    fun `state is created when accessing current state`() = suspendTest {
+        val sut = createOperationController()
 
         assertEquals(listOf("initialState", "transformedState"), sut.currentState)
     }
 
     @Test
-    fun `state is created when accessing action`() {
-        val sut = testCoroutineScope.createOperationController()
+    fun `state is created when accessing action`() = suspendTest {
+        val sut = createOperationController()
 
         sut.dispatch(listOf("action"))
 
@@ -57,8 +60,8 @@ internal class ImplementationTest : TestCoroutineScopeTest() {
     }
 
     @Test
-    fun `each method is invoked`() {
-        val sut = testCoroutineScope.createOperationController()
+    fun `each method is invoked`() = suspendTest {
+        val sut = createOperationController()
         val testFlow = sut.state.test()
 
         sut.dispatch(listOf("action"))
@@ -78,8 +81,8 @@ internal class ImplementationTest : TestCoroutineScopeTest() {
     }
 
     @Test
-    fun `only distinct states are emitted`() {
-        val sut = testCoroutineScope.createAlwaysSameStateController()
+    fun `only distinct states are emitted`() = suspendTest {
+        val sut = createAlwaysSameStateController()
         val testFlow = sut.state.test()
         sut.dispatch(Unit)
         sut.dispatch(Unit)
@@ -88,8 +91,8 @@ internal class ImplementationTest : TestCoroutineScopeTest() {
     }
 
     @Test
-    fun `collector receives latest and following states`() {
-        val sut = testCoroutineScope.createCounterController() // 0
+    fun `collector receives latest and following states`() = suspendTest {
+        val sut = createCounterController() // 0
 
         sut.dispatch(Unit) // 1
         sut.dispatch(Unit) // 2
@@ -102,26 +105,32 @@ internal class ImplementationTest : TestCoroutineScopeTest() {
     }
 
     @Test
-    fun `state flow throws error from mutator`() = suspendTest {
+    fun `state flow throws error from mutator`() {
         assertFailsWith<ControllerError.Mutate> {
-            val sut = createCounterController(mutatorErrorIndex = 2)
-            sut.dispatch(Unit)
-            sut.dispatch(Unit)
-            sut.dispatch(Unit)
+            suspendTest {
+                val sut = createCounterController(mutatorErrorIndex = 2)
+                sut.dispatch(Unit)
+                sut.dispatch(Unit)
+                sut.dispatch(Unit)
+            }
         }
     }
 
     @Test
-    fun `state flow throws error from reducer`() = suspendTest {
+    fun `state flow throws error from reducer`() {
         assertFailsWith<ControllerError.Reduce> {
-            val sut = createCounterController(reducerErrorIndex = 2)
-            sut.dispatch(Unit)
-            sut.dispatch(Unit)
-            sut.dispatch(Unit)
+            suspendTest {
+                val sut = createCounterController(reducerErrorIndex = 2)
+
+                sut.dispatch(Unit)
+                sut.dispatch(Unit)
+                sut.dispatch(Unit)
+            }
         }
     }
 
     @Test
+    @Ignore
     fun `cancel via takeUntil`() = suspendTest {
         val sut = createStopWatchController()
 
@@ -146,7 +155,7 @@ internal class ImplementationTest : TestCoroutineScopeTest() {
         delay(1000)
         sut.dispatch(StopWatchAction.Stop)
 
-        assertTrue(sut.currentState == 10) // 2+3+4+1
+        assertEquals(10, sut.currentState) // 2+3+4+1
     }
 
     @Test
@@ -160,7 +169,7 @@ internal class ImplementationTest : TestCoroutineScopeTest() {
 
         val sut = createGlobalStateMergeController(globalState)
 
-        val states = sut.state.testIn(this)
+        val states = sut.state.test()
 
         delay(251)
         sut.dispatch(1)
@@ -170,7 +179,7 @@ internal class ImplementationTest : TestCoroutineScopeTest() {
     }
 
     @Test
-    fun `MutatorContext is built correctly`() {
+    fun `MutatorContext is built correctly`() = suspendTest {
         val stateAccessor = { 1 }
         val actions = flowOf(1)
         var emittedEffect: Int? = null
@@ -187,7 +196,7 @@ internal class ImplementationTest : TestCoroutineScopeTest() {
     }
 
     @Test
-    fun `ReducerContext is built correctly`() {
+    fun `ReducerContext is built correctly`() = suspendTest {
         var emittedEffect: Int? = null
         val sut = ControllerImplementation.createReducerContext<Int> { emittedEffect = it }
         sut.emitEffect(2)
@@ -195,7 +204,7 @@ internal class ImplementationTest : TestCoroutineScopeTest() {
     }
 
     @Test
-    fun `TransformerContext is built correctly`() {
+    fun `TransformerContext is built correctly`() = suspendTest {
         var emittedEffect: Int? = null
         val sut = ControllerImplementation.createTransformerContext<Int> { emittedEffect = it }
         sut.emitEffect(3)
@@ -203,24 +212,8 @@ internal class ImplementationTest : TestCoroutineScopeTest() {
     }
 
     @Test
-    fun `cancelling the implementation will return the last state`() {
-        val sut = testCoroutineScope.createGlobalStateMergeController(emptyFlow())
-
-        val states = sut.state.test()
-
-        sut.dispatch(0)
-        sut.dispatch(1)
-
-        sut.cancel()
-
-        sut.dispatch(2)
-
-        states.assertLastEmission(1)
-    }
-
-    @Test
-    fun `effects are received from mutator, reducer and transformer`() {
-        val sut = testCoroutineScope.createEffectTestController()
+    fun `effects are received from mutator, reducer and transformer`() = suspendTest {
+        val sut = createEffectTestController()
         val states = sut.state.test()
         val effects = sut.effects.test()
 
@@ -239,11 +232,11 @@ internal class ImplementationTest : TestCoroutineScopeTest() {
     }
 
     @Test
-    fun `effects are only received once collector`() {
-        val sut = testCoroutineScope.createEffectTestController()
+    fun `effects are only received once collector`() = suspendTest {
+        val sut = createEffectTestController()
         val effects = mutableListOf<TestEffect>()
-        sut.effects.onEach { effects.add(it) }.launchIn(testCoroutineScope)
-        sut.effects.onEach { effects.add(it) }.launchIn(testCoroutineScope)
+        sut.effects.onEach { effects.add(it) }.launchIn(this)
+        sut.effects.onEach { effects.add(it) }.launchIn(this)
 
         val testEmissions = listOf(
             TestEffect.Reducer,
@@ -261,18 +254,20 @@ internal class ImplementationTest : TestCoroutineScopeTest() {
     }
 
     @Test
-    fun `effects overflow throws error`() = suspendTest {
-        val sut = createEffectTestController()
+    fun `effects overflow throws error`() {
+        val failure = kotlin.runCatching {
+            suspendTest {
+                val sut = createEffectTestController()
 
-        repeat(ControllerImplementation.EFFECTS_CAPACITY) { sut.dispatch(1) }
+                repeat(ControllerImplementation.EFFECTS_CAPACITY) { sut.dispatch(1) }
 
-        assertFailsWith<ControllerError.Effect> {
-            sut.dispatch(1)
+                sut.dispatch(1)
+            }
+        }.exceptionOrNull()
 
-            // assertEquals(1, scope.uncaughtExceptions.size)
-            // val error = scope.uncaughtExceptions.first()
-            // assertEquals(ControllerError.Effect::class, assertNotNull(error.cause)::class)
-        }
+        assertNotNull(failure)
+        assertEquals(ControllerError.Reduce::class, failure::class)
+        assertEquals(ControllerError.Effect::class, assertNotNull(failure.cause)::class)
     }
 
     @Test

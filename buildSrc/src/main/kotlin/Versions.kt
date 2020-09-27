@@ -18,13 +18,13 @@ object Versions {
 
     const val io_github_reactivecircus_flowbinding: String = "0.12.0"
 
-    const val org_jetbrains_kotlin: String = "1.4.0"
+    const val org_jetbrains_kotlin: String = "1.4.10"
 
     const val androidx_fragment: String = "1.2.5"
 
     const val androidx_test: String = "1.3.0"
 
-    const val io_ktor: String = "1.4.0"
+    const val io_ktor: String = "1.4.1"
 
     const val com_android_tools_build_gradle: String = "4.0.1"
 
@@ -56,13 +56,13 @@ object Versions {
 
     const val material: String = "1.2.1"
 
-    const val ktlint: String = "0.37.2" // available: "0.38.1"
+    const val ktlint: String = "0.37.2" // available: "0.39.0"
 
     const val aapt2: String = "4.0.1-6197926"
 
-    const val mockk: String = "1.10.0"
+    const val mockk: String = "1.10.2"
 
-    const val coil: String = "0.12.0"
+    const val coil: String = "0.13.0"
 
     /**
      * Current version: "6.6.1"
@@ -78,4 +78,4 @@ object Versions {
  */
 val PluginDependenciesSpec.buildSrcVersions: PluginDependencySpec
     inline get() =
-            id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)
+        id("de.fayard.buildSrcVersions").version(Versions.de_fayard_buildsrcversions_gradle_plugin)

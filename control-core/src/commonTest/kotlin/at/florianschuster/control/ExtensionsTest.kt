@@ -1,8 +1,11 @@
+@file:Suppress("EXPERIMENTAL_API_USAGE")
+
 package at.florianschuster.control
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -29,7 +32,7 @@ internal class ExtensionsTest {
     @Test
     fun `bind lambda throws error`() = suspendTest {
         assertFailsWith<IllegalStateException> {
-            flow<Int> { error("test") }.bind { }.launchIn(this)
+            flow<Int> { error("test") }.bind { }.first()
         }
     }
 

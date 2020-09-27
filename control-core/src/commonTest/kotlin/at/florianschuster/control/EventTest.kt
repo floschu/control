@@ -1,12 +1,15 @@
+@file:Suppress("EXPERIMENTAL_API_USAGE")
+
 package at.florianschuster.control
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.flow
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
-internal class EventTest : TestCoroutineScopeTest() {
+internal class EventTest {
 
     @Test
     fun `event message contains library name and tag`() {
@@ -18,9 +21,9 @@ internal class EventTest : TestCoroutineScopeTest() {
     }
 
     @Test
-    fun `ControllerImplementation logs events correctly`() {
+    fun `ControllerImplementation logs events correctly`() = suspendTest {
         val events = mutableListOf<ControllerEvent>()
-        val sut = testCoroutineScope.eventsController(
+        val sut = eventsController(
             events,
             controllerStart = ControllerStart.Manual
         )
@@ -54,9 +57,9 @@ internal class EventTest : TestCoroutineScopeTest() {
     }
 
     @Test
-    fun `ControllerStub logs event correctly`() {
+    fun `ControllerStub logs event correctly`() = suspendTest {
         val events = mutableListOf<ControllerEvent>()
-        val sut: Controller<Int, Int> = testCoroutineScope.eventsController(
+        val sut: Controller<Int, Int> = eventsController(
             events,
             controllerStart = ControllerStart.Manual
         )
@@ -69,9 +72,9 @@ internal class EventTest : TestCoroutineScopeTest() {
     }
 
     @Test
-    fun `EffectControllerStub logs event correctly`() {
+    fun `EffectControllerStub logs event correctly`() = suspendTest {
         val events = mutableListOf<ControllerEvent>()
-        val sut: EffectController<Int, Int, Int> = testCoroutineScope.eventsController(
+        val sut: EffectController<Int, Int, Int> = eventsController(
             events,
             controllerStart = ControllerStart.Manual
         )
@@ -85,39 +88,51 @@ internal class EventTest : TestCoroutineScopeTest() {
 
     @Test
     fun `ControllerImplementation logs mutator error correctly`() {
-        val events = mutableListOf<ControllerEvent>()
-        val sut = testCoroutineScope.eventsController(events)
+        assertFailsWith<ControllerError.Mutate> {
+            suspendTest {
+                val events = mutableListOf<ControllerEvent>()
+                val sut = eventsController(events)
 
-        sut.dispatch(mutatorErrorValue)
-        events.takeLast(2).let { lastEvents ->
-            assertTrue(lastEvents[0] is ControllerEvent.Error)
-            assertTrue(lastEvents[1] is ControllerEvent.Completed)
+                sut.dispatch(mutatorErrorValue)
+                events.takeLast(2).let { lastEvents ->
+                    assertTrue(lastEvents[0] is ControllerEvent.Error)
+                    assertTrue(lastEvents[1] is ControllerEvent.Completed)
+                }
+            }
         }
     }
 
     @Test
     fun `ControllerImplementation logs reducer error correctly`() {
-        val events = mutableListOf<ControllerEvent>()
-        val sut = testCoroutineScope.eventsController(events)
+        assertFailsWith<ControllerError.Reduce> {
+            suspendTest {
+                val events = mutableListOf<ControllerEvent>()
+                val sut = eventsController(events)
 
-        sut.dispatch(reducerErrorValue)
-        events.takeLast(2).let { lastEvents ->
-            assertTrue(lastEvents[0] is ControllerEvent.Error)
-            assertTrue(lastEvents[1] is ControllerEvent.Completed)
+                sut.dispatch(reducerErrorValue)
+                events.takeLast(2).let { lastEvents ->
+                    assertTrue(lastEvents[0] is ControllerEvent.Error)
+                    assertTrue(lastEvents[1] is ControllerEvent.Completed)
+                }
+            }
         }
     }
 
     @Test
     fun `ControllerImplementation logs effect error correctly`() {
-        val events = mutableListOf<ControllerEvent>()
-        val sut = testCoroutineScope.eventsController(events)
+        assertFailsWith<ControllerError.Mutate> {
+            suspendTest {
+                val events = mutableListOf<ControllerEvent>()
+                val sut = eventsController(events)
 
-        repeat(ControllerImplementation.EFFECTS_CAPACITY) { sut.dispatch(effectValue) }
-        sut.dispatch(effectValue)
+                repeat(ControllerImplementation.EFFECTS_CAPACITY) { sut.dispatch(effectValue) }
+                sut.dispatch(effectValue)
 
-        events.takeLast(2).let { lastEvents ->
-            assertTrue(lastEvents[0] is ControllerEvent.Error)
-            assertTrue(lastEvents[1] is ControllerEvent.Completed)
+                events.takeLast(2).let { lastEvents ->
+                    assertTrue(lastEvents[0] is ControllerEvent.Error)
+                    assertTrue(lastEvents[1] is ControllerEvent.Completed)
+                }
+            }
         }
     }
 
