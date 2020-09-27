@@ -34,9 +34,7 @@ tasks.jacocoTestReport {
     dependsOn("jvmTest")
 
     classDirectories.setFrom(File("${buildDir}/classes/kotlin/jvm/").walkBottomUp().toSet())
-    val coverageSourceDirs = arrayOf("commonMain/src", "jvmMain/src")
-    sourceDirectories.setFrom(files(coverageSourceDirs))
-    additionalSourceDirs.setFrom(files(coverageSourceDirs))
+    sourceDirectories.setFrom(files(arrayOf("commonMain/src", "jvmMain/src")))
 
     reports {
         xml.isEnabled = true
@@ -55,7 +53,7 @@ tasks.jacocoTestReport {
 
 tasks.jacocoTestCoverageVerification {
     violationRules {
-        rule { limit { minimum = "0.9".toBigDecimal() } }
+        rule { limit { minimum = "1".toBigDecimal() } }
     }
 }
 
