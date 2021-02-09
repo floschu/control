@@ -59,9 +59,3 @@ test coverage is automatically run by github actions on `[push]`
 ## author
 
 visit my [website](https://florianschuster.at/).
-
-<p align="center">
-    <b>support me via</b></br>
-    bitcoin:3GVFmCEa4sgXXu531LAxdJEbGgCji6Ycp4</br>
-    <img alt="flow" width="180" src=".media/btc.png">
-</p>
