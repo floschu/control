@@ -257,6 +257,31 @@ internal class ImplementationTest {
     }
 
     @Test
+    fun `controller is started lazily when only effects field is accessed`() {
+        val sut = ControllerImplementation<Int, Int, Int, String>(
+            scope = testCoroutineScope,
+            dispatcher = testCoroutineScope.defaultScopeDispatcher(),
+            controllerStart = ControllerStart.Lazy,
+            initialState = 0,
+            mutator = { action -> flowOf(action) },
+            reducer = { mutation, _ -> mutation },
+            actionsTransformer = { actions ->
+                merge(actions, flow {
+                    emitEffect("actionsTransformer started")
+                })
+            },
+            mutationsTransformer = { mutations -> mutations },
+            statesTransformer = { states -> states },
+            tag = "ImplementationTest.EffectController",
+            controllerLog = ControllerLog.None
+        )
+
+        val effects = sut.effects.testIn(testCoroutineScope)
+
+        effects expect emissions(listOf("actionsTransformer started"))
+    }
+
+    @Test
     fun `effects are only received once collector`() {
         val sut = testCoroutineScope.createEffectTestController()
         val effects = mutableListOf<TestEffect>()
