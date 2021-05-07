@@ -5,10 +5,16 @@ plugins {
 }
 
 dependencies {
-    api(Libs.kotlin_stdlib)
     api(Libs.kotlinx_coroutines_core)
     testImplementation(Libs.mockk)
     testImplementation(Libs.coroutines_test_extensions)
+}
+
+tasks.compileTestKotlin {
+    kotlinOptions.freeCompilerArgs = listOf(
+        "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
+        "-Xuse-experimental=kotlinx.coroutines.FlowPreview"
+    )
 }
 
 tasks.jacocoTestReport {
@@ -34,7 +40,6 @@ tasks.jacocoTestCoverageVerification {
 }
 
 pitest {
-    pitestVersion.set(Versions.gradle_pitest_plugin)
     targetClasses.add("at.florianschuster.control.*")
     mutationThreshold.set(100)
     excludedClasses.addAll(

@@ -7,6 +7,9 @@ import kotlin.String
  *   `$ ./gradlew buildSrcVersions`
  */
 object Libs {
+    /**
+     * https://github.com/Kotlin/kotlinx.serialization
+     */
     const val kotlinx_serialization_core: String =
             "org.jetbrains.kotlinx:kotlinx-serialization-core:" +
             Versions.org_jetbrains_kotlinx_kotlinx_serialization
@@ -40,26 +43,14 @@ object Libs {
     /**
      * https://kotlinlang.org/
      */
+    const val kotlin_gradle_plugin: String = "org.jetbrains.kotlin:kotlin-gradle-plugin:" +
+            Versions.org_jetbrains_kotlin
+
+    /**
+     * https://kotlinlang.org/
+     */
     const val kotlin_scripting_compiler_embeddable: String =
             "org.jetbrains.kotlin:kotlin-scripting-compiler-embeddable:" +
-            Versions.org_jetbrains_kotlin
-
-    /**
-     * https://kotlinlang.org/
-     */
-    const val kotlin_serialization_unshaded: String =
-            "org.jetbrains.kotlin:kotlin-serialization-unshaded:" + Versions.org_jetbrains_kotlin
-
-    /**
-     * https://kotlinlang.org/
-     */
-    const val kotlin_stdlib: String = "org.jetbrains.kotlin:kotlin-stdlib:" +
-            Versions.org_jetbrains_kotlin
-
-    /**
-     * https://kotlinlang.org/
-     */
-    const val kotlin_gradle_plugin: String = "org.jetbrains.kotlin:kotlin-gradle-plugin:" +
             Versions.org_jetbrains_kotlin
 
     /**
@@ -69,12 +60,18 @@ object Libs {
             Versions.org_jetbrains_kotlin
 
     /**
-     * https://developer.android.com/jetpack/androidx
+     * https://kotlinlang.org/
+     */
+    const val kotlin_stdlib_jdk8: String = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:" +
+            Versions.org_jetbrains_kotlin
+
+    /**
+     * https://developer.android.com/jetpack/androidx/releases/fragment#1.3.3
      */
     const val fragment_ktx: String = "androidx.fragment:fragment-ktx:" + Versions.androidx_fragment
 
     /**
-     * https://developer.android.com/jetpack/androidx
+     * https://developer.android.com/jetpack/androidx/releases/fragment#1.3.3
      */
     const val fragment_testing: String = "androidx.fragment:fragment-testing:" +
             Versions.androidx_fragment
@@ -117,7 +114,7 @@ object Libs {
             Versions.io_ktor
 
     /**
-     * https://developer.android.com/studio
+     * http://tools.android.com/
      */
     const val com_android_tools_build_gradle: String = "com.android.tools.build:gradle:" +
             Versions.com_android_tools_build_gradle
@@ -149,7 +146,7 @@ object Libs {
             Versions.coroutines_test_extensions
 
     /**
-     * https://developer.android.com/jetpack/androidx
+     * https://developer.android.com/jetpack/androidx/releases/lifecycle#2.3.1
      */
     const val lifecycle_runtime_ktx: String = "androidx.lifecycle:lifecycle-runtime-ktx:" +
             Versions.lifecycle_runtime_ktx
@@ -173,7 +170,7 @@ object Libs {
             Versions.espresso_core
 
     /**
-     * https://developer.android.com/studio
+     * http://tools.android.com/
      */
     const val lint_gradle: String = "com.android.tools.lint:lint-gradle:" + Versions.lint_gradle
 
@@ -194,15 +191,7 @@ object Libs {
      */
     const val material: String = "com.google.android.material:material:" + Versions.material
 
-    /**
-     * https://github.com/pinterest/ktlint
-     */
     const val ktlint: String = "com.pinterest:ktlint:" + Versions.ktlint
-
-    /**
-     * https://developer.android.com/studio
-     */
-    const val aapt2: String = "com.android.tools.build:aapt2:" + Versions.aapt2
 
     /**
      * http://mockk.io

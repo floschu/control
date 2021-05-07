@@ -4,6 +4,10 @@
 
 - binary compatibility will now be verified and held up on every release.
 
+## `[0.14.0]` - 2021-02-10
+
+- Update dependencies.
+
 ## `[0.13.1]` - 2020-09-13
 
 - Remove `atomicfu`.
