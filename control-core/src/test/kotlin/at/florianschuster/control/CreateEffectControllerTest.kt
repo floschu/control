@@ -10,6 +10,7 @@ import kotlin.test.assertEquals
 
 internal class CreateEffectControllerTest {
 
+    @Suppress("UNCHECKED_CAST")
     @Test
     fun `default parameters of controller builder`() = runBlockingTest {
         val expectedInitialState = 42
