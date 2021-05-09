@@ -4,7 +4,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.singleOrNull
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -12,7 +12,7 @@ internal class CreateControllerTest {
 
     @Suppress("UNCHECKED_CAST")
     @Test
-    fun `default parameters of controller builder`() = runBlockingTest {
+    fun `default parameters of controller builder`() = runBlocking {
         val expectedInitialState = 42
         val sut = createController<Int, Int, Int>(
             initialState = expectedInitialState
