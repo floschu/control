@@ -4,7 +4,6 @@ import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.singleOrNull
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -37,7 +36,7 @@ internal class CreateControllerTest {
     }
 
     @Test
-    fun `default parameters of effect controller builder`() = runBlocking {
+    fun `default parameters of effect controller builder`() = runBlockingTest {
         val expectedInitialState = 42
         val sut = createEffectController<Int, Int, Int, Int>(
             initialState = expectedInitialState
