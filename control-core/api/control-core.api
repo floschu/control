@@ -42,7 +42,6 @@ public final class at/florianschuster/control/ControllerKt {
 }
 
 public abstract class at/florianschuster/control/ControllerLog {
-	public static final field Companion Lat/florianschuster/control/ControllerLog$Companion;
 }
 
 public final class at/florianschuster/control/ControllerLog$Companion {
