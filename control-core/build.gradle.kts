@@ -24,8 +24,8 @@ tasks.jacocoTestReport {
         csv.isEnabled = false
     }
     classDirectories.setFrom(
-        files(classDirectories.files.map {
-            fileTree(it) {
+        files(classDirectories.files.map { file ->
+            fileTree(file) {
                 // jacoco cannot handle inline functions
                 exclude("at/florianschuster/control/DefaultTagKt.class")
             }

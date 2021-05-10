@@ -67,7 +67,7 @@ object Versions {
      * See issue 19: How to update Gradle itself?
      * https://github.com/jmfayard/buildSrcVersions/issues/19
      */
-    const val gradleLatestVersion: String = "7.0"
+    const val gradleLatestVersion: String = "7.0.1"
 }
 
 /**

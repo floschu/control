@@ -28,6 +28,10 @@ configure<kotlinx.validation.ApiValidationExtension> {
     ignoredProjects.addAll(listOf("kotlin-counter", "android-counter", "android-github"))
 }
 
+jacoco {
+    toolVersion = "0.8.7"
+}
+
 allprojects {
     repositories {
         google()
