@@ -44,11 +44,6 @@ public final class at/florianschuster/control/ControllerKt {
 public abstract class at/florianschuster/control/ControllerLog {
 }
 
-public final class at/florianschuster/control/ControllerLog$Companion {
-	public final fun getDefault ()Lat/florianschuster/control/ControllerLog;
-	public final fun setDefault (Lat/florianschuster/control/ControllerLog;)V
-}
-
 public final class at/florianschuster/control/ControllerLog$Custom : at/florianschuster/control/ControllerLog {
 	public fun <init> (Lkotlin/jvm/functions/Function2;)V
 }
