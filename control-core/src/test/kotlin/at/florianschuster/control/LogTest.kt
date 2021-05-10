@@ -19,8 +19,7 @@ internal class LogTest {
 
     @Test
     fun `none logger, methods are not called`() {
-        val sut = spyk<ControllerLog.None>()
-        assertNull(sut.logger)
+        assertNull(ControllerLog.None.logger)
     }
 
     @Test

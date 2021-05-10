@@ -17,12 +17,14 @@ interface LoggerContext {
  */
 sealed class ControllerLog {
 
-    internal open val logger: Logger? = null
+    internal abstract val logger: Logger?
 
     /**
      * No logging.
      */
-    object None : ControllerLog()
+    object None : ControllerLog() {
+        override val logger: Logger? get() = null
+    }
 
     /**
      * Uses [println] to log.
