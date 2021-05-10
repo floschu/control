@@ -4,9 +4,11 @@
 
 - binary compatibility will now be verified and held up on every release.
 
-## `[0.14.0]` - 2021-02-10
+## `[0.14.0]` - 2021-XX-XX
 
-- Update dependencies.
+- Update kotlinx.coroutines to `1.4.3`.
+- Remove kotlin as `api` dependency.
+- Remove `ControllerLog.default`.
 
 ## `[0.13.1]` - 2020-09-13
 
