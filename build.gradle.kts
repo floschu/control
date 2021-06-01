@@ -22,15 +22,31 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint").version(Versions.org_jlleitschuh_gradle_ktlint_gradle_plugin)
 }
 
+// ---- api-validation --- //
+
 apply(plugin = "binary-compatibility-validator")
 
 configure<kotlinx.validation.ApiValidationExtension> {
     ignoredProjects.addAll(listOf("kotlin-counter", "android-counter", "android-github"))
 }
 
-jacoco {
-    toolVersion = "0.8.7"
+// ---- api-validation --- //
+
+// ---- jacoco --- //
+
+subprojects {
+    configurations.all {
+        resolutionStrategy {
+            eachDependency {
+                if (requested.group == "org.jacoco") {
+                    useVersion("0.8.7")
+                }
+            }
+        }
+    }
 }
+
+// ---- jacoco --- //
 
 allprojects {
     repositories {
