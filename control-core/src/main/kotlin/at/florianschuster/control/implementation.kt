@@ -142,6 +142,7 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
         get() = if (stubEnabled) {
             stubbedEffectFlow.receiveAsFlow().cancellable()
         } else {
+            if (controllerStart is ControllerStart.Lazy) start()
             effectsChannel.receiveAsFlow().cancellable()
         }
 

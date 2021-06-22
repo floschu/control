@@ -9,6 +9,7 @@
 - Update kotlinx.coroutines to `1.4.3`.
 - Remove kotlin as `api` dependency.
 - Remove `ControllerLog.default`.
+- Lazily start controller when accessing `Controller.effects` field (#26)
 
 ## `[0.13.1]` - 2020-09-13
 
