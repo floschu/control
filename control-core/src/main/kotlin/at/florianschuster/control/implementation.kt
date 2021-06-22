@@ -103,9 +103,9 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
     // region controller
 
     override val state: Flow<State>
-        get() = if (stubEnabled) stubbedStateFlow.cancellable() else {
+        get() = if (stubEnabled) stubbedStateFlow else {
             if (controllerStart is ControllerStart.Lazy) start()
-            mutableStateFlow.cancellable()
+            mutableStateFlow
         }
 
     override val currentState: State
@@ -137,10 +137,12 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
     }
 
     private val effectsChannel = Channel<Effect>(EFFECTS_CAPACITY)
+
     override val effects: Flow<Effect>
         get() = if (stubEnabled) {
             stubbedEffectFlow.receiveAsFlow().cancellable()
         } else {
+            if (controllerStart is ControllerStart.Lazy) start()
             effectsChannel.receiveAsFlow().cancellable()
         }
 

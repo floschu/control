@@ -17,12 +17,14 @@ interface LoggerContext {
  */
 sealed class ControllerLog {
 
-    internal open val logger: Logger? = null
+    internal abstract val logger: Logger?
 
     /**
      * No logging.
      */
-    object None : ControllerLog()
+    object None : ControllerLog() {
+        override val logger: Logger? get() = null
+    }
 
     /**
      * Uses [println] to log.
@@ -35,15 +37,6 @@ sealed class ControllerLog {
      * Uses a custom [Logger] to log.
      */
     class Custom(override val logger: Logger) : ControllerLog()
-
-    companion object {
-
-        /**
-         * The default [ControllerLog] that is used by all [Controller] builders.
-         * Set this to change the default logger for all builders that do not specify one.
-         */
-        var default: ControllerLog = None
-    }
 }
 
 internal fun createLoggerContext(event: ControllerEvent) = object : LoggerContext {

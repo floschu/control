@@ -125,7 +125,7 @@ fun <Action, Mutation, State> CoroutineScope.createController(
     /**
      * Log configuration for [ControllerEvent]s. See [ControllerLog].
      */
-    controllerLog: ControllerLog = ControllerLog.default,
+    controllerLog: ControllerLog = ControllerLog.None,
 
     /**
      * When the internal state machine [Flow] should be started. See [ControllerStart].
