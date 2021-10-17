@@ -1,12 +1,19 @@
 package at.florianschuster.control
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 internal class EventTest {
 
     @Test
@@ -110,10 +117,11 @@ internal class EventTest {
 
     @Test
     fun `ControllerImplementation logs effect error correctly`() {
+        val scope = TestCoroutineScope()
         val events = mutableListOf<ControllerEvent>()
-        val sut = TestCoroutineScope().eventsController(events)
+        val sut = scope.eventsController(events)
 
-        repeat(ControllerImplementation.EFFECTS_CAPACITY) { sut.dispatch(effectValue) }
+        repeat(ControllerImplementation.CAPACITY) { sut.dispatch(effectValue) }
         sut.dispatch(effectValue)
 
         events.takeLast(2).let { lastEvents ->

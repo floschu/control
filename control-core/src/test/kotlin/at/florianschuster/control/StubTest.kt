@@ -5,6 +5,8 @@ import at.florianschuster.test.flow.emissions
 import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
@@ -15,6 +17,8 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 internal class StubTest {
 
     @get:Rule

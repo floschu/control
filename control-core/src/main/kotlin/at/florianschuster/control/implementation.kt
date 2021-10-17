@@ -7,12 +7,10 @@ import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -48,7 +46,10 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
 
     // region state machine
 
-    private val actionChannel = BroadcastChannel<Action>(BUFFERED)
+    private val actionSharedFlow = MutableSharedFlow<Action>(
+        replay = 0,
+        extraBufferCapacity = CAPACITY
+    )
     private val mutableStateFlow = MutableStateFlow(initialState)
 
     internal val stateJob: Job = scope.launch(
@@ -57,7 +58,7 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
     ) {
         val transformerContext = createTransformerContext(effectEmitter)
 
-        val actionFlow: Flow<Action> = transformerContext.actionsTransformer(actionChannel.asFlow())
+        val actionFlow: Flow<Action> = transformerContext.actionsTransformer(actionSharedFlow)
 
         val mutatorContext = createMutatorContext(
             stateAccessor = { currentState },
@@ -103,13 +104,17 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
     // region controller
 
     override val state: Flow<State>
-        get() = if (stubEnabled) stubbedStateFlow else {
+        get() = if (stubEnabled) {
+            stubbedStateFlow
+        } else {
             if (controllerStart is ControllerStart.Lazy) start()
             mutableStateFlow
         }
 
     override val currentState: State
-        get() = if (stubEnabled) stubbedStateFlow.value else {
+        get() = if (stubEnabled) {
+            stubbedStateFlow.value
+        } else {
             if (controllerStart is ControllerStart.Lazy) start()
             mutableStateFlow.value
         }
@@ -119,7 +124,7 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
             stubbedActions.add(action)
         } else {
             if (controllerStart is ControllerStart.Lazy) start()
-            actionChannel.offer(action)
+            actionSharedFlow.tryEmit(action)
         }
     }
 
@@ -127,8 +132,10 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
 
     // region effects
 
+    private val effectChannel = Channel<Effect>(CAPACITY)
+
     private val effectEmitter: (Effect) -> Unit = { effect ->
-        val canBeOffered = effectsChannel.offer(effect)
+        val canBeOffered = effectChannel.trySend(effect).isSuccess
         if (canBeOffered) {
             controllerLog.log { ControllerEvent.Effect(tag, effect.toString()) }
         } else {
@@ -136,14 +143,12 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
         }
     }
 
-    private val effectsChannel = Channel<Effect>(EFFECTS_CAPACITY)
-
     override val effects: Flow<Effect>
         get() = if (stubEnabled) {
-            stubbedEffectFlow.receiveAsFlow().cancellable()
+            stubbedEffectChannel.receiveAsFlow().cancellable()
         } else {
             if (controllerStart is ControllerStart.Lazy) start()
-            effectsChannel.receiveAsFlow().cancellable()
+            effectChannel.receiveAsFlow().cancellable()
         }
 
     // endregion
@@ -166,7 +171,7 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
 
     private val stubbedActions = mutableListOf<Action>()
     private val stubbedStateFlow = MutableStateFlow(initialState)
-    private val stubbedEffectFlow = Channel<Effect>(EFFECTS_CAPACITY)
+    private val stubbedEffectChannel = Channel<Effect>(CAPACITY)
 
     override val dispatchedActions: List<Action>
         get() = stubbedActions
@@ -176,7 +181,7 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
     }
 
     override fun emitEffect(effect: Effect) {
-        stubbedEffectFlow.offer(effect)
+        stubbedEffectChannel.trySend(effect)
     }
 
     // endregion
@@ -189,7 +194,7 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
     }
 
     companion object {
-        internal const val EFFECTS_CAPACITY = 64
+        internal const val CAPACITY = 64
 
         internal fun <Action, State, Effect> createMutatorContext(
             stateAccessor: () -> State,

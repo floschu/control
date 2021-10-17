@@ -4,6 +4,10 @@
 
 - binary compatibility will now be verified and held up on every release.
 
+## `[0.15.0]` - 2021-XX-XX
+
+- Internal `BroadcastChannel` implementations changed to `SharedFlow`
+
 ## `[0.14.0]` - 2021-10-17
 
 - Update kotlinx.coroutines to `1.5.2`.
