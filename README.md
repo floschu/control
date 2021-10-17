@@ -16,7 +16,7 @@
 
 ``` groovy
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
