@@ -1,7 +1,7 @@
 <p align="center"><img alt="flow" width="600" src=".media/control.png"></p>
 
 <p align=center>
-    <a href="https://bintray.com/flosch/control/control-core"><img alt="version" src="https://img.shields.io/bintray/v/flosch/control/control-core?label=core-version&logoColor=f88909" /></a>
+    <a href="https://github.com/floschu/control"><img alt="version" src="https://img.shields.io/maven-central/v/at.florianschuster.control/control-core?label=core-version&logoColor=f88909" /></a>
     <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-Apache%202.0-blue.svg?color=7b6fe2" /></a>
 </p>
 
