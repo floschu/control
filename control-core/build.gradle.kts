@@ -2,19 +2,32 @@ plugins {
     id("kotlin")
     id("jacoco")
     id("info.solidsoft.pitest")
+    id("com.vanniktech.maven.publish")
 }
 
 dependencies {
-    api(Libs.kotlinx_coroutines_core)
-    testImplementation(Libs.mockk)
-    testImplementation(Libs.coroutines_test_extensions)
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
+    testImplementation("io.mockk:mockk:1.12.0")
+    testImplementation("at.florianschuster.test:coroutines-test-extensions:0.1.2")
 }
+
+// ---- kotlin --- //
 
 tasks.compileTestKotlin {
     kotlinOptions.freeCompilerArgs = listOf(
         "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
         "-Xuse-experimental=kotlinx.coroutines.FlowPreview"
     )
+}
+
+// ---- end kotlin --- //
+
+// ---- jacoco --- //
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule { limit { minimum = "0.94".toBigDecimal() } }
+    }
 }
 
 tasks.jacocoTestReport {
@@ -26,18 +39,19 @@ tasks.jacocoTestReport {
     classDirectories.setFrom(
         files(classDirectories.files.map { file ->
             fileTree(file) {
-                // jacoco cannot handle inline functions
-                exclude("at/florianschuster/control/DefaultTagKt.class")
+                // jacoco cannot handle inline functions properly
+                exclude(
+                    "at/florianschuster/control/DefaultTagKt.class",
+                    "at/florianschuster/control/ExtensionsKt.class"
+                )
             }
         })
     )
 }
 
-tasks.jacocoTestCoverageVerification {
-    violationRules {
-        rule { limit { minimum = "0.9".toBigDecimal() } }
-    }
-}
+// ---- end jacoco --- //
+
+// ---- pitest --- //
 
 pitest {
     targetClasses.add("at.florianschuster.control.*")
@@ -60,4 +74,10 @@ pitest {
     verbose.set(true)
 }
 
-apply(from = "$rootDir/gradle/deploy.gradle")
+// ---- end pitest --- //
+
+// ---- publishing --- //
+
+version = System.getenv("libraryVersionTag")
+
+// ---- end publishing --- //
