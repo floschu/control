@@ -53,7 +53,7 @@ test coverage is automatically run by github actions on `[push]`
 
 |  | threshold | run | output |
 |---:|:---:|---|---|
-| instruction/branch | 90% | `./gradlew test jacocoTestReport` | `./control-core/build/reports/jacoco/` |
+| instruction/branch | 94% | `./gradlew test jacocoTestReport` | `./control-core/build/reports/jacoco/` |
 | mutation | 100% | `./gradlew pitest` | `./control-core/build/reports/pitest/` |
 
 ## author

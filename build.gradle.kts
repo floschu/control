@@ -2,30 +2,54 @@ buildscript {
     repositories {
         google()
         jcenter()
+        mavenCentral()
         maven(url = "https://plugins.gradle.org/m2/")
     }
 
     dependencies {
-        classpath(Libs.kotlin_gradle_plugin)
-        classpath(Libs.com_jfrog_bintray_gradle_plugin)
-        classpath(Libs.com_android_tools_build_gradle)
-        classpath(Libs.kotlin_serialization)
-        classpath(Libs.gradle_pitest_plugin)
-        classpath(Libs.binary_compatibility_validator)
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.0")
+        classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.0")
+        classpath("org.jetbrains.kotlinx:binary-compatibility-validator:0.7.1")
+        classpath("com.vanniktech:gradle-maven-publish-plugin:0.18.0")
+        classpath("org.jetbrains.dokka:dokka-gradle-plugin:1.5.31")
+
+        classpath("com.android.tools.build:gradle:4.2.2")
+        classpath("org.jetbrains.kotlin:kotlin-serialization:1.5.31")
     }
 }
 
 plugins {
-    buildSrcVersions
     jacoco
-    id("org.jlleitschuh.gradle.ktlint").version(Versions.org_jlleitschuh_gradle_ktlint_gradle_plugin)
+    id("org.jlleitschuh.gradle.ktlint").version("10.0.0")
+    `maven-publish`
+    signing
 }
+
+// ---- api-validation --- //
 
 apply(plugin = "binary-compatibility-validator")
 
 configure<kotlinx.validation.ApiValidationExtension> {
     ignoredProjects.addAll(listOf("kotlin-counter", "android-counter", "android-github"))
 }
+
+// ---- end api-validation --- //
+
+// ---- jacoco --- //
+
+subprojects {
+    configurations.all {
+        resolutionStrategy {
+            eachDependency {
+                if (requested.group == "org.jacoco") {
+                    useVersion("0.8.7")
+                }
+            }
+        }
+    }
+}
+
+// ---- end jacoco --- //
 
 allprojects {
     repositories {

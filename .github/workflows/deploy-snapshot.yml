@@ -1,9 +1,9 @@
-name: deploy
+name: "deploy snapshot"
 
 on:
   push:
     tags:
-      - '*'
+      - '*-SNAPSHOT'
 
 jobs:
   all_checks:
@@ -19,7 +19,7 @@ jobs:
         run: ./gradlew lint ktlintCheck test jacocoTestCoverageVerification pitest apiCheck assemble
 
   publish:
-    needs: [all_checks]
+    needs: [ all_checks ]
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
@@ -29,11 +29,11 @@ jobs:
         with:
           java-version: 1.8
       - name: "Get tag and save into env"
-        uses: olegtarasov/get-tag@v1
+        uses: olegtarasov/get-tag@v2.1
         id: tagName
-      - name: "Build, publish and upload to Bintray"
+      - name: "Upload release"
+        run: ./gradlew publishAllPublicationsToMavenCentralRepository --no-daemon --no-parallel
         env:
           libraryVersionTag: ${{ steps.tagName.outputs.tag }}
-          bintrayUser: ${{ secrets.BINTRAY_USER }}
-          bintrayApiKey: ${{ secrets.BINTRAY_TOKEN }}
-        run: ./gradlew build publish bintrayUpload
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}

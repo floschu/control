@@ -18,18 +18,8 @@ import kotlin.test.assertTrue
 internal class LogTest {
 
     @Test
-    fun `setting default logger`() {
-        ControllerLog.default = ControllerLog.Println
-        assertEquals(ControllerLog.Println, ControllerLog.default)
-
-        ControllerLog.default = ControllerLog.None
-        assertEquals(ControllerLog.None, ControllerLog.default)
-    }
-
-    @Test
     fun `none logger, methods are not called`() {
-        val sut = spyk<ControllerLog.None>()
-        assertNull(sut.logger)
+        assertNull(ControllerLog.None.logger)
     }
 
     @Test

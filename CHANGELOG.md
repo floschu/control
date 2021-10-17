@@ -4,6 +4,14 @@
 
 - binary compatibility will now be verified and held up on every release.
 
+## `[0.14.0]` - 2021-10-17
+
+- Update kotlinx.coroutines to `1.5.2`.
+- Remove kotlin as `api` dependency.
+- Remove `ControllerLog.default`.
+- Lazily start controller when accessing `Controller.effects` field (#26)
+- `control-core` will now be deployed to mavenCentral
+
 ## `[0.13.1]` - 2020-09-13
 
 - Remove `atomicfu`.

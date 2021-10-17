@@ -92,6 +92,21 @@ internal class StartTest {
     }
 
     @Test
+    fun `lazy start mode with effects`() {
+        val scope = TestCoroutineScope(Job())
+        val sut = scope.createSimpleCounterController(
+            controllerStart = ControllerStart.Lazy
+        )
+        assertFalse(sut.stateJob.isActive)
+
+        sut.effects
+        assertTrue(sut.stateJob.isActive)
+
+        scope.cancel()
+        assertFalse(sut.stateJob.isActive)
+    }
+
+    @Test
     fun `manual start mode`() {
         val scope = TestCoroutineScope(Job())
         val sut = scope.createSimpleCounterController(
@@ -102,6 +117,7 @@ internal class StartTest {
         sut.currentState
         sut.state
         sut.dispatch(1)
+        sut.effects
         assertFalse(sut.stateJob.isActive)
 
         val started = sut.start()
