@@ -11,6 +11,9 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -58,10 +61,12 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
     ) {
         val transformerContext = createTransformerContext(effectEmitter)
 
-        val actionFlow: Flow<Action> = transformerContext.actionsTransformer(actionSharedFlow)
+        val actionFlow: Flow<Action> = transformerContext.actionsTransformer(
+            actionSharedFlow.asSharedFlow()
+        )
 
         val mutatorContext = createMutatorContext(
-            stateAccessor = { currentState },
+            stateAccessor = { state.value },
             actionFlow = actionFlow,
             effectEmitter = effectEmitter
         )
@@ -103,14 +108,15 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
 
     // region controller
 
-    override val state: Flow<State>
+    override val state: StateFlow<State>
         get() = if (stubEnabled) {
-            stubbedStateFlow
+            stubbedStateFlow.asStateFlow()
         } else {
             if (controllerStart is ControllerStart.Lazy) start()
-            mutableStateFlow
+            mutableStateFlow.asStateFlow()
         }
 
+    @Suppress("OverridingDeprecatedMember")
     override val currentState: State
         get() = if (stubEnabled) {
             stubbedStateFlow.value

@@ -6,10 +6,14 @@ import at.florianschuster.test.flow.emissionCount
 import at.florianschuster.test.flow.emissions
 import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.testIn
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 internal class CounterControllerTest {
 
     @get:Rule
@@ -57,6 +61,6 @@ internal class CounterControllerTest {
         testCoroutineScope.advanceTimeBy(5000)
 
         // then
-        assertEquals(CounterState(-1, false), controller.currentState)
+        assertEquals(CounterState(-1, false), controller.state.value)
     }
 }

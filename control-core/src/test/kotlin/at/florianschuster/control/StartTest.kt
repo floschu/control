@@ -36,21 +36,6 @@ internal class StartTest {
     }
 
     @Test
-    fun `lazy start mode`() {
-        val scope = TestCoroutineScope(Job())
-        val sut = scope.createSimpleCounterController(
-            controllerStart = ControllerStart.Lazy
-        )
-        assertFalse(sut.stateJob.isActive)
-
-        sut.currentState
-        assertTrue(sut.stateJob.isActive)
-
-        scope.cancel()
-        assertFalse(sut.stateJob.isActive)
-    }
-
-    @Test
     fun `lazy start mode with currentState`() {
         val scope = TestCoroutineScope(Job())
         val sut = scope.createSimpleCounterController(
@@ -74,6 +59,21 @@ internal class StartTest {
         assertFalse(sut.stateJob.isActive)
 
         sut.state
+        assertTrue(sut.stateJob.isActive)
+
+        scope.cancel()
+        assertFalse(sut.stateJob.isActive)
+    }
+
+    @Test
+    fun `lazy start mode with state_value`() {
+        val scope = TestCoroutineScope(Job())
+        val sut = scope.createSimpleCounterController(
+            controllerStart = ControllerStart.Lazy
+        )
+        assertFalse(sut.stateJob.isActive)
+
+        sut.state.value
         assertTrue(sut.stateJob.isActive)
 
         scope.cancel()
@@ -120,6 +120,7 @@ internal class StartTest {
 
         sut.currentState
         sut.state
+        sut.state.value
         sut.dispatch(1)
         sut.effects
         assertFalse(sut.stateJob.isActive)

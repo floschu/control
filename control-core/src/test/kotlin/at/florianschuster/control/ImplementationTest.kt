@@ -11,7 +11,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -51,8 +50,10 @@ internal class ImplementationTest {
     @Test
     fun `state is created when accessing current state`() {
         val sut = testCoroutineScope.createOperationController()
-
         assertEquals(listOf("initialState", "transformedState"), sut.currentState)
+
+        val sut2 = testCoroutineScope.createOperationController()
+        assertEquals(listOf("initialState", "transformedState"), sut2.state.value)
     }
 
     @Test

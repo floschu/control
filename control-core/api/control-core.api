@@ -1,7 +1,7 @@
 public abstract interface class at/florianschuster/control/Controller {
 	public abstract fun dispatch (Ljava/lang/Object;)V
 	public abstract fun getCurrentState ()Ljava/lang/Object;
-	public abstract fun getState ()Lkotlinx/coroutines/flow/Flow;
+	public abstract fun getState ()Lkotlinx/coroutines/flow/StateFlow;
 }
 
 public abstract class at/florianschuster/control/ControllerEvent {

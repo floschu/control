@@ -13,12 +13,16 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.coVerifyOrder
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import org.junit.Rule
 import org.junit.Test
 import java.io.IOException
 import kotlin.test.assertFalse
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 internal class SearchViewModelTest {
 
     @get:Rule

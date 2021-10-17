@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
 
 /**
@@ -44,12 +45,17 @@ interface Controller<Action, State> {
     /**
      * The current [State].
      */
+    @Deprecated(
+        message = "Use state.value instead.",
+        replaceWith = ReplaceWith("state.value")
+    )
     val currentState: State
 
     /**
-     * The [State] [Flow]. Use this to collect [State] changes.
+     * The [State]. Use this to collect [State] changes
+     * or get the current [State] via [StateFlow.value].
      */
-    val state: Flow<State>
+    val state: StateFlow<State>
 }
 
 /**

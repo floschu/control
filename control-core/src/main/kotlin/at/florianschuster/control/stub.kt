@@ -16,7 +16,7 @@ interface ControllerStub<Action, State> : Controller<Action, State> {
     val dispatchedActions: List<Action>
 
     /**
-     * Emits a new [State] for [Controller.state] and [Controller.currentState].
+     * Emits a new [State] for [Controller.state].
      * Use this to verify if [State] is correctly bound to a view.
      */
     fun emitState(state: State)

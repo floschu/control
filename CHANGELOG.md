@@ -6,7 +6,9 @@
 
 ## `[0.15.0]` - 2021-XX-XX
 
-- Internal `BroadcastChannel` implementations changed to `SharedFlow`
+- Refactor `Controller.state` from `Flow<State>` to `StateFlow<State>`.
+- Deprecate `Controller.currentState`.
+- Internal `BroadcastChannel` implementations changed to `SharedFlow`.
 
 ## `[0.14.0]` - 2021-10-17
 

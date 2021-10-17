@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
 import org.junit.Test
@@ -29,7 +30,7 @@ internal class StubTest {
         val sut = object : Controller<Int, Int> {
             override fun dispatch(action: Int) = Unit
             override val currentState: Int get() = error("")
-            override val state: Flow<Int> get() = error("")
+            override val state: StateFlow<Int> get() = error("")
         }
 
         assertFailsWith<IllegalArgumentException> { sut.toStub() }
@@ -40,7 +41,7 @@ internal class StubTest {
         val sut = object : EffectController<Int, Int, Int> {
             override fun dispatch(action: Int) = Unit
             override val currentState: Int get() = error("")
-            override val state: Flow<Int> get() = error("")
+            override val state: StateFlow<Int> get() = error("")
             override val effects: Flow<Int> get() = error("")
         }
 
