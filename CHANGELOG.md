@@ -4,7 +4,7 @@
 
 - binary compatibility will now be verified and held up on every release.
 
-## `[0.15.0]` - 2021-XX-XX
+## `[0.15.0]` - 2021-10-20
 
 - Refactor `Controller.state` from `Flow<State>` to `StateFlow<State>`.
 - Deprecate `Controller.currentState`.
