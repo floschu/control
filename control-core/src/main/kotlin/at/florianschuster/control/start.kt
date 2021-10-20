@@ -11,8 +11,8 @@ sealed class ControllerStart {
     internal abstract val logName: String
 
     /**
-     * The state machine is started once [Controller.state], [Controller.currentState] or
-     * [Controller.dispatch] are accessed.
+     * The state machine is started once [Controller.state] or [Controller.dispatch]
+     * are accessed.
      */
     object Lazy : ControllerStart() {
         override val logName: String = "Lazy"

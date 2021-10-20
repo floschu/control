@@ -8,6 +8,8 @@ import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.lastEmission
 import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -29,6 +31,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 internal class ImplementationTest {
 
     @get:Rule
@@ -46,8 +50,10 @@ internal class ImplementationTest {
     @Test
     fun `state is created when accessing current state`() {
         val sut = testCoroutineScope.createOperationController()
-
         assertEquals(listOf("initialState", "transformedState"), sut.currentState)
+
+        val sut2 = testCoroutineScope.createOperationController()
+        assertEquals(listOf("initialState", "transformedState"), sut2.state.value)
     }
 
     @Test
@@ -283,7 +289,7 @@ internal class ImplementationTest {
         val scope = TestCoroutineScope()
         val sut = scope.createEffectTestController()
 
-        repeat(ControllerImplementation.EFFECTS_CAPACITY) { sut.dispatch(1) }
+        repeat(ControllerImplementation.CAPACITY) { sut.dispatch(1) }
         assertTrue(scope.uncaughtExceptions.isEmpty())
 
         sut.dispatch(1)

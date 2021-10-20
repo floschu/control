@@ -1,6 +1,8 @@
 package at.florianschuster.control
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.flowOf
@@ -10,6 +12,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 internal class StartTest {
 
     @Test
@@ -25,21 +29,6 @@ internal class StartTest {
         val sut = scope.createSimpleCounterController(
             controllerStart = ControllerStart.Immediately
         )
-        assertTrue(sut.stateJob.isActive)
-
-        scope.cancel()
-        assertFalse(sut.stateJob.isActive)
-    }
-
-    @Test
-    fun `lazy start mode`() {
-        val scope = TestCoroutineScope(Job())
-        val sut = scope.createSimpleCounterController(
-            controllerStart = ControllerStart.Lazy
-        )
-        assertFalse(sut.stateJob.isActive)
-
-        sut.currentState
         assertTrue(sut.stateJob.isActive)
 
         scope.cancel()
@@ -70,6 +59,21 @@ internal class StartTest {
         assertFalse(sut.stateJob.isActive)
 
         sut.state
+        assertTrue(sut.stateJob.isActive)
+
+        scope.cancel()
+        assertFalse(sut.stateJob.isActive)
+    }
+
+    @Test
+    fun `lazy start mode with state_value`() {
+        val scope = TestCoroutineScope(Job())
+        val sut = scope.createSimpleCounterController(
+            controllerStart = ControllerStart.Lazy
+        )
+        assertFalse(sut.stateJob.isActive)
+
+        sut.state.value
         assertTrue(sut.stateJob.isActive)
 
         scope.cancel()
@@ -116,6 +120,7 @@ internal class StartTest {
 
         sut.currentState
         sut.state
+        sut.state.value
         sut.dispatch(1)
         sut.effects
         assertFalse(sut.stateJob.isActive)

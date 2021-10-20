@@ -3,12 +3,14 @@ package at.florianschuster.control
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import org.junit.Test
 import java.lang.IllegalStateException
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
+@ExperimentalCoroutinesApi
 internal class DefaultScopeDispatcherTest {
 
     @Test

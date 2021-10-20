@@ -5,7 +5,10 @@ import at.florianschuster.test.flow.emissions
 import at.florianschuster.test.flow.expect
 import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
 import org.junit.Rule
 import org.junit.Test
@@ -15,6 +18,8 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 internal class StubTest {
 
     @get:Rule
@@ -25,7 +30,7 @@ internal class StubTest {
         val sut = object : Controller<Int, Int> {
             override fun dispatch(action: Int) = Unit
             override val currentState: Int get() = error("")
-            override val state: Flow<Int> get() = error("")
+            override val state: StateFlow<Int> get() = error("")
         }
 
         assertFailsWith<IllegalArgumentException> { sut.toStub() }
@@ -36,7 +41,7 @@ internal class StubTest {
         val sut = object : EffectController<Int, Int, Int> {
             override fun dispatch(action: Int) = Unit
             override val currentState: Int get() = error("")
-            override val state: Flow<Int> get() = error("")
+            override val state: StateFlow<Int> get() = error("")
             override val effects: Flow<Int> get() = error("")
         }
 

@@ -1,6 +1,8 @@
 package at.florianschuster.control
 
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.singleOrNull
@@ -8,6 +10,8 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Test
 import kotlin.test.assertEquals
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 @Suppress("UNCHECKED_CAST")
 internal class CreateControllerTest {
 
