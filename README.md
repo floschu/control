@@ -37,9 +37,10 @@ A [Controller](control-core/src/main/kotlin/at/florianschuster/control/Controlle
 1. [controller](https://github.com/floschu/control/wiki/controller)
 2. [view](https://github.com/floschu/control/wiki/view)
 3. [transformations](https://github.com/floschu/control/wiki/transformations)
-4. [controller testing](https://github.com/floschu/control/wiki/controller-testing)
-5. [view testing](https://github.com/floschu/control/wiki/view-testing)
-6. [logging](https://github.com/floschu/control/wiki/logging)
+4. [effects](https://github.com/floschu/control/wiki/effects)
+5. [controller testing](https://github.com/floschu/control/wiki/controller-testing)
+6. [view testing](https://github.com/floschu/control/wiki/view-testing)
+7. [logging](https://github.com/floschu/control/wiki/logging)
 
 ## examples
 
