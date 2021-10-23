@@ -20,7 +20,7 @@ sealed class CounterAction {
 /**
  * mutations that are used to alter the state.
  */
-sealed class CounterMutation {
+private sealed class CounterMutation {
     object IncreaseValue : CounterMutation()
     object DecreaseValue : CounterMutation()
     data class SetLoading(val loading: Boolean) : CounterMutation()

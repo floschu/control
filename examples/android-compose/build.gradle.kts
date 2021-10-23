@@ -6,7 +6,7 @@ plugins {
 android {
     compileSdk = 31
     defaultConfig {
-        applicationId = "at.florianschuster.control.counterexample"
+        applicationId = "at.florianschuster.control.composeexample"
         minSdk = 23
         targetSdk = 31
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -18,8 +18,12 @@ android {
     sourceSets["main"].java.srcDir("src/main/kotlin")
     sourceSets["test"].java.srcDir("src/test/kotlin")
     sourceSets["androidTest"].java.srcDir("src/androidTest/kotlin")
-    buildFeatures {
-        viewBinding = true
+    buildFeatures { compose = true }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.1.0-alpha06"
+    }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
 }
 
@@ -27,16 +31,15 @@ dependencies {
     implementation(project(":control-core"))
     implementation(project(":examples:kotlin-counter"))
 
-    implementation("androidx.appcompat:appcompat:1.3.1")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.1")
-    implementation("io.github.reactivecircus.flowbinding:flowbinding-android:1.2.0")
-    implementation("io.github.reactivecircus.flowbinding:flowbinding-core:1.2.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
-    implementation("androidx.fragment:fragment-ktx:1.3.6")
-    debugImplementation("androidx.fragment:fragment-testing:1.3.6")
+    implementation("androidx.activity:activity-compose:1.3.1")
+    implementation("androidx.compose.ui:ui:1.1.0-alpha06")
+    implementation("androidx.compose.ui:ui-tooling:1.1.0-alpha06")
+    implementation("androidx.compose.material:material:1.1.0-alpha06")
+    implementation("androidx.compose.material:material-icons-core:1.1.0-alpha06")
 
     testImplementation("at.florianschuster.test:coroutines-test-extensions:0.1.2")
 
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.1.0-alpha06")
     androidTestImplementation("androidx.test:rules:1.4.0")
     androidTestImplementation("androidx.test:runner:1.4.0")
     androidTestImplementation("androidx.test:core-ktx:1.4.0")
