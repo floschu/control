@@ -1,33 +1,23 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     id("com.android.application")
     id("kotlin-android")
 }
 
 android {
-    compileSdkVersion(30)
+    compileSdk = 31
     defaultConfig {
         applicationId = "at.florianschuster.control.counterexample"
-        minSdkVersion(23)
-        targetSdkVersion(30)
-        versionCode = 1
-        versionName = "1.0.0"
+        minSdk = 23
+        targetSdk = 30
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    tasks.withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = JavaVersion.VERSION_1_8.toString()
-        }
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     sourceSets["main"].java.srcDir("src/main/kotlin")
     sourceSets["test"].java.srcDir("src/test/kotlin")
     sourceSets["androidTest"].java.srcDir("src/androidTest/kotlin")
-    sourceSets["debug"].java.srcDir("src/debug/kotlin")
     buildFeatures {
         viewBinding = true
     }
@@ -44,8 +34,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.3.1")
     implementation("androidx.fragment:fragment-ktx:1.3.6")
     debugImplementation("androidx.fragment:fragment-testing:1.3.6")
-
-    testImplementation("at.florianschuster.test:coroutines-test-extensions:0.1.2")
 
     androidTestImplementation("androidx.test:rules:1.4.0")
     androidTestImplementation("androidx.test:runner:1.4.0")
