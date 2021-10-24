@@ -71,7 +71,7 @@ internal class SearchView : Fragment(R.layout.view_search) {
         // effect
         viewModel.controller.effects.onEach { effect ->
             when (effect) {
-                is SearchViewModel.Effect.NetworkError -> {
+                is SearchViewModel.Effect.NotifyNetworkError -> {
                     binding.root.showSnackBar(R.string.info_network_error)
                 }
             }

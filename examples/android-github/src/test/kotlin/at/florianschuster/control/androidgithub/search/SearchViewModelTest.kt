@@ -129,7 +129,7 @@ internal class SearchViewModelTest {
             SearchViewModel.State(query = query, loadingNextPage = true),
             SearchViewModel.State(query = query, loadingNextPage = false)
         )
-        effects expect emissions(SearchViewModel.Effect.NetworkError)
+        effects expect emissions(SearchViewModel.Effect.NotifyNetworkError)
     }
 
     @Test

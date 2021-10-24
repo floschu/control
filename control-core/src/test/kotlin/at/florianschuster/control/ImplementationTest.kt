@@ -71,7 +71,7 @@ internal class ImplementationTest {
                 "transformedMutation",
                 "transformedState"
             ),
-            sut.currentState
+            sut.state.value
         )
     }
 
@@ -168,7 +168,7 @@ internal class ImplementationTest {
         testCoroutineScope.advanceTimeBy(1000)
         sut.dispatch(StopWatchAction.Stop)
 
-        assertTrue(sut.currentState == 10) // 2+3+4+1
+        assertTrue(sut.state.value == 10) // 2+3+4+1
 
         testCoroutineScope.advanceUntilIdle()
     }
@@ -432,9 +432,9 @@ internal class ImplementationTest {
         controllerLog = ControllerLog.None
     )
 
-    private sealed class StopWatchAction {
-        object Start : StopWatchAction()
-        object Stop : StopWatchAction()
+    private sealed interface StopWatchAction {
+        object Start : StopWatchAction
+        object Stop : StopWatchAction
     }
 
     private fun CoroutineScope.createStopWatchController() =

@@ -163,14 +163,14 @@ fun <Action, Mutation, State> CoroutineScope.createController(
  * Example:
  *
  * ```
- * sealed class Action {
- *     object AddZero : Action()
- *     object AddOne : Action()
- *     object AddTwo : Action()
+ * sealed interface Action {
+ *     object AddZero : Action
+ *     object AddOne : Action
+ *     object AddTwo : Action
  * }
  *
- * sealed class Mutation {
- *     object Add : Mutation()
+ * sealed interface Mutation {
+ *     object Add : Mutation
  * }
  *
  * mutator = { action ->
@@ -211,9 +211,9 @@ interface MutatorContext<Action, State> {
  * Example:
  *
  * ```
- * sealed class Mutation {
- *     object Add : Mutation()
- *     data class Set(val valueToSet: Int) : Mutation()
+ * sealed interface Mutation {
+ *     object Add : Mutation
+ *     data class Set(val valueToSet: Int) : Mutation
  * }
  *
  * data class State(val value: Int)

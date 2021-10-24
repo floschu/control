@@ -26,16 +26,16 @@ internal class SearchViewModel(
     controllerDispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : ViewModel() {
 
-    sealed class Action {
-        data class UpdateQuery(val text: String) : Action()
-        object LoadNextPage : Action()
+    sealed interface Action {
+        data class UpdateQuery(val text: String) : Action
+        object LoadNextPage : Action
     }
 
-    sealed class Mutation {
-        data class SetQuery(val query: String) : Mutation()
-        data class SetRepos(val repos: List<Repository>) : Mutation()
-        data class AppendRepos(val repos: List<Repository>) : Mutation()
-        data class SetLoadingNextPage(val loading: Boolean) : Mutation()
+    sealed interface Mutation {
+        data class SetQuery(val query: String) : Mutation
+        data class SetRepos(val repos: List<Repository>) : Mutation
+        data class AppendRepos(val repos: List<Repository>) : Mutation
+        data class SetLoadingNextPage(val loading: Boolean) : Mutation
     }
 
     data class State(
@@ -45,8 +45,8 @@ internal class SearchViewModel(
         val loadingNextPage: Boolean = false
     )
 
-    sealed class Effect {
-        object NetworkError : Effect()
+    sealed interface Effect {
+        object NotifyNetworkError : Effect
     }
 
     val controller = viewModelScope.createEffectController<Action, Mutation, State, Effect>(
@@ -63,7 +63,7 @@ internal class SearchViewModel(
                         emitAll(
                             flow { emit(api.search(currentState.query, 1)) }
                                 .catch { error ->
-                                    emitEffect(Effect.NetworkError)
+                                    emitEffect(Effect.NotifyNetworkError)
                                     Log.w("GithubViewModel", error)
                                     emit(emptyList())
                                 }
@@ -85,7 +85,7 @@ internal class SearchViewModel(
                         val repos = kotlin.runCatching {
                             api.search(state.query, state.page + 1)
                         }.getOrElse { error ->
-                            emitEffect(Effect.NetworkError)
+                            emitEffect(Effect.NotifyNetworkError)
                             Log.w("GithubViewModel", error)
                             emptyList()
                         }

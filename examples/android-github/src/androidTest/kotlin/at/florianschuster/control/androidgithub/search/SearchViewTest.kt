@@ -73,7 +73,7 @@ internal class SearchViewTest {
     @Test
     fun whenNetworkErrorEffect_ThenSnackbarIsShown() {
         // when
-        stub.emitEffect(SearchViewModel.Effect.NetworkError)
+        stub.emitEffect(SearchViewModel.Effect.NotifyNetworkError)
 
         // then
         onView(withId(com.google.android.material.R.id.snackbar_text))
