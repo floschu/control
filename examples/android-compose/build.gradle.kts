@@ -40,13 +40,10 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling:1.1.0-alpha06")
     implementation("androidx.compose.material:material:1.1.0-alpha06")
     implementation("androidx.compose.material:material-icons-core:1.1.0-alpha06")
+    implementation("androidx.compose.material:material-icons-extended:1.1.0-alpha06")
 
     debugImplementation("androidx.compose.ui:ui-test-manifest:1.1.0-alpha06")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.1.0-alpha06")
-    androidTestImplementation("androidx.test:rules:1.4.0")
-    androidTestImplementation("androidx.test:runner:1.4.0")
-    androidTestImplementation("androidx.test:core-ktx:1.4.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
-    androidTestImplementation("at.florianschuster.test:coroutines-test-extensions:0.1.2")
     androidTestImplementation("androidx.test.ext:junit-ktx:1.1.3")
 }

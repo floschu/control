@@ -1,15 +1,20 @@
 package at.florianschuster.control.composeexample
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -17,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,21 +43,21 @@ internal fun CounterScreen(
 }
 
 @Composable
-internal fun CounterComponent(
+private fun CounterComponent(
     modifier: Modifier = Modifier,
     state: CounterState,
     onAction: (CounterAction) -> Unit = {}
 ) {
-    Column(
+    Box(
         modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
+        contentAlignment = Alignment.Center
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Button(
+            CounterButton(
                 modifier = Modifier.semantics { contentDescription = "decrement" },
+                imageVector = Icons.Default.RemoveCircle,
+                enabled = !state.loading,
                 onClick = { onAction(CounterAction.Decrement) },
-                content = { Text(text = "-") },
-                enabled = !state.loading
             )
             Spacer(modifier = Modifier.width(16.dp))
             Text(
@@ -59,19 +65,43 @@ internal fun CounterComponent(
                 text = "Value: ${state.value}"
             )
             Spacer(modifier = Modifier.width(16.dp))
-            Button(
+            CounterButton(
                 modifier = Modifier.semantics { contentDescription = "increment" },
+                imageVector = Icons.Default.AddCircle,
+                enabled = !state.loading,
                 onClick = { onAction(CounterAction.Increment) },
-                content = { Text(text = "+") },
-                enabled = !state.loading
             )
         }
         if (state.loading) {
             CircularProgressIndicator(
-                modifier = Modifier.semantics { contentDescription = "loading" },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 16.dp)
+                    .semantics { contentDescription = "loading" },
             )
         }
     }
+}
+
+@Composable
+private fun CounterButton(
+    modifier: Modifier = Modifier,
+    imageVector: ImageVector,
+    enabled: Boolean,
+    onClick: () -> Unit
+) {
+    IconButton(
+        modifier = modifier,
+        onClick = { onClick() },
+        enabled = enabled,
+        content = {
+            Icon(
+                imageVector = imageVector,
+                contentDescription = null,
+                tint = MaterialTheme.colors.primary,
+            )
+        }
+    )
 }
 
 @Preview
