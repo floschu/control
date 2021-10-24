@@ -8,7 +8,7 @@ android {
     defaultConfig {
         applicationId = "at.florianschuster.control.composeexample"
         minSdk = 23
-        targetSdk = 31
+        targetSdk = 30
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
