@@ -54,7 +54,10 @@ internal fun CounterComponent(
                 enabled = !state.loading
             )
             Spacer(modifier = Modifier.width(16.dp))
-            Text(text = "Value: ${state.value}")
+            Text(
+                modifier = Modifier.semantics { contentDescription = "value" },
+                text = "Value: ${state.value}"
+            )
             Spacer(modifier = Modifier.width(16.dp))
             Button(
                 modifier = Modifier.semantics { contentDescription = "increment" },
@@ -63,7 +66,11 @@ internal fun CounterComponent(
                 enabled = !state.loading
             )
         }
-        if (state.loading) CircularProgressIndicator()
+        if (state.loading) {
+            CircularProgressIndicator(
+                modifier = Modifier.semantics { contentDescription = "loading" },
+            )
+        }
     }
 }
 

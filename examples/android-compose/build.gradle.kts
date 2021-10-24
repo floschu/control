@@ -18,6 +18,10 @@ android {
     sourceSets["main"].java.srcDir("src/main/kotlin")
     sourceSets["test"].java.srcDir("src/test/kotlin")
     sourceSets["androidTest"].java.srcDir("src/androidTest/kotlin")
+    packagingOptions {
+        resources.excludes.add("META-INF/AL2.0")
+        resources.excludes.add("META-INF/LGPL2.1")
+    }
     buildFeatures { compose = true }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.1.0-alpha06"
@@ -37,8 +41,7 @@ dependencies {
     implementation("androidx.compose.material:material:1.1.0-alpha06")
     implementation("androidx.compose.material:material-icons-core:1.1.0-alpha06")
 
-    testImplementation("at.florianschuster.test:coroutines-test-extensions:0.1.2")
-
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.1.0-alpha06")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.1.0-alpha06")
     androidTestImplementation("androidx.test:rules:1.4.0")
     androidTestImplementation("androidx.test:runner:1.4.0")
