@@ -3,7 +3,6 @@ package at.florianschuster.control
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,15 +40,6 @@ interface Controller<Action, State> {
      * Dispatches an [Action] to be processed by this [Controller].
      */
     fun dispatch(action: Action)
-
-    /**
-     * The current [State].
-     */
-    @Deprecated(
-        message = "Use state.value instead.",
-        replaceWith = ReplaceWith("state.value")
-    )
-    val currentState: State
 
     /**
      * The [State]. Use this to collect [State] changes
@@ -100,7 +90,6 @@ interface Controller<Action, State> {
  * 3. [Transformer]
  * 4. [ControllerImplementation]
  */
-@ExperimentalCoroutinesApi
 @FlowPreview
 fun <Action, Mutation, State> CoroutineScope.createController(
 
@@ -188,7 +177,7 @@ fun <Action, Mutation, State> CoroutineScope.createController(
 typealias Mutator<Action, Mutation, State> = MutatorContext<Action, State>.(action: Action) -> Flow<Mutation>
 
 /**
- * The [MutatorContext] provides access to the [currentState] and the [actions] [Flow] in
+ * The [MutatorContext] provides access to the current [State] and the [actions] [Flow] in
  * a [Mutator].
  */
 interface MutatorContext<Action, State> {

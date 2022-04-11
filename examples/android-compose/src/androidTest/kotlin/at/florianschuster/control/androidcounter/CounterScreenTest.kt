@@ -13,10 +13,11 @@ import at.florianschuster.control.kotlincounter.createCounterController
 import at.florianschuster.control.toStub
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.TestScope
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.test.assertEquals
 
 @FlowPreview
 @ExperimentalCoroutinesApi
@@ -29,7 +30,7 @@ internal class CounterScreenTest {
 
     @Before
     fun setup() {
-        val scope = TestCoroutineScope()
+        val scope = TestScope()
         val controller = scope.createCounterController().toStub()
         composeTestRule.setContent {
             CounterScreen(scope = scope, controller = controller)
@@ -44,7 +45,7 @@ internal class CounterScreenTest {
             .performClick()
 
         // then
-        assert(CounterAction.Increment == stub.dispatchedActions.last())
+        assertEquals(CounterAction.Increment, stub.dispatchedActions.last())
     }
 
     @Test
@@ -54,7 +55,7 @@ internal class CounterScreenTest {
             .performClick()
 
         // then
-        assert(CounterAction.Decrement == stub.dispatchedActions.last())
+        assertEquals(CounterAction.Decrement, stub.dispatchedActions.last())
     }
 
     @Test

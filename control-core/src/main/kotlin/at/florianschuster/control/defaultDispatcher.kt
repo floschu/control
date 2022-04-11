@@ -9,7 +9,7 @@ import kotlin.coroutines.ContinuationInterceptor
  */
 internal fun CoroutineScope.defaultScopeDispatcher(): CoroutineDispatcher {
     val continuationInterceptor = coroutineContext[ContinuationInterceptor]
-    checkNotNull(continuationInterceptor) {
+    requireNotNull(continuationInterceptor) {
         "CoroutineScope does not have a ContinuationInterceptor"
     }
     return continuationInterceptor as CoroutineDispatcher

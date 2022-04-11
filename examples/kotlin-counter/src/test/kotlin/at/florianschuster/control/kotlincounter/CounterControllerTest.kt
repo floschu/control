@@ -1,14 +1,14 @@
 package at.florianschuster.control.kotlincounter
 
-import at.florianschuster.test.coroutines.TestCoroutineScopeRule
-import at.florianschuster.test.flow.TestFlow
-import at.florianschuster.test.flow.emissionCount
-import at.florianschuster.test.flow.emissions
-import at.florianschuster.test.flow.expect
-import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import org.junit.Rule
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -16,40 +16,35 @@ import kotlin.test.assertEquals
 @ExperimentalCoroutinesApi
 internal class CounterControllerTest {
 
-    @get:Rule
-    val testCoroutineScope = TestCoroutineScopeRule()
-
-    private lateinit var controller: CounterController
-    private lateinit var states: TestFlow<CounterState>
-
-    private fun `given counter controller`() {
-        controller = testCoroutineScope.createCounterController()
-        states = controller.state.testIn(testCoroutineScope)
-    }
-
     @Test
-    fun `action increment triggers correct flow`() {
+    fun `action increment triggers correct flow`() = runTest(UnconfinedTestDispatcher()) {
         // given
-        `given counter controller`()
+        val controller = createCounterController(initialValue = 0)
+        val states = mutableListOf<CounterState>()
+        launch { controller.state.toList(states) }
 
         // when
         controller.dispatch(CounterAction.Increment)
-        testCoroutineScope.advanceTimeBy(1000)
+        advanceUntilIdle()
 
         // then
-        states expect emissionCount(4)
-        states expect emissions(
-            CounterState(0, false),
-            CounterState(0, true),
-            CounterState(1, true),
-            CounterState(1, false)
+        assertEquals(
+            listOf(
+                CounterState(0, false),
+                CounterState(0, true),
+                CounterState(1, true),
+                CounterState(1, false)
+            ),
+            states
         )
+
+        coroutineContext.cancelChildren()
     }
 
     @Test
-    fun `actions trigger correct current state`() {
+    fun `actions trigger correct state`() = runTest(UnconfinedTestDispatcher()) {
         // given
-        `given counter controller`()
+        val controller = createCounterController(initialValue = 0)
 
         // when
         controller.dispatch(CounterAction.Increment)
@@ -58,9 +53,11 @@ internal class CounterControllerTest {
         controller.dispatch(CounterAction.Decrement)
         controller.dispatch(CounterAction.Decrement)
 
-        testCoroutineScope.advanceTimeBy(5000)
+        advanceUntilIdle()
 
         // then
         assertEquals(CounterState(-1, false), controller.state.value)
+
+        coroutineContext.cancelChildren()
     }
 }

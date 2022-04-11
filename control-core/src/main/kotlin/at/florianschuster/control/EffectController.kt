@@ -3,7 +3,6 @@ package at.florianschuster.control
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -37,7 +36,6 @@ interface EffectController<Action, State, Effect> : Controller<Action, State> {
  * An [Effect] can be emitted either in [mutator], [reducer], [actionsTransformer],
  * [mutationsTransformer] or [statesTransformer].
  */
-@ExperimentalCoroutinesApi
 @FlowPreview
 fun <Action, Mutation, State, Effect> CoroutineScope.createEffectController(
 
@@ -99,7 +97,7 @@ fun <Action, Mutation, State, Effect> CoroutineScope.createEffectController(
  * This is implemented by the respective context's of [EffectMutator], [EffectReducer]
  * and [EffectTransformer].
  */
-interface EffectEmitter<Effect> {
+fun interface EffectEmitter<Effect> {
 
     /**
      * Emits an [Effect].

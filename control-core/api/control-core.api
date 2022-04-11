@@ -1,6 +1,5 @@
 public abstract interface class at/florianschuster/control/Controller {
 	public abstract fun dispatch (Ljava/lang/Object;)V
-	public abstract fun getCurrentState ()Ljava/lang/Object;
 	public abstract fun getState ()Lkotlinx/coroutines/flow/StateFlow;
 }
 
@@ -98,14 +97,6 @@ public abstract interface class at/florianschuster/control/EffectReducerContext 
 public abstract interface class at/florianschuster/control/EffectTransformerContext : at/florianschuster/control/EffectEmitter, at/florianschuster/control/TransformerContext {
 }
 
-public final class at/florianschuster/control/ExtensionsKt {
-	public static final fun bind (Lkotlinx/coroutines/flow/Flow;Lkotlin/jvm/functions/Function1;)Lkotlinx/coroutines/flow/Flow;
-	public static final fun distinctMap (Lkotlinx/coroutines/flow/Flow;Lkotlin/jvm/functions/Function1;)Lkotlinx/coroutines/flow/Flow;
-	public static final fun takeUntil (Lkotlinx/coroutines/flow/Flow;Lkotlinx/coroutines/flow/Flow;)Lkotlinx/coroutines/flow/Flow;
-	public static final fun takeUntil (Lkotlinx/coroutines/flow/Flow;ZLkotlin/jvm/functions/Function2;)Lkotlinx/coroutines/flow/Flow;
-	public static synthetic fun takeUntil$default (Lkotlinx/coroutines/flow/Flow;ZLkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
-}
-
 public abstract interface class at/florianschuster/control/LoggerContext {
 	public abstract fun getEvent ()Lat/florianschuster/control/ControllerEvent;
 }
@@ -121,6 +112,12 @@ public abstract interface class at/florianschuster/control/ReducerContext {
 public final class at/florianschuster/control/StubKt {
 	public static final fun toStub (Lat/florianschuster/control/Controller;)Lat/florianschuster/control/ControllerStub;
 	public static final fun toStub (Lat/florianschuster/control/EffectController;)Lat/florianschuster/control/EffectControllerStub;
+}
+
+public final class at/florianschuster/control/TakeUntilKt {
+	public static final fun takeUntil (Lkotlinx/coroutines/flow/Flow;Lkotlinx/coroutines/flow/Flow;)Lkotlinx/coroutines/flow/Flow;
+	public static final fun takeUntil (Lkotlinx/coroutines/flow/Flow;ZLkotlin/jvm/functions/Function2;)Lkotlinx/coroutines/flow/Flow;
+	public static synthetic fun takeUntil$default (Lkotlinx/coroutines/flow/Flow;ZLkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
 }
 
 public abstract interface class at/florianschuster/control/TransformerContext {

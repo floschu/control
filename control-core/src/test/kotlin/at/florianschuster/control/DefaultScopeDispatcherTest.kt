@@ -4,9 +4,8 @@ import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
 import org.junit.Test
-import java.lang.IllegalStateException
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
@@ -24,7 +23,7 @@ internal class DefaultScopeDispatcherTest {
 
     @Test
     fun `test dispatcher`() {
-        val expectedDispatcher = TestCoroutineDispatcher()
+        val expectedDispatcher = StandardTestDispatcher()
         assertEquals(
             expectedDispatcher,
             CoroutineScope(expectedDispatcher).defaultScopeDispatcher()
@@ -34,6 +33,6 @@ internal class DefaultScopeDispatcherTest {
     @Test
     fun `scope without interceptor fails`() {
         val scope = CoroutineScope(CoroutineName("name"))
-        assertFailsWith<IllegalStateException> { scope.defaultScopeDispatcher() }
+        assertFailsWith<IllegalArgumentException> { scope.defaultScopeDispatcher() }
     }
 }

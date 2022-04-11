@@ -1,20 +1,19 @@
 buildscript {
     repositories {
         google()
-        jcenter()
         mavenCentral()
         maven(url = "https://plugins.gradle.org/m2/")
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31")
-        classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.0")
-        classpath("org.jetbrains.kotlinx:binary-compatibility-validator:0.7.1")
-        classpath("com.vanniktech:gradle-maven-publish-plugin:0.18.0")
-        classpath("org.jetbrains.dokka:dokka-gradle-plugin:1.5.31")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10")
+        classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.4")
+        classpath("org.jetbrains.kotlinx:binary-compatibility-validator:0.8.0")
+        classpath("com.vanniktech:gradle-maven-publish-plugin:0.19.0")
+        classpath("org.jetbrains.dokka:dokka-gradle-plugin:1.6.10")
 
-        classpath("com.android.tools.build:gradle:7.0.3")
-        classpath("org.jetbrains.kotlin:kotlin-serialization:1.5.31")
+        classpath("com.android.tools.build:gradle:7.0.4")
+        classpath("org.jetbrains.kotlin:kotlin-serialization:1.6.20")
     }
 }
 
@@ -23,6 +22,7 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint").version("10.0.0")
     `maven-publish`
     signing
+    id("com.github.ben-manes.versions").version("0.42.0")
 }
 
 // ---- api-validation --- //

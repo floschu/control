@@ -4,5 +4,7 @@ plugins {
 
 dependencies {
     implementation(project(":control-core"))
-    testImplementation("at.florianschuster.test:coroutines-test-extensions:0.1.2")
+
+    testImplementation(kotlin("test"))
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1")
 }

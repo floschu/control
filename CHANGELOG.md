@@ -1,8 +1,10 @@
 # changelog
 
-## `[1.0.0]` - Unreleased
+## `[1.0.0]` - 2022-04-11
 
-- binary compatibility will now be verified and held up on every release.
+- Remove `Controller.currentState`.
+- Remove `Flow.bind` and `Flow.distinctMap` extensions.
+- Binary compatibility will now be verified and held up on every release.
 
 ## `[0.15.0]` - 2021-10-20
 

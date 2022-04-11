@@ -1,31 +1,10 @@
 package at.florianschuster.control
 
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-
-/**
- * Binds a [Flow] to an non suspending block.
- */
-fun <T> Flow<T>.bind(
-    to: (T) -> Unit
-): Flow<T> = onEach { to(it) }
-
-/**
- * Maps emissions of a [Flow] and only emits those that are distinct from their immediate
- * predecessors.
- */
-@ExperimentalCoroutinesApi
-fun <State, SubState> Flow<State>.distinctMap(
-    by: (State) -> SubState
-): Flow<SubState> = map { by(it) }.distinctUntilChanged()
 
 /**
  * Discard any emissions by a [Flow] of [T] if emission matches [predicate].

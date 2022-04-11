@@ -1,46 +1,21 @@
 package at.florianschuster.control
 
-import io.mockk.spyk
-import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
-internal class ExtensionsTest {
+internal class TakeUntilTest {
 
     @Test
-    fun `bind lambda emits values correctly`() = runBlockingTest {
-        val lambda = spyk<(Int) -> Unit>()
-        flow {
-            emit(1)
-            emit(2)
-        }.bind(to = lambda).launchIn(this)
-
-        verify(exactly = 2) { lambda.invoke(any()) }
-    }
-
-    @Test(expected = IllegalStateException::class)
-    fun `bind lambda throws error`() = runBlockingTest {
-        flow<Int> { error("test") }.bind { }.launchIn(this)
-    }
-
-    @Test
-    fun `distinctMap works`() = runBlockingTest {
-        val result = listOf(0, 1, 1, 2, 2, 3, 4, 4, 5, 5).asFlow().distinctMap { it * 2 }.toList()
-        assertEquals(listOf(0, 2, 4, 6, 8, 10), result)
-    }
-
-    @Test
-    fun `takeUntil with predicate`() = runBlockingTest {
+    fun `takeUntil with predicate`() = runTest {
         val numberFlow = (0..10).asFlow()
         val list = numberFlow.takeUntil { it == 5 }.toList()
         val inclusiveList = numberFlow.takeUntil(inclusive = true) { it == 5 }.toList()
@@ -50,7 +25,7 @@ internal class ExtensionsTest {
     }
 
     @Test
-    fun `takeUntil with other flow`() = runBlockingTest {
+    fun `takeUntil with other flow`() = runTest {
         val numberFlow = (0..10).asFlow().map { delay(100); it }
 
         val shortResult = numberFlow.takeUntil(flow { delay(501); emit(Unit) }).toList()
