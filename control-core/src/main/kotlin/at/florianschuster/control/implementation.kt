@@ -4,7 +4,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -28,7 +27,6 @@ import kotlinx.coroutines.launch
 /**
  * An implementation of [Controller].
  */
-@ExperimentalCoroutinesApi
 @FlowPreview
 internal class ControllerImplementation<Action, Mutation, State, Effect>(
     val scope: CoroutineScope,
@@ -61,9 +59,8 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
     ) {
         val transformerContext = createTransformerContext(effectEmitter)
 
-        val actionFlow: Flow<Action> = transformerContext.actionsTransformer(
-            actionSharedFlow.asSharedFlow()
-        )
+        val actionFlow: Flow<Action> = transformerContext
+            .actionsTransformer(actionSharedFlow.asSharedFlow())
 
         val mutatorContext = createMutatorContext(
             stateAccessor = { state.value },
@@ -114,15 +111,6 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
         } else {
             if (controllerStart is ControllerStart.Lazy) start()
             mutableStateFlow.asStateFlow()
-        }
-
-    @Suppress("OverridingDeprecatedMember")
-    override val currentState: State
-        get() = if (stubEnabled) {
-            stubbedStateFlow.value
-        } else {
-            if (controllerStart is ControllerStart.Lazy) start()
-            mutableStateFlow.value
         }
 
     override fun dispatch(action: Action) {

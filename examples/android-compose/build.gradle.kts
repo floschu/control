@@ -23,9 +23,7 @@ android {
         resources.excludes.add("META-INF/LGPL2.1")
     }
     buildFeatures { compose = true }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.1.0-alpha06"
-    }
+    composeOptions { kotlinCompilerExtensionVersion = "1.1.1" }
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
@@ -35,15 +33,16 @@ dependencies {
     implementation(project(":control-core"))
     implementation(project(":examples:kotlin-counter"))
 
-    implementation("androidx.activity:activity-compose:1.3.1")
-    implementation("androidx.compose.ui:ui:1.1.0-alpha06")
-    implementation("androidx.compose.ui:ui-tooling:1.1.0-alpha06")
-    implementation("androidx.compose.material:material:1.1.0-alpha06")
-    implementation("androidx.compose.material:material-icons-core:1.1.0-alpha06")
-    implementation("androidx.compose.material:material-icons-extended:1.1.0-alpha06")
+    implementation("androidx.activity:activity-compose:1.4.0")
+    implementation("androidx.compose.ui:ui:1.1.1")
+    implementation("androidx.compose.ui:ui-tooling:1.1.1")
+    implementation("androidx.compose.material:material:1.1.1")
+    implementation("androidx.compose.material:material-icons-core:1.1.1")
+    implementation("androidx.compose.material:material-icons-extended:1.1.1")
 
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.1.0-alpha06")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.1.0-alpha06")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.1.1")
+    androidTestImplementation(kotlin("test"))
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.1.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
     androidTestImplementation("androidx.test.ext:junit-ktx:1.1.3")
 }

@@ -24,7 +24,7 @@ import kotlin.test.assertEquals
 
 internal class SearchViewTest {
 
-    private lateinit var stub: EffectControllerStub<SearchViewModel.Action, SearchViewModel.State, SearchViewModel.Effect>
+    private lateinit var stub: EffectControllerStub<SearchAction, SearchState, SearchEffect>
 
     @Before
     fun setup() {
@@ -50,7 +50,7 @@ internal class SearchViewTest {
 
         // then
         assertEquals(
-            SearchViewModel.Action.UpdateQuery(testQuery),
+            SearchAction.UpdateQuery(testQuery),
             stub.dispatchedActions.last()
         )
     }
@@ -58,13 +58,13 @@ internal class SearchViewTest {
     @Test
     fun whenStateOffersLoadingNextPage_ThenProgressBarIsShown() {
         // when
-        stub.emitState(SearchViewModel.State(loadingNextPage = true))
+        stub.emitState(SearchState(loadingNextPage = true))
 
         // then
         onView(withId(R.id.loadingProgressBar)).check(matches(isDisplayed()))
 
         // when
-        stub.emitState(SearchViewModel.State(loadingNextPage = false))
+        stub.emitState(SearchState(loadingNextPage = false))
 
         // then
         onView(withId(R.id.loadingProgressBar)).check(matches(not(isDisplayed())))
@@ -73,7 +73,7 @@ internal class SearchViewTest {
     @Test
     fun whenNetworkErrorEffect_ThenSnackbarIsShown() {
         // when
-        stub.emitEffect(SearchViewModel.Effect.NotifyNetworkError)
+        stub.emitEffect(SearchEffect.NotifyNetworkError)
 
         // then
         onView(withId(com.google.android.material.R.id.snackbar_text))

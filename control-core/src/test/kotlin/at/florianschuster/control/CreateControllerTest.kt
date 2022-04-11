@@ -3,10 +3,11 @@ package at.florianschuster.control
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.singleOrNull
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -16,7 +17,7 @@ import kotlin.test.assertEquals
 internal class CreateControllerTest {
 
     @Test
-    fun `default parameters of controller builder`() = runBlockingTest {
+    fun `controller builder`() = runTest {
         val expectedInitialState = 42
         val sut = createController<Int, Int, Int>(
             initialState = expectedInitialState
@@ -37,10 +38,12 @@ internal class CreateControllerTest {
 
         assertEquals(ControllerStart.Lazy, sut.controllerStart)
         assertEquals(defaultScopeDispatcher(), sut.dispatcher)
+
+        coroutineContext.cancelChildren()
     }
 
     @Test
-    fun `default parameters of effect controller builder`() = runBlockingTest {
+    fun `effect controller builder`() = runTest {
         val expectedInitialState = 42
         val sut = createEffectController<Int, Int, Int, Int>(
             initialState = expectedInitialState
@@ -61,5 +64,7 @@ internal class CreateControllerTest {
 
         assertEquals(ControllerStart.Lazy, sut.controllerStart)
         assertEquals(defaultScopeDispatcher(), sut.dispatcher)
+
+        coroutineContext.cancelChildren()
     }
 }

@@ -6,12 +6,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import at.florianschuster.control.ControllerEvent
 import at.florianschuster.control.ControllerLog
+import at.florianschuster.control.EffectController
 import at.florianschuster.control.androidgithub.GithubApi
 import at.florianschuster.control.androidgithub.model.Repository
 import at.florianschuster.control.createEffectController
 import at.florianschuster.control.takeUntil
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
@@ -21,106 +21,114 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 internal class SearchViewModel(
-    initialState: State = State(),
-    private val api: GithubApi = GithubApi(),
-    controllerDispatcher: CoroutineDispatcher = Dispatchers.Default
+    api: GithubApi = GithubApi(),
 ) : ViewModel() {
 
-    sealed interface Action {
-        data class UpdateQuery(val text: String) : Action
-        object LoadNextPage : Action
-    }
-
-    sealed interface Mutation {
-        data class SetQuery(val query: String) : Mutation
-        data class SetRepos(val repos: List<Repository>) : Mutation
-        data class AppendRepos(val repos: List<Repository>) : Mutation
-        data class SetLoadingNextPage(val loading: Boolean) : Mutation
-    }
-
-    data class State(
-        val query: String = "",
-        val repos: List<Repository> = emptyList(),
-        val page: Int = 1,
-        val loadingNextPage: Boolean = false
-    )
-
-    sealed interface Effect {
-        object NotifyNetworkError : Effect
-    }
-
-    val controller = viewModelScope.createEffectController<Action, Mutation, State, Effect>(
-        initialState = initialState,
-
-        mutator = { action ->
-            when (action) {
-                is Action.UpdateQuery -> flow {
-                    emit(Mutation.SetQuery(action.text))
-                    if (action.text.isNotEmpty()) {
-                        emit(Mutation.SetLoadingNextPage(true))
-
-                        // flow search
-                        emitAll(
-                            flow { emit(api.search(currentState.query, 1)) }
-                                .catch { error ->
-                                    emitEffect(Effect.NotifyNetworkError)
-                                    Log.w("GithubViewModel", error)
-                                    emit(emptyList())
-                                }
-                                .filter { it.isNotEmpty() }
-                                .map { Mutation.SetRepos(it) }
-                                .takeUntil(actions.filterIsInstance<Action.UpdateQuery>())
-                        )
-
-                        emit(Mutation.SetLoadingNextPage(false))
-                    }
-                }
-                is Action.LoadNextPage -> when {
-                    currentState.loadingNextPage -> emptyFlow()
-                    else -> flow {
-                        val state = currentState
-                        emit(Mutation.SetLoadingNextPage(true))
-
-                        // suspending search
-                        val repos = kotlin.runCatching {
-                            api.search(state.query, state.page + 1)
-                        }.getOrElse { error ->
-                            emitEffect(Effect.NotifyNetworkError)
-                            Log.w("GithubViewModel", error)
-                            emptyList()
-                        }
-                        emit(Mutation.AppendRepos(repos))
-
-                        emit(Mutation.SetLoadingNextPage(false))
-                    }
-                }
-            }
-        },
-
-        reducer = { mutation, previousState ->
-            when (mutation) {
-                is Mutation.SetQuery -> previousState.copy(query = mutation.query)
-                is Mutation.SetRepos -> previousState.copy(repos = mutation.repos, page = 1)
-                is Mutation.AppendRepos -> previousState.copy(
-                    repos = previousState.repos + mutation.repos,
-                    page = previousState.page + 1
-                )
-                is Mutation.SetLoadingNextPage -> previousState.copy(loadingNextPage = mutation.loading)
-            }
-        },
-
-        // viewModelScope uses Dispatchers.Main, we do not want to run on Main
-        dispatcher = controllerDispatcher,
-
-        controllerLog = ControllerLog.Custom { message ->
-            if (event is ControllerEvent.State) Log.d("GithubViewModel", message)
-        }
+    val controller = viewModelScope.createSearchController(
+        initialState = SearchState(),
+        api = api
     )
 
     companion object {
         internal var Factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T = SearchViewModel() as T
+            override fun <T : ViewModel> create(modelClass: Class<T>): T = SearchViewModel() as T
         }
     }
 }
+
+internal sealed interface SearchAction {
+    data class UpdateQuery(val text: String) : SearchAction
+    object LoadNextPage : SearchAction
+}
+
+private sealed interface SearchMutation {
+    data class SetQuery(val query: String) : SearchMutation
+    data class SetRepos(val repos: List<Repository>) : SearchMutation
+    data class AppendRepos(val repos: List<Repository>) : SearchMutation
+    data class SetLoadingNextPage(val loading: Boolean) : SearchMutation
+}
+
+internal data class SearchState(
+    val query: String = "",
+    val repos: List<Repository> = emptyList(),
+    val page: Int = 1,
+    val loadingNextPage: Boolean = false
+)
+
+internal sealed interface SearchEffect {
+    object NotifyNetworkError : SearchEffect
+}
+
+internal fun CoroutineScope.createSearchController(
+    initialState: SearchState,
+    api: GithubApi
+): EffectController<SearchAction, SearchState, SearchEffect> = createEffectController(
+    initialState = initialState,
+
+    mutator = { action ->
+        when (action) {
+            is SearchAction.UpdateQuery -> flow {
+                emit(SearchMutation.SetQuery(action.text))
+
+                if (action.text.isNotEmpty()) {
+                    emit(SearchMutation.SetLoadingNextPage(true))
+
+                    emitAll(
+                        flow { emit(api.search(action.text, 1)) }
+                            .catch { error ->
+                                emitEffect(SearchEffect.NotifyNetworkError)
+                                Log.w("GithubViewModel", error)
+                                emit(emptyList())
+                            }
+                            .filter { repos -> repos.isNotEmpty() }
+                            .map { repos -> SearchMutation.SetRepos(repos) }
+                            .takeUntil(actions.filterIsInstance<SearchAction.UpdateQuery>())
+                    )
+
+                    emit(SearchMutation.SetLoadingNextPage(false))
+                }
+            }
+            is SearchAction.LoadNextPage -> when {
+                currentState.loadingNextPage -> emptyFlow()
+                else -> flow {
+                    emit(SearchMutation.SetLoadingNextPage(true))
+
+                    val repos = kotlin.runCatching {
+                        api.search(currentState.query, currentState.page + 1)
+                    }.getOrElse { error ->
+                        emitEffect(SearchEffect.NotifyNetworkError)
+                        Log.w("GithubViewModel", error)
+                        emptyList()
+                    }
+                    emit(SearchMutation.AppendRepos(repos))
+
+                    emit(SearchMutation.SetLoadingNextPage(false))
+                }
+            }
+        }
+    },
+
+    reducer = { mutation, previousState ->
+        when (mutation) {
+            is SearchMutation.SetQuery -> previousState.copy(
+                query = mutation.query
+            )
+            is SearchMutation.SetRepos -> previousState.copy(
+                repos = mutation.repos,
+                page = 1
+            )
+            is SearchMutation.AppendRepos -> previousState.copy(
+                repos = previousState.repos + mutation.repos,
+                page = previousState.page + 1
+            )
+            is SearchMutation.SetLoadingNextPage -> previousState.copy(
+                loadingNextPage = mutation.loading
+            )
+        }
+    },
+
+    controllerLog = ControllerLog.Custom { message ->
+        if (event is ControllerEvent.State) Log.d("GithubViewModel", message)
+    }
+)

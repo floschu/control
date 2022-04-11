@@ -1,16 +1,16 @@
 package at.florianschuster.control
 
-import at.florianschuster.test.coroutines.TestCoroutineScopeRule
-import at.florianschuster.test.flow.emissions
-import at.florianschuster.test.flow.expect
-import at.florianschuster.test.flow.testIn
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
-import org.junit.Rule
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.Test
 import java.lang.IllegalArgumentException
 import kotlin.test.assertEquals
@@ -22,14 +22,10 @@ import kotlin.test.assertTrue
 @ExperimentalCoroutinesApi
 internal class StubTest {
 
-    @get:Rule
-    val testCoroutineScope = TestCoroutineScopeRule()
-
     @Test
     fun `custom controller implementation cannot be stubbed`() {
         val sut = object : Controller<Int, Int> {
             override fun dispatch(action: Int) = Unit
-            override val currentState: Int get() = error("")
             override val state: StateFlow<Int> get() = error("")
         }
 
@@ -40,7 +36,6 @@ internal class StubTest {
     fun `custom EffectController implementation cannot be stubbed`() {
         val sut = object : EffectController<Int, Int, Int> {
             override fun dispatch(action: Int) = Unit
-            override val currentState: Int get() = error("")
             override val state: StateFlow<Int> get() = error("")
             override val effects: Flow<Int> get() = error("")
         }
@@ -50,88 +45,118 @@ internal class StubTest {
 
     @Test
     fun `Controller stub is enabled only after conversion()`() {
-        val sut = testCoroutineScope.createStringController()
+        val scope = TestScope()
+        val sut = scope.createStringController()
         assertFalse(sut.stubEnabled)
 
         (sut as Controller<List<String>, List<String>>).toStub()
         assertTrue(sut.stubEnabled)
+
+        scope.cancel()
     }
 
     @Test
     fun `EffectController stub is enabled only after conversion()`() {
-        val sut = testCoroutineScope.createStringController()
-        assertFalse(sut.stubEnabled)
+        val scope = TestScope()
+        val sut = scope.createStringController()
 
+        assertFalse(sut.stubEnabled)
         (sut as EffectController<List<String>, List<String>, String>).toStub()
         assertTrue(sut.stubEnabled)
+
+        scope.cancel()
     }
 
     @Test
     fun `stub actions are recorded correctly`() {
+        val scope = TestScope(UnconfinedTestDispatcher())
         val expectedActions = listOf(
             listOf("one"),
             listOf("two"),
             listOf("three")
         )
-        val sut = testCoroutineScope.createStringController().apply { toStub() }
+        val sut = scope.createStringController().apply { toStub() }
 
         expectedActions.forEach(sut::dispatch)
 
-        assertEquals(expectedActions, sut.toStub().dispatchedActions)
+        assertEquals(expectedActions, sut.dispatchedActions)
+
+        scope.cancel()
     }
 
     @Test
     fun `stub set state`() {
+        val scope = TestScope(UnconfinedTestDispatcher())
         val expectedStates = listOf(
             listOf("one"),
             listOf("two"),
             listOf("three")
         )
-        val sut = testCoroutineScope.createStringController().apply { toStub() }
-        val testFlow = sut.state.testIn(testCoroutineScope)
+        val sut = scope.createStringController().apply { toStub() }
+        val states = mutableListOf<List<String>>()
+        scope.launch { sut.state.toList(states) }
 
-        expectedStates.forEach(sut.toStub()::emitState)
+        expectedStates.forEach(sut::emitState)
 
-        testFlow expect emissions(listOf(initialState) + expectedStates)
+        assertEquals(
+            listOf(initialState) + expectedStates,
+            states
+        )
+
+        scope.cancel()
     }
 
     @Test
     fun `stub state contains latest and following states`() {
+        val scope = TestScope(UnconfinedTestDispatcher())
         val expectedStates = listOf(
             listOf("one"),
             listOf("two"),
             listOf("three")
         )
-        val sut = testCoroutineScope.createStringController().apply { toStub() }
+        val sut = scope.createStringController().apply { toStub() }
 
         sut.toStub().emitState(listOf("something 1"))
         sut.toStub().emitState(listOf("something 2"))
 
-        val testFlow = sut.state.testIn(testCoroutineScope)
+        val states = mutableListOf<List<String>>()
+        scope.launch { sut.state.toList(states) }
 
         expectedStates.forEach(sut.toStub()::emitState)
 
-        testFlow expect emissions(listOf(listOf("something 2")) + expectedStates)
+        assertEquals(listOf(listOf("something 2")) + expectedStates, states)
+
+        scope.cancel()
     }
 
     @Test
     fun `stub action does not trigger state machine`() {
-        val sut = testCoroutineScope.createStringController().apply { toStub() }
+        val scope = TestScope(UnconfinedTestDispatcher())
+        val sut = scope.createStringController().apply { toStub() }
 
         sut.dispatch(listOf("test"))
 
-        assertEquals(initialState, sut.currentState)
+        assertEquals(initialState, sut.state.value)
+
+        scope.cancel()
     }
 
     @Test
     fun `stub emits effects`() {
-        val sut = testCoroutineScope.createStringController().apply { toStub() }
-        val testFlow = sut.effects.testIn(testCoroutineScope)
+        val scope = TestScope(UnconfinedTestDispatcher())
+        val sut = scope.createStringController().apply { toStub() }
+        val effects = mutableListOf<String>()
+        scope.launch { sut.effects.toList(effects) }
 
         sut.emitEffect("effect1")
         sut.emitEffect("effect2")
 
-        testFlow expect emissions("effect1", "effect2")
+        assertEquals(
+            listOf("effect1", "effect2"),
+            effects
+        )
+
+        scope.cancel()
     }
 
     private fun CoroutineScope.createStringController() =

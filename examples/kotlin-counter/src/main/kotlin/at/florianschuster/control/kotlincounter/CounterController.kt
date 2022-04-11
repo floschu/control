@@ -37,10 +37,12 @@ data class CounterState(
 /**
  * creates a [CounterController] from the [CoroutineScope].
  */
-fun CoroutineScope.createCounterController(): CounterController = createController(
+fun CoroutineScope.createCounterController(
+    initialValue: Int = 0
+): CounterController = createController(
 
     // we start with the initial state
-    initialState = CounterState(value = 0, loading = false),
+    initialState = CounterState(value = initialValue, loading = false),
 
     // every action is transformed into [0..n] mutations
     mutator = { action ->

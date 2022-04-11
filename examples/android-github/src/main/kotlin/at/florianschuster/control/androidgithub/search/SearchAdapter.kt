@@ -16,11 +16,15 @@ internal class SearchAdapter(
     private val onItemClick: (Repository) -> Unit
 ) : ListAdapter<Repository, RepoViewHolder>(
     object : DiffUtil.ItemCallback<Repository>() {
-        override fun areItemsTheSame(oldItem: Repository, newItem: Repository): Boolean =
-            oldItem.id == newItem.id
+        override fun areItemsTheSame(
+            oldItem: Repository,
+            newItem: Repository
+        ): Boolean = oldItem.id == newItem.id
 
-        override fun areContentsTheSame(oldItem: Repository, newItem: Repository): Boolean =
-            oldItem == newItem
+        override fun areContentsTheSame(
+            oldItem: Repository,
+            newItem: Repository
+        ): Boolean = oldItem == newItem
     }
 ) {
 
