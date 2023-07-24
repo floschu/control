@@ -4,7 +4,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -27,7 +27,6 @@ import kotlinx.coroutines.launch
 /**
  * An implementation of [Controller].
  */
-@FlowPreview
 internal class ControllerImplementation<Action, Mutation, State, Effect>(
     val scope: CoroutineScope,
     val dispatcher: CoroutineDispatcher,
@@ -53,6 +52,7 @@ internal class ControllerImplementation<Action, Mutation, State, Effect>(
     )
     private val mutableStateFlow = MutableStateFlow(initialState)
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     internal val stateJob: Job = scope.launch(
         context = dispatcher + CoroutineName(tag),
         start = CoroutineStart.LAZY

@@ -1,8 +1,6 @@
 package at.florianschuster.control
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.flowOf
@@ -12,8 +10,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-@FlowPreview
-@ExperimentalCoroutinesApi
 internal class StartTest {
 
     @Test

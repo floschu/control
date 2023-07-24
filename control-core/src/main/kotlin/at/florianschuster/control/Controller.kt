@@ -3,7 +3,6 @@ package at.florianschuster.control
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.emptyFlow
@@ -90,7 +89,6 @@ interface Controller<Action, State> {
  * 3. [Transformer]
  * 4. [ControllerImplementation]
  */
-@FlowPreview
 fun <Action, Mutation, State> CoroutineScope.createController(
 
     /**

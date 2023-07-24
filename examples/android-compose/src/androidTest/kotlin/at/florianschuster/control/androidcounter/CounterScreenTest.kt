@@ -11,16 +11,12 @@ import at.florianschuster.control.kotlincounter.CounterAction
 import at.florianschuster.control.kotlincounter.CounterState
 import at.florianschuster.control.kotlincounter.createCounterController
 import at.florianschuster.control.toStub
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.test.TestScope
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
 
-@FlowPreview
-@ExperimentalCoroutinesApi
 internal class CounterScreenTest {
 
     @get:Rule

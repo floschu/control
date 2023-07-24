@@ -2,7 +2,6 @@ package at.florianschuster.control
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -10,8 +9,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-@FlowPreview
-@ExperimentalCoroutinesApi
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class EventTest {
 
     @Test
