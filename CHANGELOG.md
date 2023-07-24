@@ -1,5 +1,10 @@
 # changelog
 
+## `[1.1.0]` - 2023-07-24
+
+- Update Kotlin to `1.9.0`
+- Update kotlinx.coroutines to `1.7.2`
+
 ## `[1.0.0]` - 2022-04-11
 
 - Remove `Controller.currentState`.
