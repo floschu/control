@@ -6,7 +6,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
 import at.florianschuster.control.ControllerStub
-import at.florianschuster.control.composeexample.CounterScreen
+import at.florianschuster.control.androidcompose.CounterScreen
 import at.florianschuster.control.kotlincounter.CounterAction
 import at.florianschuster.control.kotlincounter.CounterState
 import at.florianschuster.control.kotlincounter.createCounterController

@@ -4,45 +4,46 @@ plugins {
 }
 
 android {
-    compileSdk = 31
+    namespace = "at.florianschuster.control.androidcompose"
+    compileSdk = 33
     defaultConfig {
-        applicationId = "at.florianschuster.control.composeexample"
+        applicationId = "at.florianschuster.control.androidcompose"
         minSdk = 23
-        targetSdk = 30
+        targetSdk = 33
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     sourceSets["main"].java.srcDir("src/main/kotlin")
     sourceSets["test"].java.srcDir("src/test/kotlin")
     sourceSets["androidTest"].java.srcDir("src/androidTest/kotlin")
-    packagingOptions {
+    packaging {
         resources.excludes.add("META-INF/AL2.0")
         resources.excludes.add("META-INF/LGPL2.1")
     }
     buildFeatures { compose = true }
-    composeOptions { kotlinCompilerExtensionVersion = "1.1.1" }
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
-    }
+    composeOptions { kotlinCompilerExtensionVersion = "1.5.0" }
+    kotlinOptions { jvmTarget = JavaVersion.VERSION_17.toString() }
 }
 
 dependencies {
     implementation(project(":control-core"))
     implementation(project(":examples:kotlin-counter"))
 
-    implementation("androidx.activity:activity-compose:1.4.0")
-    implementation("androidx.compose.ui:ui:1.1.1")
-    implementation("androidx.compose.ui:ui-tooling:1.1.1")
-    implementation("androidx.compose.material:material:1.1.1")
-    implementation("androidx.compose.material:material-icons-core:1.1.1")
-    implementation("androidx.compose.material:material-icons-extended:1.1.1")
+    implementation("androidx.activity:activity-compose:1.7.2")
+    implementation(platform("androidx.compose:compose-bom:2023.06.01"))
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-tooling")
+    implementation("androidx.compose.material:material")
+    implementation("androidx.compose.material:material-icons-core")
+    implementation("androidx.compose.material:material-icons-extended")
 
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.1.1")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
+
     androidTestImplementation(kotlin("test"))
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.1.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
-    androidTestImplementation("androidx.test.ext:junit-ktx:1.1.3")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.4.3")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.test.ext:junit-ktx:1.1.5")
 }
