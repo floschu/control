@@ -11,7 +11,7 @@ jobs:
       - name: "Set up Java"
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: 17
       - name: "lint"
         run: ./gradlew lint
 
@@ -23,7 +23,7 @@ jobs:
       - name: "Set up Java"
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: 17
       - name: "ktlint"
         run: ./gradlew ktlintCheck
 
@@ -35,7 +35,7 @@ jobs:
       - name: "Set up Java"
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: 17
       - name: "Test"
         run: ./gradlew test
 
@@ -47,7 +47,7 @@ jobs:
       - name: "Set up Java"
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: 17
       - name: "Check if coverage is satisfied"
         run: ./gradlew jacocoTestCoverageVerification
 
@@ -59,7 +59,7 @@ jobs:
       - name: "Set up Java"
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: 17
       - name: "Mutation Testing"
         run: ./gradlew pitest
 
@@ -71,7 +71,7 @@ jobs:
       - name: "Set up Java"
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: 17
       - name: "Validates the Api"
         run: ./gradlew apiCheck
 
@@ -84,7 +84,7 @@ jobs:
       - name: "Set up Java"
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: 17
       - name: "Assemble"
         run: ./gradlew assemble
 
@@ -97,7 +97,7 @@ jobs:
       - name: "Set up Java"
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: 17
       - name: "Create coverage reports"
         run: ./gradlew check jacocoTestReport
       - name: "Upload coverage to codecov"

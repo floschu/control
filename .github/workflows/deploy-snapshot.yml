@@ -14,7 +14,7 @@ jobs:
       - name: "Set up Java"
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: 17
       - name: "Checks all the things"
         run: ./gradlew lint ktlintCheck test jacocoTestCoverageVerification pitest apiCheck assemble
 
@@ -27,7 +27,7 @@ jobs:
       - name: "Set up Java"
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: 17
       - name: "Get tag and save into env"
         uses: olegtarasov/get-tag@v2.1
         id: tagName
