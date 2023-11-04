@@ -57,3 +57,6 @@ lint/tmp/
 
 # macOS
 .DS_Store
+
+# jenv
+.java-version
