@@ -6,11 +6,11 @@ plugins {
 
 android {
     namespace = "at.florianschuster.control.androidgithub"
-    compileSdk = 33
+    compileSdk = 34
     defaultConfig {
         applicationId = "at.florianschuster.control.androidgithub"
         minSdk = 23
-        targetSdk = 33
+        targetSdk = 34
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
@@ -40,21 +40,21 @@ dependencies {
     implementation("io.github.reactivecircus.flowbinding:flowbinding-android:1.2.0")
     implementation("io.github.reactivecircus.flowbinding:flowbinding-core:1.2.0")
     implementation("io.github.reactivecircus.flowbinding:flowbinding-recyclerview:1.2.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-    implementation("androidx.fragment:fragment-ktx:1.6.0")
-    debugImplementation("androidx.fragment:fragment-testing:1.6.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.5.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
+    debugImplementation("androidx.fragment:fragment-testing:1.6.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.5.1")
     implementation("io.ktor:ktor-client-cio:2.0.0")
     implementation("io.ktor:ktor-client-logging-jvm:2.0.0")
     implementation("io.ktor:ktor-client-serialization:2.0.0")
     implementation("io.ktor:ktor-client-content-negotiation:2.0.0")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.0.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-    implementation("com.google.android.material:material:1.9.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation("com.google.android.material:material:1.10.0")
 
     testImplementation(kotlin("test"))
-    testImplementation("io.mockk:mockk:1.13.5")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.2")
+    testImplementation("io.mockk:mockk:1.13.8")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
 
     androidTestImplementation(kotlin("test"))
     androidTestImplementation("androidx.test:rules:1.5.0")

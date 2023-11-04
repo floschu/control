@@ -11,7 +11,7 @@ buildscript {
         classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.7.4")
         classpath("org.jetbrains.kotlinx:binary-compatibility-validator:0.13.2")
         classpath("com.vanniktech:gradle-maven-publish-plugin:0.19.0")
-        classpath("org.jetbrains.dokka:dokka-gradle-plugin:1.6.10")
+        classpath("org.jetbrains.dokka:dokka-gradle-plugin:1.9.0")
 
         classpath("com.android.tools.build:gradle:8.0.2")
         classpath("org.jetbrains.kotlin:kotlin-serialization:1.9.0")
@@ -20,7 +20,7 @@ buildscript {
 
 plugins {
     jacoco
-    id("org.jlleitschuh.gradle.ktlint").version("11.5.0")
+    id("org.jlleitschuh.gradle.ktlint").version("11.6.1")
     `maven-publish`
     signing
     id("com.github.ben-manes.versions").version("0.47.0")

@@ -5,11 +5,11 @@ plugins {
 
 android {
     namespace = "at.florianschuster.control.androidcounter"
-    compileSdk = 33
+    compileSdk = 34
     defaultConfig {
         applicationId = "at.florianschuster.control.androidcounter"
         minSdk = 23
-        targetSdk = 33
+        targetSdk = 34
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
@@ -32,9 +32,9 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("io.github.reactivecircus.flowbinding:flowbinding-android:1.2.0")
     implementation("io.github.reactivecircus.flowbinding:flowbinding-core:1.2.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-    implementation("androidx.fragment:fragment-ktx:1.6.0")
-    debugImplementation("androidx.fragment:fragment-testing:1.6.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
+    debugImplementation("androidx.fragment:fragment-testing:1.6.2")
 
     androidTestImplementation(kotlin("test"))
     androidTestImplementation("androidx.test:rules:1.5.0")
