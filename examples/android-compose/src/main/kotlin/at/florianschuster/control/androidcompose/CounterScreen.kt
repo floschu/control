@@ -1,4 +1,4 @@
-package at.florianschuster.control.composeexample
+package at.florianschuster.control.androidcompose
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -33,6 +33,7 @@ import at.florianschuster.control.kotlincounter.CounterState
 import at.florianschuster.control.kotlincounter.createCounterController
 import kotlinx.coroutines.CoroutineScope
 
+@Suppress("RememberReturnType") // this is a bug with Kotlin 1.9.0
 @Composable
 internal fun CounterScreen(
     scope: CoroutineScope = rememberCoroutineScope(),

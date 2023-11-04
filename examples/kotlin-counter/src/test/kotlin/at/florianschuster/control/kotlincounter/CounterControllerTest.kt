@@ -1,19 +1,16 @@
 package at.florianschuster.control.kotlincounter
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import kotlin.test.assertEquals
 
-@FlowPreview
-@ExperimentalCoroutinesApi
+@OptIn(ExperimentalCoroutinesApi::class)
 internal class CounterControllerTest {
 
     @Test

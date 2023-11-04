@@ -1,4 +1,4 @@
-package at.florianschuster.control.composeexample
+package at.florianschuster.control.androidcompose
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

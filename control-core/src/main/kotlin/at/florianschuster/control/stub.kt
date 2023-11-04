@@ -1,6 +1,5 @@
 package at.florianschuster.control
 
-import kotlinx.coroutines.FlowPreview
 import org.jetbrains.annotations.TestOnly
 
 /**
@@ -27,7 +26,6 @@ interface ControllerStub<Action, State> : Controller<Action, State> {
  *
  * Custom implementations of [Controller] cannot be stubbed.
  */
-@FlowPreview
 @TestOnly
 fun <Action, State> Controller<Action, State>.toStub(): ControllerStub<Action, State> {
     require(this is ControllerImplementation<Action, *, State, *>) {
@@ -58,7 +56,6 @@ interface EffectControllerStub<Action, State, Effect> : ControllerStub<Action, S
  *
  * Custom implementations of [EffectController] cannot be stubbed.
  */
-@FlowPreview
 @TestOnly
 fun <Action, State, Effect> EffectController<Action, State, Effect>.toStub(): EffectControllerStub<Action, State, Effect> {
     require(this is ControllerImplementation<Action, *, State, Effect>) {

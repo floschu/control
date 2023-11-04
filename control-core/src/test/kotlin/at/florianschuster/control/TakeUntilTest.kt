@@ -1,6 +1,5 @@
 package at.florianschuster.control
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.emptyFlow
@@ -11,7 +10,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import kotlin.test.assertEquals
 
-@ExperimentalCoroutinesApi
 internal class TakeUntilTest {
 
     @Test

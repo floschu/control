@@ -39,7 +39,7 @@ internal class SearchViewModel(
 
 internal sealed interface SearchAction {
     data class UpdateQuery(val text: String) : SearchAction
-    object LoadNextPage : SearchAction
+    data object LoadNextPage : SearchAction
 }
 
 private sealed interface SearchMutation {
@@ -57,7 +57,7 @@ internal data class SearchState(
 )
 
 internal sealed interface SearchEffect {
-    object NotifyNetworkError : SearchEffect
+    data object NotifyNetworkError : SearchEffect
 }
 
 internal fun CoroutineScope.createSearchController(

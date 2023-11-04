@@ -36,7 +36,9 @@ internal class SearchViewTest {
                 return viewModel as T
             }
         }
-        launchFragmentInContainer<SearchView>(themeResId = R.style.Theme_MaterialComponents)
+        launchFragmentInContainer<SearchView>(
+            themeResId = com.google.android.material.R.style.Theme_MaterialComponents
+        )
     }
 
     @Test
