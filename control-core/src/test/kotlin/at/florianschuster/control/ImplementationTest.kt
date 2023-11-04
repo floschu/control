@@ -460,8 +460,8 @@ internal class ImplementationTest {
     )
 
     private sealed interface StopWatchAction {
-        object Start : StopWatchAction
-        object Stop : StopWatchAction
+        data object Start : StopWatchAction
+        data object Stop : StopWatchAction
     }
 
     private fun CoroutineScope.createStopWatchController() =

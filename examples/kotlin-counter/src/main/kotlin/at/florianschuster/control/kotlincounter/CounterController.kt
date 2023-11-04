@@ -13,16 +13,16 @@ typealias CounterController = Controller<CounterAction, CounterState>
  * actions triggered by the view.
  */
 sealed interface CounterAction {
-    object Increment : CounterAction
-    object Decrement : CounterAction
+    data object Increment : CounterAction
+    data object Decrement : CounterAction
 }
 
 /**
  * mutations that are used to alter the state.
  */
 private sealed interface CounterMutation {
-    object IncreaseValue : CounterMutation
-    object DecreaseValue : CounterMutation
+    data object IncreaseValue : CounterMutation
+    data object DecreaseValue : CounterMutation
     data class SetLoading(val loading: Boolean) : CounterMutation
 }
 
@@ -53,6 +53,7 @@ fun CoroutineScope.createCounterController(
                 emit(CounterMutation.IncreaseValue)
                 emit(CounterMutation.SetLoading(false))
             }
+
             is CounterAction.Decrement -> flow {
                 emit(CounterMutation.SetLoading(true))
                 delay(500)
