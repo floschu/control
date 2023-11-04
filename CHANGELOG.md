@@ -1,6 +1,6 @@
 # changelog
 
-## `[1.1.0]` - 2023-07-24
+## `[1.1.0]` - 2023-11-04
 
 - Update Kotlin from `1.6.10` to `1.9.10`
 - Update kotlinx.coroutines from `1.6.1` to `1.7.3`
