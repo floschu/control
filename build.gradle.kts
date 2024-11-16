@@ -6,24 +6,23 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.10")
+        classpath(libs.kotlin.gradle.plugin)
+        classpath(libs.pitest.gradle.plugin)
+        classpath(libs.binary.compat.validator)
+        classpath(libs.maven.publish.plugin)
+        classpath(libs.dokka.gradle.plugin)
 
-        classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.15.0")
-        classpath("org.jetbrains.kotlinx:binary-compatibility-validator:0.13.2")
-        classpath("com.vanniktech:gradle-maven-publish-plugin:0.25.3")
-        classpath("org.jetbrains.dokka:dokka-gradle-plugin:1.9.10")
-
-        classpath("com.android.tools.build:gradle:8.1.2")
-        classpath("org.jetbrains.kotlin:kotlin-serialization:1.9.10")
+        // examples
+        classpath(libs.android.gradle.plugin)
+        classpath(libs.kotlin.serialization)
     }
 }
 
 plugins {
     jacoco
-    id("org.jlleitschuh.gradle.ktlint").version("11.6.1")
+    alias(libs.plugins.ktlint)
     `maven-publish`
     signing
-    id("com.github.ben-manes.versions").version("0.47.0")
 }
 
 // ---- api-validation --- //
@@ -35,9 +34,7 @@ configure<kotlinx.validation.ApiValidationExtension> {
         listOf(
             "kotlin-counter",
             "android-counter",
-            "android-compose",
-            "android-github"
-        )
+        ),
     )
 }
 
@@ -62,6 +59,6 @@ subprojects {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
