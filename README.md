@@ -1,7 +1,7 @@
 <p align="center"><img alt="flow" width="600" src=".media/control.png"></p>
 
 <p align=center>
-    <a href="https://search.maven.org/artifact/at.florianschuster.control/control-core"><img alt="version" src="https://img.shields.io/maven-central/v/at.florianschuster.control/control-core?label=core-version&logoColor=f88909" /></a>
+    <a href="https://search.maven.org/artifact/at.florianschuster.control/control-core"><img alt="version" src="https://img.shields.io/maven-central/v/at.florianschuster.control/control-core?label=version&logoColor=f88909" /></a>
     <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-Apache%202.0-blue.svg?color=7b6fe2" /></a>
 </p>
 
@@ -45,9 +45,7 @@ A [Controller](control-core/src/main/kotlin/at/florianschuster/control/Controlle
 ## examples
 
 *   [kotlin-counter](examples/kotlin-counter): most basic kotlin example. uses `Controller`.
-*   [android-counter](examples/android-counter): most basic android example. uses `Controller` from kotlin-counter.
-*   [android-github](examples/android-github): android github repository search. uses `Controller` combined with _Android Jetpack AAC_ `ViewModel`.
-*   [android-compose](examples/android-compose): android counter example built with [jetpack compose](https://developer.android.com/jetpack/compose).
+*   [android-counter](examples/android-counter): android counter example built with [jetpack compose](https://developer.android.com/jetpack/compose).
 
 ## author
 
