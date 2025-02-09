@@ -17,7 +17,7 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
       - name: "Checks all the things"
-        run: ./gradlew lint ktlintCheck test jacocoTestCoverageVerification pitest apiCheck assemble
+        run: ./gradlew lint ktlintCheck test jacocoTestCoverageVerification apiCheck assemble
 
   publish:
     needs: [ all_checks ]

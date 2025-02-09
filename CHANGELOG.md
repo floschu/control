@@ -1,5 +1,11 @@
 # changelog
 
+## `[1.4.0]` - 2025-XX-XX
+
+- Update Kotlin to `2.1.10`
+- Update kotlinx.coroutines to `1.10.1`
+- Publish `control-core` as kotlin multiplatform library
+
 ## `[1.3.0]` - 2024-11-16
 
 - Update Kotlin to `2.0.21`

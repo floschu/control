@@ -55,19 +55,6 @@ jobs:
       - name: "Check if coverage is satisfied"
         run: ./gradlew jacocoTestCoverageVerification
 
-  mutation_test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4
-      - name: "Set up Java"
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'adopt'
-          java-version: '17'
-      - name: "Mutation Testing"
-        run: ./gradlew pitest
-
   api_validation:
     runs-on: ubuntu-latest
     steps:
@@ -82,7 +69,7 @@ jobs:
         run: ./gradlew apiCheck
 
   assemble:
-    needs: [lint, ktlint, test, check_coverage, mutation_test]
+    needs: [lint, ktlint, test, check_coverage]
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
@@ -109,8 +96,8 @@ jobs:
       - name: "Create coverage reports"
         run: ./gradlew check jacocoTestReport
       - name: "Upload coverage to codecov"
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v5.3.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./control-core/build/reports/jacoco/test/jacocoTestReport.xml
+          files: ./control-core/build/reports/jacoco/test/jacocoTestReport.xml
           fail_ci_if_error: true

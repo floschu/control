@@ -1,16 +1,16 @@
 plugins {
-    id("com.android.application")
     id("kotlin-android")
+    alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
 }
 
 android {
     namespace = "at.florianschuster.control.counter"
-    compileSdk = 34
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
     defaultConfig {
         applicationId = "at.florianschuster.control.counter"
-        minSdk = 23
-        targetSdk = 34
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.compileSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {

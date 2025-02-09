@@ -1,35 +1,19 @@
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-        maven(url = "https://plugins.gradle.org/m2/")
-    }
-
-    dependencies {
-        classpath(libs.kotlin.gradle.plugin)
-        classpath(libs.pitest.gradle.plugin)
-        classpath(libs.binary.compat.validator)
-        classpath(libs.maven.publish.plugin)
-        classpath(libs.dokka.gradle.plugin)
-
-        // examples
-        classpath(libs.android.gradle.plugin)
-        classpath(libs.kotlin.serialization)
-    }
-}
-
 plugins {
-    jacoco
     alias(libs.plugins.ktlint)
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.binary.compatibility.validator)
+    jacoco
     `maven-publish`
     signing
+    alias(libs.plugins.kotlin.multiplatform) apply false
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.vanniktech.maven.publish) apply false
 }
 
 // ---- api-validation --- //
 
-apply(plugin = "binary-compatibility-validator")
-
-configure<kotlinx.validation.ApiValidationExtension> {
+apiValidation {
     ignoredProjects.addAll(
         listOf(
             "kotlin-counter",
@@ -47,7 +31,7 @@ subprojects {
         resolutionStrategy {
             eachDependency {
                 if (requested.group == "org.jacoco") {
-                    useVersion("0.8.7")
+                    useVersion("0.8.12")
                 }
             }
         }
@@ -55,10 +39,3 @@ subprojects {
 }
 
 // ---- end jacoco --- //
-
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
