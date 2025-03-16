@@ -6,6 +6,7 @@ import at.florianschuster.control.createController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
+import kotlin.time.Duration.Companion.milliseconds
 
 typealias CounterController = Controller<CounterAction, CounterState>
 
@@ -49,14 +50,14 @@ fun CoroutineScope.createCounterController(
         when (action) {
             is CounterAction.Increment -> flow {
                 emit(CounterMutation.SetLoading(true))
-                delay(500)
+                delay(500.milliseconds)
                 emit(CounterMutation.IncreaseValue)
                 emit(CounterMutation.SetLoading(false))
             }
 
             is CounterAction.Decrement -> flow {
                 emit(CounterMutation.SetLoading(true))
-                delay(500)
+                delay(500.milliseconds)
                 emit(CounterMutation.DecreaseValue)
                 emit(CounterMutation.SetLoading(false))
             }

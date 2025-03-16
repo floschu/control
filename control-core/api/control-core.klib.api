@@ -1,0 +1,121 @@
+// Klib ABI Dump
+// Targets: [iosArm64, iosSimulatorArm64, iosX64, linuxArm64, linuxX64, macosArm64, macosX64, watchosArm64, watchosSimulatorArm64, watchosX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <at.florianschuster.control:control-core>
+open annotation class at.florianschuster.control/TestOnlyStub : kotlin/Annotation { // at.florianschuster.control/TestOnlyStub|null[0]
+    constructor <init>() // at.florianschuster.control/TestOnlyStub.<init>|<init>(){}[0]
+}
+
+abstract fun interface <#A: kotlin/Any?> at.florianschuster.control/EffectEmitter { // at.florianschuster.control/EffectEmitter|null[0]
+    abstract fun emitEffect(#A) // at.florianschuster.control/EffectEmitter.emitEffect|emitEffect(1:0){}[0]
+}
+
+abstract interface <#A: kotlin/Any?, #B: kotlin/Any?, #C: kotlin/Any?> at.florianschuster.control/EffectController : at.florianschuster.control/Controller<#A, #B> { // at.florianschuster.control/EffectController|null[0]
+    abstract val effects // at.florianschuster.control/EffectController.effects|{}effects[0]
+        abstract fun <get-effects>(): kotlinx.coroutines.flow/Flow<#C> // at.florianschuster.control/EffectController.effects.<get-effects>|<get-effects>(){}[0]
+}
+
+abstract interface <#A: kotlin/Any?, #B: kotlin/Any?, #C: kotlin/Any?> at.florianschuster.control/EffectControllerStub : at.florianschuster.control/ControllerStub<#A, #B> { // at.florianschuster.control/EffectControllerStub|null[0]
+    abstract fun emitEffect(#C) // at.florianschuster.control/EffectControllerStub.emitEffect|emitEffect(1:2){}[0]
+}
+
+abstract interface <#A: kotlin/Any?, #B: kotlin/Any?, #C: kotlin/Any?> at.florianschuster.control/EffectMutatorContext : at.florianschuster.control/EffectEmitter<#C>, at.florianschuster.control/MutatorContext<#A, #B> // at.florianschuster.control/EffectMutatorContext|null[0]
+
+abstract interface <#A: kotlin/Any?, #B: kotlin/Any?> at.florianschuster.control/Controller { // at.florianschuster.control/Controller|null[0]
+    abstract val state // at.florianschuster.control/Controller.state|{}state[0]
+        abstract fun <get-state>(): kotlinx.coroutines.flow/StateFlow<#B> // at.florianschuster.control/Controller.state.<get-state>|<get-state>(){}[0]
+
+    abstract fun dispatch(#A) // at.florianschuster.control/Controller.dispatch|dispatch(1:0){}[0]
+}
+
+abstract interface <#A: kotlin/Any?, #B: kotlin/Any?> at.florianschuster.control/ControllerStub : at.florianschuster.control/Controller<#A, #B> { // at.florianschuster.control/ControllerStub|null[0]
+    abstract val dispatchedActions // at.florianschuster.control/ControllerStub.dispatchedActions|{}dispatchedActions[0]
+        abstract fun <get-dispatchedActions>(): kotlin.collections/List<#A> // at.florianschuster.control/ControllerStub.dispatchedActions.<get-dispatchedActions>|<get-dispatchedActions>(){}[0]
+
+    abstract fun emitState(#B) // at.florianschuster.control/ControllerStub.emitState|emitState(1:1){}[0]
+}
+
+abstract interface <#A: kotlin/Any?, #B: kotlin/Any?> at.florianschuster.control/MutatorContext { // at.florianschuster.control/MutatorContext|null[0]
+    abstract val actions // at.florianschuster.control/MutatorContext.actions|{}actions[0]
+        abstract fun <get-actions>(): kotlinx.coroutines.flow/Flow<#A> // at.florianschuster.control/MutatorContext.actions.<get-actions>|<get-actions>(){}[0]
+    abstract val currentState // at.florianschuster.control/MutatorContext.currentState|{}currentState[0]
+        abstract fun <get-currentState>(): #B // at.florianschuster.control/MutatorContext.currentState.<get-currentState>|<get-currentState>(){}[0]
+}
+
+abstract interface <#A: kotlin/Any?> at.florianschuster.control/EffectReducerContext : at.florianschuster.control/EffectEmitter<#A>, at.florianschuster.control/ReducerContext // at.florianschuster.control/EffectReducerContext|null[0]
+
+abstract interface <#A: kotlin/Any?> at.florianschuster.control/EffectTransformerContext : at.florianschuster.control/EffectEmitter<#A>, at.florianschuster.control/TransformerContext // at.florianschuster.control/EffectTransformerContext|null[0]
+
+abstract interface at.florianschuster.control/LoggerContext { // at.florianschuster.control/LoggerContext|null[0]
+    abstract val event // at.florianschuster.control/LoggerContext.event|{}event[0]
+        abstract fun <get-event>(): at.florianschuster.control/ControllerEvent // at.florianschuster.control/LoggerContext.event.<get-event>|<get-event>(){}[0]
+}
+
+abstract interface at.florianschuster.control/ReducerContext // at.florianschuster.control/ReducerContext|null[0]
+
+abstract interface at.florianschuster.control/TransformerContext // at.florianschuster.control/TransformerContext|null[0]
+
+sealed class at.florianschuster.control/ControllerEvent { // at.florianschuster.control/ControllerEvent|null[0]
+    open fun toString(): kotlin/String // at.florianschuster.control/ControllerEvent.toString|toString(){}[0]
+
+    final class Action : at.florianschuster.control/ControllerEvent // at.florianschuster.control/ControllerEvent.Action|null[0]
+
+    final class Completed : at.florianschuster.control/ControllerEvent // at.florianschuster.control/ControllerEvent.Completed|null[0]
+
+    final class Created : at.florianschuster.control/ControllerEvent // at.florianschuster.control/ControllerEvent.Created|null[0]
+
+    final class Effect : at.florianschuster.control/ControllerEvent // at.florianschuster.control/ControllerEvent.Effect|null[0]
+
+    final class Error : at.florianschuster.control/ControllerEvent // at.florianschuster.control/ControllerEvent.Error|null[0]
+
+    final class Mutation : at.florianschuster.control/ControllerEvent // at.florianschuster.control/ControllerEvent.Mutation|null[0]
+
+    final class Started : at.florianschuster.control/ControllerEvent // at.florianschuster.control/ControllerEvent.Started|null[0]
+
+    final class State : at.florianschuster.control/ControllerEvent // at.florianschuster.control/ControllerEvent.State|null[0]
+
+    final class Stub : at.florianschuster.control/ControllerEvent // at.florianschuster.control/ControllerEvent.Stub|null[0]
+}
+
+sealed class at.florianschuster.control/ControllerLog { // at.florianschuster.control/ControllerLog|null[0]
+    final class Custom : at.florianschuster.control/ControllerLog { // at.florianschuster.control/ControllerLog.Custom|null[0]
+        constructor <init>(kotlin/Function2<at.florianschuster.control/LoggerContext, kotlin/String, kotlin/Unit>) // at.florianschuster.control/ControllerLog.Custom.<init>|<init>(kotlin.Function2<at.florianschuster.control.LoggerContext,kotlin.String,kotlin.Unit>){}[0]
+    }
+
+    final object None : at.florianschuster.control/ControllerLog { // at.florianschuster.control/ControllerLog.None|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // at.florianschuster.control/ControllerLog.None.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // at.florianschuster.control/ControllerLog.None.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // at.florianschuster.control/ControllerLog.None.toString|toString(){}[0]
+    }
+
+    final object Println : at.florianschuster.control/ControllerLog { // at.florianschuster.control/ControllerLog.Println|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // at.florianschuster.control/ControllerLog.Println.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // at.florianschuster.control/ControllerLog.Println.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // at.florianschuster.control/ControllerLog.Println.toString|toString(){}[0]
+    }
+}
+
+sealed class at.florianschuster.control/ControllerStart { // at.florianschuster.control/ControllerStart|null[0]
+    final object Immediately : at.florianschuster.control/ControllerStart { // at.florianschuster.control/ControllerStart.Immediately|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // at.florianschuster.control/ControllerStart.Immediately.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // at.florianschuster.control/ControllerStart.Immediately.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // at.florianschuster.control/ControllerStart.Immediately.toString|toString(){}[0]
+    }
+
+    final object Lazy : at.florianschuster.control/ControllerStart { // at.florianschuster.control/ControllerStart.Lazy|null[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // at.florianschuster.control/ControllerStart.Lazy.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // at.florianschuster.control/ControllerStart.Lazy.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // at.florianschuster.control/ControllerStart.Lazy.toString|toString(){}[0]
+    }
+}
+
+final fun <#A: kotlin/Any?, #B: kotlin/Any?, #C: kotlin/Any?, #D: kotlin/Any?> (kotlinx.coroutines/CoroutineScope).at.florianschuster.control/createEffectController(#C, kotlin/Function2<at.florianschuster.control/EffectMutatorContext<#A, #C, #D>, #A, kotlinx.coroutines.flow/Flow<#B>> = ..., kotlin/Function3<at.florianschuster.control/EffectReducerContext<#D>, #B, #C, #C> = ..., kotlin/Function2<at.florianschuster.control/EffectTransformerContext<#D>, kotlinx.coroutines.flow/Flow<#A>, kotlinx.coroutines.flow/Flow<#A>> = ..., kotlin/Function2<at.florianschuster.control/EffectTransformerContext<#D>, kotlinx.coroutines.flow/Flow<#B>, kotlinx.coroutines.flow/Flow<#B>> = ..., kotlin/Function2<at.florianschuster.control/EffectTransformerContext<#D>, kotlinx.coroutines.flow/Flow<#C>, kotlinx.coroutines.flow/Flow<#C>> = ..., kotlin/String = ..., at.florianschuster.control/ControllerLog = ..., at.florianschuster.control/ControllerStart = ..., kotlinx.coroutines/CoroutineDispatcher = ...): at.florianschuster.control/EffectController<#A, #C, #D> // at.florianschuster.control/createEffectController|createEffectController@kotlinx.coroutines.CoroutineScope(0:2;kotlin.Function2<at.florianschuster.control.EffectMutatorContext<0:0,0:2,0:3>,0:0,kotlinx.coroutines.flow.Flow<0:1>>;kotlin.Function3<at.florianschuster.control.EffectReducerContext<0:3>,0:1,0:2,0:2>;kotlin.Function2<at.florianschuster.control.EffectTransformerContext<0:3>,kotlinx.coroutines.flow.Flow<0:0>,kotlinx.coroutines.flow.Flow<0:0>>;kotlin.Function2<at.florianschuster.control.EffectTransformerContext<0:3>,kotlinx.coroutines.flow.Flow<0:1>,kotlinx.coroutines.flow.Flow<0:1>>;kotlin.Function2<at.florianschuster.control.EffectTransformerContext<0:3>,kotlinx.coroutines.flow.Flow<0:2>,kotlinx.coroutines.flow.Flow<0:2>>;kotlin.String;at.florianschuster.control.ControllerLog;at.florianschuster.control.ControllerStart;kotlinx.coroutines.CoroutineDispatcher){0§<kotlin.Any?>;1§<kotlin.Any?>;2§<kotlin.Any?>;3§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?, #B: kotlin/Any?, #C: kotlin/Any?> (at.florianschuster.control/EffectController<#A, #B, #C>).at.florianschuster.control/toStub(): at.florianschuster.control/EffectControllerStub<#A, #B, #C> // at.florianschuster.control/toStub|toStub@at.florianschuster.control.EffectController<0:0,0:1,0:2>(){0§<kotlin.Any?>;1§<kotlin.Any?>;2§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?, #B: kotlin/Any?, #C: kotlin/Any?> (kotlinx.coroutines/CoroutineScope).at.florianschuster.control/createController(#C, kotlin/Function2<at.florianschuster.control/MutatorContext<#A, #C>, #A, kotlinx.coroutines.flow/Flow<#B>> = ..., kotlin/Function3<at.florianschuster.control/ReducerContext, #B, #C, #C> = ..., kotlin/Function2<at.florianschuster.control/TransformerContext, kotlinx.coroutines.flow/Flow<#A>, kotlinx.coroutines.flow/Flow<#A>> = ..., kotlin/Function2<at.florianschuster.control/TransformerContext, kotlinx.coroutines.flow/Flow<#B>, kotlinx.coroutines.flow/Flow<#B>> = ..., kotlin/Function2<at.florianschuster.control/TransformerContext, kotlinx.coroutines.flow/Flow<#C>, kotlinx.coroutines.flow/Flow<#C>> = ..., kotlin/String = ..., at.florianschuster.control/ControllerLog = ..., at.florianschuster.control/ControllerStart = ..., kotlinx.coroutines/CoroutineDispatcher = ...): at.florianschuster.control/Controller<#A, #C> // at.florianschuster.control/createController|createController@kotlinx.coroutines.CoroutineScope(0:2;kotlin.Function2<at.florianschuster.control.MutatorContext<0:0,0:2>,0:0,kotlinx.coroutines.flow.Flow<0:1>>;kotlin.Function3<at.florianschuster.control.ReducerContext,0:1,0:2,0:2>;kotlin.Function2<at.florianschuster.control.TransformerContext,kotlinx.coroutines.flow.Flow<0:0>,kotlinx.coroutines.flow.Flow<0:0>>;kotlin.Function2<at.florianschuster.control.TransformerContext,kotlinx.coroutines.flow.Flow<0:1>,kotlinx.coroutines.flow.Flow<0:1>>;kotlin.Function2<at.florianschuster.control.TransformerContext,kotlinx.coroutines.flow.Flow<0:2>,kotlinx.coroutines.flow.Flow<0:2>>;kotlin.String;at.florianschuster.control.ControllerLog;at.florianschuster.control.ControllerStart;kotlinx.coroutines.CoroutineDispatcher){0§<kotlin.Any?>;1§<kotlin.Any?>;2§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?, #B: kotlin/Any?> (at.florianschuster.control/Controller<#A, #B>).at.florianschuster.control/toStub(): at.florianschuster.control/ControllerStub<#A, #B> // at.florianschuster.control/toStub|toStub@at.florianschuster.control.Controller<0:0,0:1>(){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?, #B: kotlin/Any?> (kotlinx.coroutines.flow/Flow<#A>).at.florianschuster.control/takeUntil(kotlinx.coroutines.flow/Flow<#B>): kotlinx.coroutines.flow/Flow<#A> // at.florianschuster.control/takeUntil|takeUntil@kotlinx.coroutines.flow.Flow<0:0>(kotlinx.coroutines.flow.Flow<0:1>){0§<kotlin.Any?>;1§<kotlin.Any?>}[0]
+final fun <#A: kotlin/Any?> (kotlinx.coroutines.flow/Flow<#A>).at.florianschuster.control/takeUntil(kotlin/Boolean = ..., kotlin.coroutines/SuspendFunction1<#A, kotlin/Boolean>): kotlinx.coroutines.flow/Flow<#A> // at.florianschuster.control/takeUntil|takeUntil@kotlinx.coroutines.flow.Flow<0:0>(kotlin.Boolean;kotlin.coroutines.SuspendFunction1<0:0,kotlin.Boolean>){0§<kotlin.Any?>}[0]

@@ -5,25 +5,23 @@ coroutines = "1.10.1"
 binary-compatibility-validator = "0.17.0"
 
 # examples
-agp = "8.8.0"
-android-minSdk = "24"
+agp = "8.9.0"
+android-minSdk = "28"
 android-compileSdk = "35"
-androidx-activity-compose = "1.10.0"
-androidx-compose-bom = "2025.01.01"
+androidx-activity-compose = "1.10.1"
+androidx-compose-bom = "2025.03.00"
 androidx-material3 = "1.3.1"
 espresso = "3.6.1"
 junit-ktx = "1.2.1"
-mockk = "1.13.16"
-maven-publish-plugin = "0.29.0"
-dokka = "2.0.0"
-ktlint = "12.1.1"
-androidx-ui-test-junit4 = "1.7.7"
+maven-publish-plugin = "0.30.0"
+kover = "0.9.1"
+ktlint = "12.2.0"
+androidx-ui-test-junit4 = "1.7.8"
 
 [libraries]
 # lib
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
-mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 # examples
 activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity-compose" }
@@ -42,7 +40,7 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 binary-compatibility-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binary-compatibility-validator" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish-plugin" }

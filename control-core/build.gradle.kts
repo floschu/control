@@ -1,36 +1,77 @@
 import com.vanniktech.maven.publish.SonatypeHost
+import kotlinx.kover.gradle.plugin.dsl.AggregationType
+import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 
 plugins {
-    id("kotlin")
-    jacoco
+    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.vanniktech.maven.publish)
+    alias(libs.plugins.kover)
 }
 
-dependencies {
-    api(libs.kotlinx.coroutines.core)
+kotlin {
+    jvm()
 
-    testImplementation(kotlin("test"))
-    testImplementation(libs.mockk)
-    testImplementation(libs.kotlinx.coroutines.test)
-}
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
 
-// ---- jacoco --- //
+    macosX64()
+    macosArm64()
 
-tasks.jacocoTestCoverageVerification {
-    violationRules {
-        rule { limit { minimum = "0.9".toBigDecimal() } }
+    watchosX64()
+    watchosArm64()
+    watchosSimulatorArm64()
+
+    linuxX64()
+    linuxArm64()
+
+    sourceSets {
+        commonMain {
+            dependencies {
+                api(libs.kotlinx.coroutines.core)
+            }
+        }
+        commonTest {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(libs.kotlinx.coroutines.test)
+            }
+        }
     }
 }
 
-tasks.jacocoTestReport {
+// ---- code coverage --- //
+
+kover {
     reports {
-        xml.required.set(true)
-        html.required.set(true)
-        csv.required.set(false)
+        filters { excludes { classes("*DefaultControllerTag*") } }
+        verify {
+            rule("line coverage") {
+                bound {
+                    aggregationForGroup = AggregationType.COVERED_PERCENTAGE
+                    coverageUnits = CoverageUnit.LINE
+                    minValue = 100
+                }
+            }
+            rule("branch coverage") {
+                bound {
+                    aggregationForGroup = AggregationType.COVERED_PERCENTAGE
+                    coverageUnits = CoverageUnit.BRANCH
+                    minValue = 100
+                }
+            }
+            rule("instruction coverage") {
+                bound {
+                    aggregationForGroup = AggregationType.COVERED_PERCENTAGE
+                    coverageUnits = CoverageUnit.INSTRUCTION
+                    minValue = 100
+                }
+            }
+        }
     }
 }
 
-// ---- end jacoco --- //
+// ---- end code coverage --- //
 
 // ---- publishing --- //
 
@@ -38,6 +79,8 @@ group = "at.florianschuster.control"
 version = System.getenv("libraryVersionTag")
 
 mavenPublishing {
+    // Snapshots will be immediately available at:
+    // https://s01.oss.sonatype.org/content/repositories/snapshots/at/florianschuster/control/
     publishToMavenCentral(SonatypeHost.S01)
     signAllPublications()
     coordinates(group.toString(), "control-core", version.toString())

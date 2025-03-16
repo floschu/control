@@ -1,8 +1,9 @@
+import kotlinx.validation.ExperimentalBCVApi
+
 plugins {
-    alias(libs.plugins.ktlint)
-    alias(libs.plugins.dokka)
     alias(libs.plugins.binary.compatibility.validator)
-    jacoco
+    alias(libs.plugins.ktlint)
+    alias(libs.plugins.kover)
     `maven-publish`
     signing
     alias(libs.plugins.kotlin.multiplatform) apply false
@@ -14,6 +15,8 @@ plugins {
 // ---- api-validation --- //
 
 apiValidation {
+    @OptIn(ExperimentalBCVApi::class)
+    klib { enabled = true }
     ignoredProjects.addAll(
         listOf(
             "kotlin-counter",
@@ -23,19 +26,3 @@ apiValidation {
 }
 
 // ---- end api-validation --- //
-
-// ---- jacoco --- //
-
-subprojects {
-    configurations.all {
-        resolutionStrategy {
-            eachDependency {
-                if (requested.group == "org.jacoco") {
-                    useVersion("0.8.12")
-                }
-            }
-        }
-    }
-}
-
-// ---- end jacoco --- //

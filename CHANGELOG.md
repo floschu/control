@@ -1,6 +1,6 @@
 # changelog
 
-## `[1.4.0]` - 2025-XX-XX
+## `[2.0.0]` - 2025-03-16
 
 - Update Kotlin to `2.1.10`
 - Update kotlinx.coroutines to `1.10.1`

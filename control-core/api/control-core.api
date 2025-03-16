@@ -49,10 +49,16 @@ public final class at/florianschuster/control/ControllerLog$Custom : at/florians
 
 public final class at/florianschuster/control/ControllerLog$None : at/florianschuster/control/ControllerLog {
 	public static final field INSTANCE Lat/florianschuster/control/ControllerLog$None;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class at/florianschuster/control/ControllerLog$Println : at/florianschuster/control/ControllerLog {
 	public static final field INSTANCE Lat/florianschuster/control/ControllerLog$Println;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public abstract class at/florianschuster/control/ControllerStart {
@@ -60,10 +66,16 @@ public abstract class at/florianschuster/control/ControllerStart {
 
 public final class at/florianschuster/control/ControllerStart$Immediately : at/florianschuster/control/ControllerStart {
 	public static final field INSTANCE Lat/florianschuster/control/ControllerStart$Immediately;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class at/florianschuster/control/ControllerStart$Lazy : at/florianschuster/control/ControllerStart {
 	public static final field INSTANCE Lat/florianschuster/control/ControllerStart$Lazy;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public abstract interface class at/florianschuster/control/ControllerStub : at/florianschuster/control/Controller {
@@ -118,6 +130,9 @@ public final class at/florianschuster/control/TakeUntilKt {
 	public static final fun takeUntil (Lkotlinx/coroutines/flow/Flow;Lkotlinx/coroutines/flow/Flow;)Lkotlinx/coroutines/flow/Flow;
 	public static final fun takeUntil (Lkotlinx/coroutines/flow/Flow;ZLkotlin/jvm/functions/Function2;)Lkotlinx/coroutines/flow/Flow;
 	public static synthetic fun takeUntil$default (Lkotlinx/coroutines/flow/Flow;ZLkotlin/jvm/functions/Function2;ILjava/lang/Object;)Lkotlinx/coroutines/flow/Flow;
+}
+
+public abstract interface annotation class at/florianschuster/control/TestOnlyStub : java/lang/annotation/Annotation {
 }
 
 public abstract interface class at/florianschuster/control/TransformerContext {

@@ -19,8 +19,14 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    implementation("at.florianschuster.control:control-core:$version")
+kotlin {
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation("at.florianschuster.control:control-core:$version")
+            }
+        }
+    }
 }
 ```
 
@@ -30,7 +36,10 @@ see [changelog](https://github.com/floschu/control/blob/develop/CHANGELOG.md)  f
 
 <p align="center"><img alt="flow" width="500" src=".media/udf.png"></p>
 
-A [Controller](control-core/src/main/kotlin/at/florianschuster/control/Controller.kt) is an ui-independent class that controls the state of a view. The role of a `Controller` is to separate business-logic from view-logic. A `Controller` has no dependency to the view, so it can easily be unit tested.
+A [Controller](control-core/src/main/kotlin/at/florianschuster/control/Controller.kt) is an
+ui-independent class that controls the state of a view. The role of a `Controller` is to separate
+business-logic from view-logic. A `Controller` has no dependency to the view, so it can easily be
+unit tested.
 
 ## info & documentation
 
@@ -44,8 +53,9 @@ A [Controller](control-core/src/main/kotlin/at/florianschuster/control/Controlle
 
 ## examples
 
-*   [kotlin-counter](examples/kotlin-counter): most basic kotlin example. uses `Controller`.
-*   [android-counter](examples/android-counter): android counter example built with [jetpack compose](https://developer.android.com/jetpack/compose).
+* [kotlin-counter](examples/kotlin-counter): most basic kotlin example. uses `Controller`.
+* [android-counter](examples/android-counter): android counter example built
+  with [jetpack compose](https://developer.android.com/jetpack/compose).
 
 ## author
 

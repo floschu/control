@@ -7,7 +7,7 @@ on:
 
 jobs:
   all_checks:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
@@ -17,11 +17,11 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
       - name: "Checks all the things"
-        run: ./gradlew lint ktlintCheck test jacocoTestCoverageVerification apiCheck assemble
+        run: ./gradlew lint ktlintCheck test koverVerify apiCheck assemble
 
   publish:
     needs: [ all_checks ]
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
@@ -34,7 +34,7 @@ jobs:
         uses: olegtarasov/get-tag@v2.1
         id: tagName
       - name: "Upload release"
-        run: ./gradlew publishAllPublicationsToMavenCentralRepository --no-daemon --no-parallel
+        run: ./gradlew publishToMavenCentral --no-daemon --no-parallel
         env:
           libraryVersionTag: ${{ steps.tagName.outputs.tag }}
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
@@ -42,7 +42,7 @@ jobs:
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_PRIVATE_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
       - name: "Publish release"
-        run: ./gradlew closeAndReleaseRepository --no-daemon --no-parallel
+        run: ./gradlew releaseRepository --no-daemon --no-parallel
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
