@@ -3,39 +3,41 @@ name: "deploy snapshot"
 on:
   push:
     tags:
-      - '*-SNAPSHOT'
+      - "*-SNAPSHOT"
 
 jobs:
   all_checks:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
       - name: "Set up Java"
         uses: actions/setup-java@v4
         with:
-          distribution: 'adopt'
-          java-version: '17'
+          distribution: "adopt"
+          java-version: "17"
       - name: "Checks all the things"
-        run: ./gradlew lint ktlintCheck test jacocoTestCoverageVerification pitest apiCheck assemble
+        run: ./gradlew lint ktlintCheck test koverVerify apiCheck assemble
 
   publish:
     needs: [ all_checks ]
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
       - name: "Set up Java"
         uses: actions/setup-java@v4
         with:
-          distribution: 'adopt'
-          java-version: '17'
+          distribution: "adopt"
+          java-version: "17"
       - name: "Get tag and save into env"
         uses: olegtarasov/get-tag@v2.1
         id: tagName
-      - name: "Upload release"
-        run: ./gradlew publishAllPublicationsToMavenCentralRepository --no-daemon --no-parallel
+      - name: "Upload snapshot"
+        run: ./gradlew publishAllPublicationsToMavenCentralRepository --no-configuration-cache
         env:
           libraryVersionTag: ${{ steps.tagName.outputs.tag }}
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_NEXUS_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_NEXUS_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_PRIVATE_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}

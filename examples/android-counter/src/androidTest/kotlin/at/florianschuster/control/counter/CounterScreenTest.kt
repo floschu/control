@@ -6,13 +6,14 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performClick
 import at.florianschuster.control.ControllerStub
+import at.florianschuster.control.TestOnlyStub
 import at.florianschuster.control.toStub
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.TestScope
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 internal class CounterScreenTest {
@@ -23,6 +24,7 @@ internal class CounterScreenTest {
     private lateinit var scope: TestScope
     private lateinit var stub: ControllerStub<CounterAction, CounterState>
 
+    @OptIn(TestOnlyStub::class)
     @Before
     fun setup() {
         scope = TestScope()

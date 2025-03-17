@@ -1,35 +1,22 @@
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-        maven(url = "https://plugins.gradle.org/m2/")
-    }
-
-    dependencies {
-        classpath(libs.kotlin.gradle.plugin)
-        classpath(libs.pitest.gradle.plugin)
-        classpath(libs.binary.compat.validator)
-        classpath(libs.maven.publish.plugin)
-        classpath(libs.dokka.gradle.plugin)
-
-        // examples
-        classpath(libs.android.gradle.plugin)
-        classpath(libs.kotlin.serialization)
-    }
-}
+import kotlinx.validation.ExperimentalBCVApi
 
 plugins {
-    jacoco
+    alias(libs.plugins.binary.compatibility.validator)
     alias(libs.plugins.ktlint)
+    alias(libs.plugins.kover)
     `maven-publish`
     signing
+    alias(libs.plugins.kotlin.multiplatform) apply false
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.vanniktech.maven.publish) apply false
 }
 
 // ---- api-validation --- //
 
-apply(plugin = "binary-compatibility-validator")
-
-configure<kotlinx.validation.ApiValidationExtension> {
+apiValidation {
+    @OptIn(ExperimentalBCVApi::class)
+    klib { enabled = true }
     ignoredProjects.addAll(
         listOf(
             "kotlin-counter",
@@ -39,26 +26,3 @@ configure<kotlinx.validation.ApiValidationExtension> {
 }
 
 // ---- end api-validation --- //
-
-// ---- jacoco --- //
-
-subprojects {
-    configurations.all {
-        resolutionStrategy {
-            eachDependency {
-                if (requested.group == "org.jacoco") {
-                    useVersion("0.8.7")
-                }
-            }
-        }
-    }
-}
-
-// ---- end jacoco --- //
-
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}

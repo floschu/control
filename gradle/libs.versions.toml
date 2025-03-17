@@ -1,45 +1,46 @@
 [versions]
 # lib
-kotlin = "2.0.21"
-coroutines = "1.9.0"
+kotlin = "2.1.10"
+coroutines = "1.10.1"
+binary-compatibility-validator = "0.17.0"
 
 # examples
-activity-compose = "1.9.3"
-material3 = "1.3.1"
-compose-bom = "2024.11.00"
+agp = "8.9.0"
+android-minSdk = "28"
+android-compileSdk = "35"
+androidx-activity-compose = "1.10.1"
+androidx-compose-bom = "2025.03.00"
+androidx-material3 = "1.3.1"
 espresso = "3.6.1"
 junit-ktx = "1.2.1"
-mockk = "1.13.13"
-pitest = "1.15.0"
-binary-compat-validator = "0.14.0"
-maven-publish-plugin = "0.25.3"
-dokka = "1.9.20"
-android-gradle-plugin = "8.6.1"
-ktlint = "12.1.1"
-ui-test-junit4 = "1.7.5"
+maven-publish-plugin = "0.30.0"
+kover = "0.9.1"
+ktlint = "12.2.0"
+androidx-ui-test-junit4 = "1.7.8"
 
 [libraries]
-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
-androidx-compose-material = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+# lib
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+
+# examples
+activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity-compose" }
+androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidx-compose-bom" }
+androidx-compose-material = { module = "androidx.compose.material3:material3", version.ref = "androidx-material3" }
 androidx-compose-material-icons-core = { module = "androidx.compose.material:material-icons-core" }
 androidx-compose-ui = { module = "androidx.compose.ui:ui" }
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
-androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "ui-test-junit4" }
+androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "androidx-ui-test-junit4" }
 androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
 junit-ktx = { module = "androidx.test.ext:junit-ktx", version.ref = "junit-ktx" }
-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
-kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
-mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
-pitest-gradle-plugin = { module = "info.solidsoft.gradle.pitest:gradle-pitest-plugin", version.ref = "pitest" }
-binary-compat-validator = { module = "org.jetbrains.kotlinx:binary-compatibility-validator", version.ref = "binary-compat-validator" }
-maven-publish-plugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "maven-publish-plugin" }
-dokka-gradle-plugin = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
-android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "android-gradle-plugin" }
-kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 
 [plugins]
-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+binary-compatibility-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binary-compatibility-validator" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish-plugin" }
