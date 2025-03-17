@@ -5,6 +5,8 @@
 - Update Kotlin to `2.1.10`
 - Update kotlinx.coroutines to `1.10.1`
 - Publish `control-core` as kotlin multiplatform library
+- Create custom `@TestOnlyStub` annotation and use it instead of `@TestOnly` to support KMP
+  implementation
 
 ## `[1.3.0]` - 2024-11-16
 
@@ -54,17 +56,20 @@
 
 ## `[0.11.0]` - 2020-05-30
 
-- `CoroutineScope.createController` and `CoroutineScope.createSynchronousController` now accept a custom `ControllerStart` parameter instead of `CoroutineStart`.
+- `CoroutineScope.createController` and `CoroutineScope.createSynchronousController` now accept a
+  custom `ControllerStart` parameter instead of `CoroutineStart`.
 - Add `ManagedController`.
 - `Controller.stub` is now marked as `@TestOnly`.
 - binary compatibility is now checked on each `[build]` & `[publish]`.
 
 ## `[0.10.0]` - 2020-05-11
 
-- `ControllerStub` is removed from `Controller` interface.  
-- `ControllerStub` is now accessible via the `Controller.stub()` extension function. once a `Controller` is stubbed via this extension function, it cannot be un-stubbed.
+- `ControllerStub` is removed from `Controller` interface.
+- `ControllerStub` is now accessible via the `Controller.stub()` extension function. once a
+  `Controller` is stubbed via this extension function, it cannot be un-stubbed.
 
 ## `[0.9.0]` - 2020-05-10
 
-- `ControllerImplementation` now uses `MutableStateFlow` instead of `ConflatedBroadCastChannel` internally.
+- `ControllerImplementation` now uses `MutableStateFlow` instead of `ConflatedBroadCastChannel`
+  internally.
 - `Controller.state` emissions are now distinct by default (via `StateFlow`).
