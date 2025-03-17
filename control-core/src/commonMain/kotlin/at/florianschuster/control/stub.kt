@@ -2,7 +2,7 @@ package at.florianschuster.control
 
 /**
  * Marker to remind users, that stubs should only be used in tests.
- * Use `@OptIn(ControlStubTestOnly::class)` on test classes using the stub api.
+ * Use `@OptIn(TestOnlyStub::class)` on test classes using the stub api.
  */
 @RequiresOptIn("The stub API is only for testing purposes and should not be used in production code")
 annotation class TestOnlyStub
