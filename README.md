@@ -56,6 +56,10 @@ unit tested.
 * [android-counter](examples/android-counter): android counter example built
   with [jetpack compose](https://developer.android.com/jetpack/compose).
 
+## skills
+
+* [control-library](.opencode/skills/control-library.md): comprehensive guide for AI agents to implement state management using the control library.
+
 ## author
 
 visit my [website](https://florianschuster.at/).

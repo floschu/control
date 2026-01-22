@@ -1,4 +1,3 @@
-import com.vanniktech.maven.publish.SonatypeHost
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 
@@ -76,13 +75,13 @@ kover {
 // ---- publishing --- //
 
 group = "at.florianschuster.control"
-version = System.getenv("libraryVersionTag")
+version = System.getenv("libraryVersionTag") ?: "local"
 
 mavenPublishing {
     // Snapshots will be immediately available at:
     // https://s01.oss.sonatype.org/content/repositories/snapshots/at/florianschuster/control/
-    publishToMavenCentral(SonatypeHost.S01)
-    signAllPublications()
+    publishToMavenCentral(automaticRelease = true)
+    if (version != "local") signAllPublications()
     coordinates(group.toString(), "control-core", version.toString())
     pom {
         name = "control-core"

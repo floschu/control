@@ -1,5 +1,11 @@
 # changelog
 
+## `[2.1.0]` - 2025-01-22
+
+- Update Kotlin to `2.3.0`
+- Update kotlinx.coroutines to `1.10.2`
+- Add AI agent skill documentation (`.opencode/skills/control-library.md`) for comprehensive library usage guidance
+
 ## `[2.0.0]` - 2025-03-16
 
 - Update Kotlin to `2.1.10`
