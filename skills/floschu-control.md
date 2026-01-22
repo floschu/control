@@ -1,11 +1,6 @@
 ---
 name: floschu-control
 description: Implement, debug, and test floschu/control - a unidirectional data flow state management kmp library with coroutines
-license: Apache-2.0
-compatibility: opencode
-metadata:
-  language: kotlin
-  framework: kotlin-multiplatform
 ---
 
 

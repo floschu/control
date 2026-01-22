@@ -58,7 +58,7 @@ unit tested.
 
 ## skills
 
-* [control-library](.opencode/skills/control-library.md): comprehensive guide for AI agents to implement state management using the control library.
+Check out the [control skill](skills/floschu-control.md) to implement and test `control` with your **AI agents**.
 
 ## author
 
