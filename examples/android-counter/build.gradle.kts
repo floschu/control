@@ -1,7 +1,17 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("kotlin-android")
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
+}
+
+val jenvContent = File(".java-version").readText().trim()
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.fromTarget(jenvContent))
+    }
 }
 
 android {
@@ -14,8 +24,9 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        val javaVersion = JavaVersion.toVersion(jenvContent)
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
     }
     sourceSets["main"].java.srcDir("src/main/kotlin")
     sourceSets["test"].java.srcDir("src/test/kotlin")
@@ -25,7 +36,6 @@ android {
         resources.excludes.add("META-INF/LGPL2.1")
     }
     buildFeatures { compose = true }
-    kotlinOptions { jvmTarget = JavaVersion.VERSION_17.toString() }
 }
 
 dependencies {

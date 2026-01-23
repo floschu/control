@@ -12,7 +12,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'adopt'
-          java-version: '17'
+          java-version-file: .java-version
       - name: "lint"
         run: ./gradlew lint ktlintCheck
 
@@ -25,7 +25,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'adopt'
-          java-version: '17'
+          java-version-file: .java-version
       - name: "Test"
         run: ./gradlew test
 
@@ -38,7 +38,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'adopt'
-          java-version: '17'
+          java-version-file: .java-version
       - name: "Check if coverage is satisfied"
         run: ./gradlew koverVerify
 
@@ -51,7 +51,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'adopt'
-          java-version: '17'
+          java-version-file: .java-version
       - name: "Validates the Api"
         run: ./gradlew apiCheck
 
@@ -65,7 +65,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'adopt'
-          java-version: '17'
+          java-version-file: .java-version
       - name: "Assemble"
         run: ./gradlew assemble
 
@@ -79,7 +79,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'adopt'
-          java-version: '17'
+          java-version-file: .java-version
       - name: "Create coverage reports"
         run: ./gradlew koverXmlReport
       - name: "Upload coverage to codecov"

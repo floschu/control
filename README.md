@@ -56,6 +56,10 @@ unit tested.
 * [android-counter](examples/android-counter): android counter example built
   with [jetpack compose](https://developer.android.com/jetpack/compose).
 
+## skills
+
+Check out the [control skill](skills/floschu-control.md) to implement and test `control` with your **AI agents**.
+
 ## author
 
 visit my [website](https://florianschuster.at/).
