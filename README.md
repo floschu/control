@@ -18,14 +18,8 @@ repositories {
     mavenCentral()
 }
 
-kotlin {
-    sourceSets {
-        commonMain {
-            dependencies {
-                implementation("at.florianschuster.control:control-core:$version")
-            }
-        }
-    }
+dependencies {
+    implementation("at.florianschuster.control:control-core:$version")
 }
 ```
 
