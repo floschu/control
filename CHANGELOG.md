@@ -4,7 +4,7 @@
 
 - Update Kotlin to `2.3.0`
 - Update kotlinx.coroutines to `1.10.2`
-- Add AI agent skill documentation (`.opencode/skills/control-library.md`) for comprehensive library usage guidance
+- Add AI agent skill documentation (`.opencode/skills/control-library`) for comprehensive library usage guidance
 
 ## `[2.0.0]` - 2025-03-16
 
