@@ -1,6 +1,6 @@
 ---
 name: floschu-control
-description: Implement, debug, and test floschu/control - a unidirectional data flow state management kmp library with coroutines
+description: Use when implementing, debugging, or testing code that uses the floschu/control library. Triggers on tasks involving Store, Reducer, Actions, Mutations, Effects types from at.florianschuster.control; UDF state management in Kotlin Multiplatform projects; or migrating to or from the control library.
 ---
 
 

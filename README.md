@@ -52,7 +52,7 @@ unit tested.
 
 ## skills
 
-Check out the [control skill](skills/floschu-control.md) to implement and test `control` with your **AI agents**.
+Check out the [control skill](skills/floschu-control) to implement and test `control` with your **AI agents**.
 
 ## author
 
