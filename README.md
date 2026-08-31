@@ -1,3 +1,5 @@
+
+
 <p align="center"><img alt="flow" width="600" src=".media/control.png"></p>
 
 <p align=center>
@@ -22,6 +24,8 @@ dependencies {
     implementation("at.florianschuster.control:control-core:$version")
 }
 ```
+
+`control-core` is a Kotlin Multiplatform library.
 
 see [changelog](https://github.com/floschu/control/blob/develop/CHANGELOG.md)  for versions
 
