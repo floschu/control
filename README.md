@@ -56,4 +56,4 @@ Check out the [control skill](skills/floschu-control) to implement and test `con
 
 ## author
 
-visit my [website](https://florianschuster.at/).
+visit my [website](https://flosch.at/).
